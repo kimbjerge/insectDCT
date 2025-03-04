@@ -183,8 +183,8 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains Ominiglot models
-    #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
-    parser.add_argument('--classifier', default='./models_save/ConvNeXtBase-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.89
+    parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
+    #parser.add_argument('--classifier', default='./models_save/ConvNeXtBase-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.89
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-60-Ext-Finetuned.keras') # 128x128 F1 0.84
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-90-Ext.keras')
     parser.add_argument('--video', default='')
