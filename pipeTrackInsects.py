@@ -60,7 +60,7 @@ def run(dirName):
     print(tracksFilename)
     tracks = TracksSave(tracksFilename)
 
-    csvFilename = './CSV/'+dirName+'.csv'
+    csvFilename = './detections/'+dirName+'.csv'
     threshold=[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
     predicted = predict.load_predictions(csvFilename, filterTime=0, threshold=threshold) # Skip if not moved within 5 minutes
     totPredictions, totFilteredPredictions = predict.getPredictions()
