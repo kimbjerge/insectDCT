@@ -6,3 +6,5 @@ pip install -U scikit-image
 pip install -U scikit-learn
 python -m pip install tensorflow[and-cuda]==2.17.0
 pip install ultralytics
+pip install pyqt5
+
