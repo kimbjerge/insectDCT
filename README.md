@@ -1,6 +1,6 @@
 # insectsDCT
-This project contains Python code for processing time-lapse (0.2-1fps) images from insect camera traps. 
-Python code to detect, classify, and track insects with a background of plants and flowers.
+This project contains Python code for processing time-lapse (0.2-1fps) images (resized to 1920x1080 pixel) from insect camera traps. 
+Code to detect, classify, and track insects with a background of plants and flowers.
 (detection, classification, tracking, and floral cover estimation)
 
 ## The algorithms used are described in the papers: 
@@ -33,16 +33,21 @@ README-conda-env-yolo11.txt - environment requirements
 ### Getting started ###
 
 1. Download the repository and install it with the same directory structure
-  
-2. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
-3. Activate the python environment
+2. Download weights for the classifier and unzip to: models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
+   
+	https://drive.google.com/file/d/1_zjJS_Y5aIr2OFN6Jmg9aRAtILV0LV0J/view?usp=sharing
+   
+4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
+
+5. Activate the python environment
 
    - Anaconda: $ conda activate yolo11
   
-4. Run the Python code to test and plot the abundance of arthropods
+6. Run the Python code to generate the CSV files for detection and tracking
 
-   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification)
+   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification on CUDA:0)
+   - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
 
 ### CSV files in detections directory ###
@@ -86,14 +91,14 @@ Content of *.csv files which contain lines for each track (piX_YYYY_MM_DDTR.csv)
 
 	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
 
-Where class is the same as orderId and id is the track number
+Where class is the name of the orderId and id is the track number
 
 Example:
 
 	0,20250221,11:57:31,11:58:23,52.00,Hymenoptera,18,36.84,3198.74,3171  
 	1,20250221,11:58:07,11:58:31,24.00,Hymenoptera,12,53.85,2686.08,1364
 
-counts is the number of detections  <br />
+counts is the number of detections minus one in a track (at least two detections to make a track)  <br />
 confidence is the number of times the class was predicted relative to all detections in the track   <br />
 size is the average pixel size of the tracked insect   <br />
 distance is the distance in pixels the insect was tracked   <br />
@@ -103,6 +108,7 @@ Content of *.csv files which contain lines for each detection in each track (piX
 	id,date,time,percent,class,xc,yc,x1,y1,width,height,image
 
 Example:
+
 	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,pi2_2025_02_21_11_57_31.jpg  
 	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,pi2_2025_02_21_11_57_32.jpg 
 	0,20250221,115734,63,Background,1278,700,1252,682,52,37,pi2_2025_02_21_11_57_34.jpg
