@@ -1,5 +1,5 @@
 # insectsDCT
-This project contains Python code for processing time-lapse (0.2-1fps) images from insect camera traps. 
+This project contains Python code for processing time-lapse (0.2-1fps) images (resized to 1920x1080 pixel) from insect camera traps. 
 Code to detect, classify, and track insects with a background of plants and flowers.
 (detection, classification, tracking, and floral cover estimation)
 
