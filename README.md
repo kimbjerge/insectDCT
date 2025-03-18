@@ -34,16 +34,17 @@ README-conda-env-yolo11.txt - environment requirements
 
 1. Download the repository and install it with the same directory structure
 
-2. Download the weithts for the arthropod classifier and unzip the file to models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
+2. Download the weights for the classifier and unzip to: models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
+   
 https://drive.google.com/file/d/1_zjJS_Y5aIr2OFN6Jmg9aRAtILV0LV0J/view?usp=sharing
    
-3. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
+4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
-4. Activate the python environment
+5. Activate the python environment
 
    - Anaconda: $ conda activate yolo11
   
-5. Run the Python code to generate the CSV files for detection and tracking
+6. Run the Python code to generate the CSV files for detection and tracking
 
    - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification on CUDA:0)
    - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
