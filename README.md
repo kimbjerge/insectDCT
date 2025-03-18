@@ -42,7 +42,8 @@ README-conda-env-yolo11.txt - environment requirements
   
 4. Run the Python code to generate the CSV files for detection and tracking
 
-   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification)
+   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification on CUDA:0)
+   - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
 
 ### CSV files in detections directory ###
