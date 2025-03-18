@@ -7,4 +7,4 @@ https://zenodo.org/records/13772695
 Copy the NI2-19cls.zip to datasets and unpack the file
 
 
-![Alt text](pipeline.png?raw=true "Processing pipeline")
+![Alt text](pipeline.png)
