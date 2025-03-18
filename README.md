@@ -1,6 +1,6 @@
 # insectsDCT
-Python code to detect, classify, and track insects with a background of plants and flowers
-This project contains Python code for processing time-lapse images from insect camera traps. 
+This project contains Python code for processing time-lapse (0.2-1fps) images from insect camera traps. 
+Python code to detect, classify, and track insects with a background of plants and flowers.
 (detection, classification, tracking, and floral cover estimation)
 
 ## The algorithms used are described in the papers: 
@@ -25,12 +25,14 @@ https://www.biorxiv.org/content/10.1101/2024.07.01.601488v2
 
 ![Alt text](Pipeline.png)
 
+Estimating flower cover is currently in development. 
+
 ## Python environment files ##
 README-conda-env-yolo11.txt - environment requirements
 
 ### Getting started ###
 
-1. Download, unzip, and copy the python npy files to the subfolder python as described above
+1. Download the repository and install it with the same directory structure
   
 2. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
@@ -40,8 +42,8 @@ README-conda-env-yolo11.txt - environment requirements
   
 4. Run the Python code to test and plot the abundance of arthropods
 
-   - $ python pipeDetectAndClassifyInsects.py
-   - $ python pipeTrackInsects.py
+   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification)
+   - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
 
 ### CSV files in detections directory ###
 
@@ -51,8 +53,8 @@ Content of *.csv files which contain lines for each detection (piX_YYYY_MM_DD.cs
 
 Where the orderId will be updated with the following classification codes:
 
-	1 - Ladybirds  <br />
-	2 - Beetles  <br />
+	1 - Ladybirds 
+	2 - Beetles  
 	3 - Plants  <br />
 	4 - Bumblebees  <br />
 	5 - Hoverflies  <br />
@@ -71,9 +73,11 @@ Where the orderId will be updated with the following classification codes:
 	18 - Dragonflies  <br />
 	19 - Honeybees
 
+orderConf is the confidence score from the classifier (0-100%)
+
 Example:
 
-	pi1,1,20250221,115753,64,19,1335,820,1386,888,pi1_2025_02_21/pi2_2025_02_21_11_57_53.jpg  <br />
+	pi1,1,20250221,115753,64,19,1335,820,1386,888,pi1_2025_02_21/pi2_2025_02_21_11_57_53.jpg 
 	pi1,1,20250221,115807,39,12,422,729,489,776,pi1_2025_02_21/pi2_2025_02_21_11_58_07.jpg
 
 ### CSV and JSON files in tracks directory ###
@@ -82,24 +86,30 @@ Content of *.csv files which contain lines for each track (piX_YYYY_MM_DDTR.csv)
 
 	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
 
-	Where class is the same as orderId and id is the track number
+Where class is the same as orderId and id is the track number
 
 Example:
 
-	0,20250221,11:57:31,11:58:23,52.00,Hymenoptera,18,36.84,3198.74,3171  <br />
+	0,20250221,11:57:31,11:58:23,52.00,Hymenoptera,18,36.84,3198.74,3171  
 	1,20250221,11:58:07,11:58:31,24.00,Hymenoptera,12,53.85,2686.08,1364
+
+counts is the number of detections  <br />
+confidence is the number of times the class was predicted relative to all detections in the track   <br />
+size is the average pixel size of the tracked insect   <br />
+distance is the distance in pixels the insect was tracked   <br />
 
 Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DDTRS.csv):
 
 	id,date,time,percent,class,xc,yc,x1,y1,width,height,image
 
 Example:
-	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,pi2_2025_02_21_11_57_31.jpg  <br />
-	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,pi2_2025_02_21_11_57_32.jpg  <br />
+	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,pi2_2025_02_21_11_57_31.jpg  
+	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,pi2_2025_02_21_11_57_32.jpg 
 	0,20250221,115734,63,Background,1278,700,1252,682,52,37,pi2_2025_02_21_11_57_34.jpg
 
+percent is the confidence score same as confidence in the detecion CSV file
 
-## Training and testing insect detector model (YOLO11) and classifier (EfficientNetB4) ##
+## Training insect detector and classifier models ##
 
 ### Code for inspiration to create datasets with motion (MIE) images: ###
 
@@ -110,7 +120,7 @@ Example:
   - common - contains Python code used by pipeDetectAndClassifyInsects.py  <br />
   - idac - contains python code used by pipeTrackInsects.py
 
-### Training and validating YOLO11 on color or motion (MIE) images: ###
+### Training and validating models (YOLO11) on color or motion images: ###
 
  - insectsColorTrain.py, insectsColorVal.py  <br />
  - insectsMotionTrain.py
