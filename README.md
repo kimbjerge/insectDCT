@@ -40,7 +40,7 @@ README-conda-env-yolo11.txt - environment requirements
 
    - Anaconda: $ conda activate yolo11
   
-4. Run the Python code to test and plot the abundance of arthropods
+4. Run the Python code to generate the CSV files for detection and tracking
 
    - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification)
    - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
