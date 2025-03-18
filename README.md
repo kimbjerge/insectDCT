@@ -34,9 +34,9 @@ README-conda-env-yolo11.txt - environment requirements
 
 1. Download the repository and install it with the same directory structure
 
-2. Download the weights for the classifier and unzip to: models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
+2. Download weights for the classifier and unzip to: models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
    
-https://drive.google.com/file/d/1_zjJS_Y5aIr2OFN6Jmg9aRAtILV0LV0J/view?usp=sharing
+	https://drive.google.com/file/d/1_zjJS_Y5aIr2OFN6Jmg9aRAtILV0LV0J/view?usp=sharing
    
 4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
