@@ -86,7 +86,7 @@ Content of *.csv files which contain lines for each track (piX_YYYY_MM_DDTR.csv)
 
 	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
 
-Where class is the same as orderId and id is the track number
+Where class is the name of the orderId and id is the track number
 
 Example:
 
