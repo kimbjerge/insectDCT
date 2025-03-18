@@ -193,7 +193,7 @@ if __name__=='__main__':
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion best F1-score 0.93
-    parser.add_argument('--device', default='0', type=int) # used for YOLO GPU processing 
+    parser.add_argument('--device', default='0') # used for YOLO GPU processing 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
     parser.add_argument('--scale', default='1.0', type=float) # Scale factor used for creating result video
