@@ -53,25 +53,25 @@ Content of *.csv files which contain lines for each detection (piX_YYYY_MM_DD.cs
 
 Where the orderId will be updated with the following classification codes:
 
-	1 - Ladybirds 
-	2 - Beetles  
-	3 - Plants  <br />
-	4 - Bumblebees  <br />
-	5 - Hoverflies  <br />
-	6 - Butterflies  <br />
-	7 - Spiders  <br />
-	8 - Ants  <br />
-	9 - Flies  <br />
-	10 - True bugs  <br />
-	11 - Isopods  <br />
-	12 - Unspecified  <br />
-	13 - Hymenoptera  <br />
-	14 - Grasshoppers  <br />
-	15 - R. fulva  <br />
-	16 - Satyrines  <br />
-	17 - Small tortoiseshell  <br />
-	18 - Dragonflies  <br />
-	19 - Honeybees
+	1 - Coccinellidae (Ladybirds) 
+	2 - Coleoptera (Beetles) 
+	3 - Background (Plants)
+	4 - Bombus (Bumblebees)
+	5 - Syrphidae (Hoverflies) 
+	6 - Lepidoptera (Butterflies)
+	7 - Araneae (Spiders)
+	8 - Formidicidae (Ants)
+	9 - Diptera (Flies)
+	10 - Hemiptera (True bugs)
+	11 - Isopoda (Isopods)
+	12 - Unspecified 
+	13 - Hymenoptera
+	14 - Orthoptera (Grasshoppers)
+	15 - Rhagnoycha fulva
+	16 - Satyrinae (Satyrines)
+	17 - Aglais urticea (Small tortoiseshell)
+	18 - Odonata (Dragonflies)
+	19 - Apis mellifera (Honeybees)
 
 orderConf is the confidence score from the classifier (0-100%)
 
