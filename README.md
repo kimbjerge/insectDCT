@@ -107,6 +107,7 @@ Content of *.csv files which contain lines for each detection in each track (piX
 	id,date,time,percent,class,xc,yc,x1,y1,width,height,image
 
 Example:
+
 	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,pi2_2025_02_21_11_57_31.jpg  
 	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,pi2_2025_02_21_11_57_32.jpg 
 	0,20250221,115734,63,Background,1278,700,1252,682,52,37,pi2_2025_02_21_11_57_34.jpg
