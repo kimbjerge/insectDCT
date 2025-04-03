@@ -1,0 +1,260 @@
+'''Train script.
+'''
+
+import os
+import pickle
+import shutil
+from tqdm import tqdm
+import torch
+import numpy as np
+from torch.utils.data import DataLoader
+from torch.optim import Adam, SGD
+#from torchsummary import summary
+from torchvision import transforms
+
+from runtime_args import args
+from load_dataset import LoadDataset
+from hierarchical_loss import HierarchicalLossNetwork
+from resnet50tf import ResNet50 #KBE??? (tf)
+from helper import calculate_accuracy
+from level_NI_dict import labelsL1, labelsL2, labelsL3
+
+
+def checkHierarcy(HLN, level1_pred, level2_pred, level3_pred):    
+         
+    level1p = np.argmax(level1_pred, axis=1)
+    level2p = np.argmax(level2_pred, axis=1)
+    level3p = np.argmax(level3_pred, axis=1)
+    checkL2 = HLN.check_hierarchy_list(level=1, current_level=level2p, previous_level=level1p)
+    checkL3 = HLN.check_hierarchy_list(level=2, current_level=level3p, previous_level=level2p)
+    
+    checkList = checkL3 
+    
+    for idx in range(len(checkList)):
+        if checkL3[idx] == False or checkL2[idx] == False:
+            checkList[idx] = False
+            #print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
+    
+    countWrongHierarchy = sum(map(lambda x : x == False, checkList))
+    
+    return countWrongHierarchy, len(level3p)
+
+
+def trainModel(alpha, save_path):
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() and args.device == 'gpu' else 'cpu')
+    
+    if not os.path.exists(save_path): 
+        os.makedirs(save_path)
+        print("Directory created", save_path)
+    
+    train_dataset = LoadDataset(image_path=args.train_path, image_size=args.img_size, image_depth=args.img_depth, 
+                                transform=transforms.Compose([transforms.RandomAffine(40, scale=(.85, 1.15), shear=0, resample=0),
+                                    transforms.RandomHorizontalFlip(),
+                                    transforms.RandomVerticalFlip(),
+                                    transforms.RandomPerspective(distortion_scale=0.2),
+                                    transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5),
+                                    transforms.ToTensor()]))
+    test_dataset = LoadDataset(image_path=args.test_path, image_size=args.img_size, image_depth=args.img_depth, 
+                               transform=transforms.ToTensor())
+    
+    train_generator = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+    test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    
+    model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+    optimizer = None
+    if args.optimizer == 'Adam':
+        optimizer = Adam(model.parameters(), lr=args.learning_rate)
+        print('Adam learning rate', args.learning_rate)
+    if args.optimizer == 'SGD':
+        optimizer = SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+        print('SGD learning rate', args.learning_rate)
+        print('SGD momentum', args.momentum)
+        print('SGD weight decay', args.weight_decay)
+    if optimizer is None:
+        print('Wrong optimizer specified', args.optimizer)
+        
+    model = model.to(device)
+    HLN = HierarchicalLossNetwork(total_level=3, alpha=alpha, device=device, simple=True) 
+    
+    train_epoch_loss = []
+    train_epoch_level1class_accuracy = []
+    train_epoch_level2class_accuracy = []
+    train_epoch_level3class_accuracy = []
+    
+    test_epoch_loss = []
+    test_epoch_level1class_accuracy = []
+    test_epoch_level2class_accuracy = []
+    test_epoch_level3class_accuracy = []
+    test_epoch_countWrongHierarchy = []
+    test_epoch_countWrongPercentage = []
+    test_minimum_loss = 1000
+    best_epoch_idx = 0
+    
+    for epoch_idx in range(args.epoch):
+    
+        i = 0
+    
+        epoch_loss = []
+        epoch_level1class_accuracy = []
+        epoch_level2class_accuracy = []
+        epoch_level3class_accuracy = []
+    
+        model.train()
+        for i, sample in tqdm(enumerate(train_generator)):
+    
+    
+            batch_x, batch_y1, batch_y2, batch_y3 = sample['image'].to(device), sample['label_1'].to(device), sample['label_2'].to(device), sample['label_3'].to(device)
+            optimizer.zero_grad()
+    
+            leve1class_pred, level2class_pred, level3class_pred = model(batch_x)
+            prediction = [leve1class_pred, level2class_pred, level3class_pred]
+            dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
+            lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
+    
+            total_loss = lloss + dloss
+    
+            total_loss.backward()
+            optimizer.step()
+            epoch_loss.append(total_loss.item())
+            epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0].detach(), labels=batch_y1))
+            epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1].detach(), labels=batch_y2))
+            epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2].detach(), labels=batch_y3))
+    
+    
+        train_epoch_loss.append(sum(epoch_loss)/(i+1))
+        train_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(i+1))
+        train_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(i+1))
+        train_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(i+1))
+     
+    
+        print(f'Training Loss at epoch {epoch_idx+1} : {sum(epoch_loss)/(i+1)}')
+        print(f'Training level 1 accuracy at epoch {epoch_idx+1} : {sum(epoch_level1class_accuracy)/(i+1)}')
+        print(f'Training level 2 accuracy at epoch {epoch_idx+1} : {sum(epoch_level2class_accuracy)/(i+1)}')
+        print(f'Training level 3 accuracy at epoch {epoch_idx+1} : {sum(epoch_level3class_accuracy)/(i+1)}')
+    
+        j = 0
+    
+        epoch_loss = []
+        epoch_level1class_accuracy = []
+        epoch_level2class_accuracy = []
+        epoch_level3class_accuracy = []
+        level1_pred = []
+        level2_pred = []
+        level3_pred = []
+    
+        model.eval()
+        with torch.set_grad_enabled(False):
+            for j, sample in tqdm(enumerate(test_generator)):
+    
+    
+                batch_x, batch_y1, batch_y2, batch_y3 = sample['image'].to(device), sample['label_1'].to(device), sample['label_2'].to(device), sample['label_3'].to(device)
+    
+                level1class_pred, level2class_pred, level3class_pred = model(batch_x)
+                
+                level1_pred = level1_pred + level1class_pred.tolist()
+                level2_pred = level2_pred + level2class_pred.tolist()
+                level3_pred = level3_pred + level3class_pred.tolist()
+                
+                prediction = [level1class_pred, level2class_pred, level3class_pred]
+                dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
+                lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
+    
+                total_loss = lloss + dloss
+    
+                epoch_loss.append(total_loss.item())
+                epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0], labels=batch_y1))
+                epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1], labels=batch_y2))
+                epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2], labels=batch_y3))
+    
+    
+        test_loss_avg = sum(epoch_loss)/(j+1)
+        test_epoch_loss.append(test_loss_avg)
+        test_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(j+1))
+        test_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(j+1))
+        test_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(j+1))
+    
+        countWrongHierarchy, testSize = checkHierarcy(HLN, level1_pred, level2_pred, level3_pred)
+        countWrongPercentage = countWrongHierarchy/testSize     
+        test_epoch_countWrongHierarchy.append(countWrongHierarchy)
+        test_epoch_countWrongPercentage.append(countWrongPercentage)
+     
+   
+        print(f'Testing Loss at epoch {epoch_idx+1} : {sum(epoch_loss)/(j+1)}')
+        print(f'Testing level1class accuracy at epoch {epoch_idx+1} : {sum(epoch_level1class_accuracy)/(j+1)}')
+        print(f'Testing level2class accuracy at epoch {epoch_idx+1} : {sum(epoch_level2class_accuracy)/(j+1)}')
+        print(f'Testing level3class accuracy at epoch {epoch_idx+1} : {sum(epoch_level3class_accuracy)/(j+1)}')
+        print("Testing wrong hierarchy predictions %d/%d (%.5f)" % (countWrongHierarchy, testSize, countWrongPercentage))
+        print('-------------------------------------------------------------------------------------------')
+       
+        src_model_file = save_path + 'dhc' + str(epoch_idx+1) + '.pth'
+        torch.save(model.state_dict(), src_model_file)
+        print("Model saved in ", src_model_file)
+
+        if test_minimum_loss > test_loss_avg:
+            best_epoch_idx = epoch_idx+1
+            test_minimum_loss = test_loss_avg
+            best_model_file = save_path + 'dhc_best.pth'
+            shutil.copyfile(src_model_file, best_model_file)
+                
+        with open(save_path + 'resultsAdv3L.pkl', 'wb') as f:
+            objs = [epoch_idx,
+                    best_epoch_idx,
+                    train_epoch_level1class_accuracy, 
+                    train_epoch_level2class_accuracy,
+                    train_epoch_level3class_accuracy,
+                    train_epoch_loss,
+                    test_epoch_level1class_accuracy,
+                    test_epoch_level2class_accuracy,
+                    test_epoch_level3class_accuracy,
+                    test_epoch_loss,
+                    test_epoch_countWrongHierarchy,
+                    test_epoch_countWrongPercentage,
+                    testSize
+                    ]
+            pickle.dump(objs, f)
+            print("Train and test accuracy and loss resultsAdv3L.pkl saved in", save_path)
+                    
+
+        with open(save_path + 'optimizerAdv3L.pkl', 'wb') as f:
+            objs = [args.optimizer,
+                    args.learning_rate,
+                    args.momentum,
+                    args.weight_decay,
+                    alpha]
+            pickle.dump(objs, f)
+            print("Optimizer optimizerAdv3L.pkl settings saved in", save_path)
+        
+#%% MAIN
+if __name__=='__main__':
+    
+    #trainModel(alpha=0.01, save_path="./save0_01/")
+    #trainModel(alpha=0.50, save_path="./save0_50/")
+    #trainModel(alpha=0.99, save_path="./save0_99/")
+    #trainModel(alpha=0.00, save_path="./saveOrg0_00/")
+    #trainModel(alpha=1.00, save_path="./save1_00/")
+    #trainModel(alpha=0.001, save_path="./save0_001/")
+    #trainModel(alpha=0.0001, save_path="./save0_0001/")
+    #trainModel(alpha=0.00001, save_path="./save0_00001/")
+    #trainModel(alpha=0.000001, save_path="./save0_000001/")
+    #trainModel(alpha=0.50, save_path="./saveT1/")
+    #trainModel(alpha=0.50, save_path="./saveT2/")
+    #trainModel(alpha=0.50, save_path="./saveT3/")
+    #trainModel(alpha=0.50, save_path="./saveT4/")
+    #trainModel(alpha=0.50, save_path="./saveT5/")
+    #trainModel(alpha=0.90, save_path="./saveA9T1/")
+    #trainModel(alpha=0.90, save_path="./saveA9T2/")
+    #trainModel(alpha=0.90, save_path="./saveA9T3/")
+    #trainModel(alpha=0.90, save_path="./saveA9T4/")
+    #trainModel(alpha=0.50, save_path="./saveA9T5/")
+    #trainModel(alpha=0.1, save_path="./save0_10/")
+    #trainModel(alpha=0.2, save_path="./save0_20/")
+    #trainModel(alpha=0.3, save_path="./save0_30/")
+    #trainModel(alpha=0.4, save_path="./save0_40/")
+    #trainModel(alpha=0.6, save_path="./save0_60/")
+    #trainModel(alpha=0.7, save_path="./save0_70/")
+    #trainModel(alpha=0.8, save_path="./save0_80/")
+    #trainModel(alpha=0.9, save_path="./save0_90/")
+    #trainModel(alpha=0.5, save_path="./save0_50Test/")
+    trainModel(alpha=0.5, save_path="./save0_50SGD/")
+
