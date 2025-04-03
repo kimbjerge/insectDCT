@@ -15,7 +15,7 @@ from torchvision import transforms
 from runtime_args import args
 from load_dataset import LoadDataset
 from hierarchical_loss import HierarchicalLossNetwork
-from resnet50tf import ResNet50 #KBE??? (tf)
+from resnet50tf import ResNet50
 from helper import calculate_accuracy
 from level_NI_dict import labelsL1, labelsL2, labelsL3
 
@@ -49,7 +49,7 @@ def trainModel(alpha, save_path):
         print("Directory created", save_path)
     
     train_dataset = LoadDataset(image_path=args.train_path, image_size=args.img_size, image_depth=args.img_depth, 
-                                transform=transforms.Compose([transforms.RandomAffine(40, scale=(.85, 1.15), shear=0, resample=0),
+                                transform=transforms.Compose([transforms.RandomAffine(40, scale=(.85, 1.15), shear=0),
                                     transforms.RandomHorizontalFlip(),
                                     transforms.RandomVerticalFlip(),
                                     transforms.RandomPerspective(distortion_scale=0.2),
@@ -228,33 +228,5 @@ def trainModel(alpha, save_path):
 #%% MAIN
 if __name__=='__main__':
     
-    #trainModel(alpha=0.01, save_path="./save0_01/")
-    #trainModel(alpha=0.50, save_path="./save0_50/")
-    #trainModel(alpha=0.99, save_path="./save0_99/")
-    #trainModel(alpha=0.00, save_path="./saveOrg0_00/")
-    #trainModel(alpha=1.00, save_path="./save1_00/")
-    #trainModel(alpha=0.001, save_path="./save0_001/")
-    #trainModel(alpha=0.0001, save_path="./save0_0001/")
-    #trainModel(alpha=0.00001, save_path="./save0_00001/")
-    #trainModel(alpha=0.000001, save_path="./save0_000001/")
-    #trainModel(alpha=0.50, save_path="./saveT1/")
-    #trainModel(alpha=0.50, save_path="./saveT2/")
-    #trainModel(alpha=0.50, save_path="./saveT3/")
-    #trainModel(alpha=0.50, save_path="./saveT4/")
-    #trainModel(alpha=0.50, save_path="./saveT5/")
-    #trainModel(alpha=0.90, save_path="./saveA9T1/")
-    #trainModel(alpha=0.90, save_path="./saveA9T2/")
-    #trainModel(alpha=0.90, save_path="./saveA9T3/")
-    #trainModel(alpha=0.90, save_path="./saveA9T4/")
-    #trainModel(alpha=0.50, save_path="./saveA9T5/")
-    #trainModel(alpha=0.1, save_path="./save0_10/")
-    #trainModel(alpha=0.2, save_path="./save0_20/")
-    #trainModel(alpha=0.3, save_path="./save0_30/")
-    #trainModel(alpha=0.4, save_path="./save0_40/")
-    #trainModel(alpha=0.6, save_path="./save0_60/")
-    #trainModel(alpha=0.7, save_path="./save0_70/")
-    #trainModel(alpha=0.8, save_path="./save0_80/")
-    #trainModel(alpha=0.9, save_path="./save0_90/")
-    #trainModel(alpha=0.5, save_path="./save0_50Test/")
-    trainModel(alpha=0.5, save_path="./save0_50SGD/")
+    trainModel(alpha=0.5, save_path="./saved/")
 
