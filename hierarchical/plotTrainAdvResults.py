@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from scipy.stats import norm
-from plot import plot_loss_acc
 from sklearn import metrics
+from plot import plot_loss_acc
 from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
 graph_folder = './graph_folder/'
@@ -110,24 +110,7 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     if level == 3:
         font_size = 12
     plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=False, font_size=font_size)
-
-    """
-    #confusion_matrix = metrics.confusion_matrix(level_label, level_p)
-    #cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = labels)
-    fig, ax = plt.subplots(figsize=(10, 8))
-    #metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize='true', display_labels=labels, #Normalized labels
-    #metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize='pred', display_labels=labels, #Normalized predictions
-    #                                                xticks_rotation='vertical', values_format='.2g', cmap='Greens', ax=ax)
-
-    #plt.rcParams.update({'font.size': 20})
-    plt.rcParams.update({'font.size': 14})
-    metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize=None, display_labels=labels, 
-                                                    xticks_rotation='vertical', values_format='d', cmap='Greens', ax=ax)
-    plt.title('L' + str(level) + ' ' + level_name )
-    plt.savefig(graph_folder + 'level'+ str(level) + '.png')
-    plt.show()
-    """
-    
+  
     precision = metrics.precision_score(level_label, level_p, average='macro')
     print("Level %d (macro) precision %.4f" % (level, precision))
     recall = metrics.recall_score(level_label, level_p, average='macro')
@@ -264,53 +247,12 @@ if __name__=='__main__':
     best_epoch = []
     counts = []
     
-    """
+
     resultFiles = [
         # Result file                  , alpha value
-        ['./saved/resultsAdv3L0_00.pkl',     0],
-        ['./saved/resultsAdv3L0_000001.pkl', 0.000001],
-        ['./saved/resultsAdv3L0_00001.pkl',  0.00001],
-        ['./saved/resultsAdv3L0_0001.pkl',   0.0001],
-        ['./saved/resultsAdv3L0_001.pkl',    0.001],
-        ['./saved/resultsAdv3L0_01.pkl',     0.01],
-        ['./saved/resultsAdv3L0_50.pkl',     0.5],
-        ['./saved/resultsAdv3L0_99.pkl',     0.99],
-        ['./saved/resultsAdv3L1_00.pkl',     1]
-        ]
-        
-    resultFiles = [
-        # Result file                  , alpha value
-        ['./saved/resultsAdv3LT1.pkl',     0.5], #A9
-        ['./saved/resultsAdv3LT2.pkl',     0.5],
-        ['./saved/resultsAdv3LT3.pkl',     0.5],
-        ['./saved/resultsAdv3LT4.pkl',     0.5],
-        ['./saved/resultsAdv3LT5.pkl',     0.5],
-        ]
-    resultFiles = [
-        # Result file                  , alpha value
-        ['./saved/resultsAdv3L0_01.pkl',     0.01],
-        ['./saved/resultsAdv3L0_10.pkl',     0.1],
-        ['./saved/resultsAdv3L0_20.pkl',     0.2],
-        ['./saved/resultsAdv3L0_30.pkl',     0.3],
-        ['./saved/resultsAdv3L0_40.pkl',     0.4],
-        ['./saved/resultsAdv3L0_50.pkl',     0.5],
-        ['./saved/resultsAdv3L0_60.pkl',     0.6],
-        ['./saved/resultsAdv3L0_70.pkl',     0.7],
-        ['./saved/resultsAdv3L0_80.pkl',     0.8],
-        ['./saved/resultsAdv3L0_90.pkl',     0.9],
-        ['./saved/resultsAdv3L0_99.pkl',     0.99]
-        ]    
-    resultFiles = [
-        # Result file                  , alpha value
-        ['./saved_ENet/resultsAdv3L_ENetB0.pkl',     0.5],
-        ['./saved_ENet/resultsAdv3L_ENetB3.pkl',     0.5],
-        ['./saved_ENet/resultsAdv3L_ENetB4.pkl',     0.5]
+        ['./saved/resultsAdv3L.pkl',     0.5]
         ]  
-    """
-    resultFiles = [
-        # Result file                  , alpha value
-        ['./saved/resultsAdv3LT4.pkl',     0.5]
-        ]  
+    
     """
     resultFiles = [
         # Result file                  , alpha value
@@ -367,17 +309,10 @@ if __name__=='__main__':
     plt.show()    
     print(alpha_values, best_epoch, acc_avg_levels)
 
-    #resultFile = './saved/predictLabels3Ltrain_alpha1_e17.pkl'    
-    #resultFile = './saved/predictLabels3Ltrain_alpha0_2.pkl'    
-    resultFile = './saved/predictLabels3Ltrain_alpha0_5_T4.pkl'    
+    resultFile = './saved/predictLabels3Ltrain.pkl'    
     plotHistogram(resultFile)
     
-    #resultFile = './saved/predictLabels3Lval_alpha1_e17.pkl'
-    #resultFile = './saved/predictLabels3Lval_alpha0_2.pkl'
-    resultFile = './saved/predictLabels3Lval_alpha0_5_T4.pkl' # Paper
-    #resultFile = './saved/predictLabels3Lval_GBIF.pkl'
-    #resultFile = './saved/predictLabels3Lval_GBIF_NI.pkl'
-    #resultFile = './saved_ENet/predictLabels3L_ENetB3.pkl' #B0, B3 Best, B4
+    resultFile = './saved/predictLabels3Lval.pkl'
     level3False = plotConfusionMatrix(resultFile)
     checkList = checkHierarcy(resultFile)
     
