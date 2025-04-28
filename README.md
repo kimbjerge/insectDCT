@@ -18,7 +18,7 @@ https://doi.org/10.1016/j.ecoinf.2024.102861
 Tracking insects in low-framerate video recordings (<1fps):
 
 "Towards edge processing of images from insect camera traps".  <br />
-https://www.biorxiv.org/content/10.1101/2024.07.01.601488v2
+https://doi.org/10.1002/rse2.70007
 
 
 # This repository includes the essential Python code for the steps in the figure below. 
