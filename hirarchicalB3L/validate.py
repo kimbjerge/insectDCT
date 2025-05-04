@@ -1,0 +1,118 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 27 21:26:08 2022
+
+@author: Kim Bjerge
+"""
+
+import os
+import pickle
+from tqdm import tqdm
+import torch
+from torch.utils.data import DataLoader
+from torchsummary import summary
+from torchvision import transforms
+
+from runtime_args import args
+from load_dataset import LoadDataset
+from hierarchical_loss import HierarchicalLossNetwork
+from resnet50tf import ResNet50 #KBE??? (tf)
+from helper import calculate_accuracy
+from plot import plot_loss_acc
+from level_NI_dict import labelsL1, labelsL2, labelsL3
+
+
+#%% MAIN
+if __name__=='__main__':
+   
+    device = torch.device("cuda:0" if torch.cuda.is_available() and args.device == 'gpu' else 'cpu')
+    
+    if not os.path.exists(args.graphs_folder) : os.makedirs(args.graphs_folder)
+    
+    test_dataset = LoadDataset(image_path=args.test_path, image_size=args.img_size, image_depth=args.img_depth, 
+    #test_dataset = LoadDataset(image_path=args.train_path, image_size=args.img_size, image_depth=args.img_depth, 
+                               transform=transforms.ToTensor())
+
+    test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    
+    #model = ResNet50tf(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) #KBE???
+    model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+    model.load_state_dict(torch.load(args.model_save_path+args.weights, map_location=device))
+    
+    model = model.to(device)
+    HLN = HierarchicalLossNetwork(total_level=3, device=device, simple=True) #KBE???
+     
+    test_epoch_loss = []
+    test_epoch_level1class_accuracy = []
+    test_epoch_level2class_accuracy = []
+    test_epoch_level3class_accuracy = []
+     
+    j = 0
+
+    epoch_loss = []
+    epoch_level1class_accuracy = []
+    epoch_level2class_accuracy = []
+    epoch_level3class_accuracy = []
+    
+    level1_pred = []
+    level2_pred = []
+    level3_pred = []
+    level1_label = []
+    level2_label = []
+    level3_label = []
+    
+    model.eval()
+    with torch.set_grad_enabled(False):
+        for j, sample in tqdm(enumerate(test_generator)):
+
+            batch_x, batch_y1, batch_y2, batch_y3 = sample['image'].to(device), sample['label_1'].to(device), sample['label_2'].to(device), sample['label_3'].to(device)
+
+            level1class_pred, level2class_pred, level3class_pred = model(batch_x)
+            prediction = [level1class_pred, level2class_pred, level3class_pred]
+            dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
+            lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
+
+            total_loss = lloss + dloss
+
+            epoch_loss.append(total_loss.item())
+            epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0], labels=batch_y1))
+            epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1], labels=batch_y2))
+            epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2], labels=batch_y3))
+            
+            level1_pred = level1_pred + level1class_pred.tolist()
+            level2_pred = level2_pred + level2class_pred.tolist()
+            level3_pred = level3_pred + level3class_pred.tolist()
+            level1_label = level1_label + batch_y1.tolist()
+            level2_label = level2_label + batch_y2.tolist()
+            level3_label = level3_label + batch_y3.tolist()
+
+
+    test_epoch_loss.append(sum(epoch_loss)/(j+1))
+    test_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(j+1))
+    test_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(j+1))
+    test_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(j+1))
+
+    #plot accuracy and loss graph
+    #plot_loss_acc('./graph_folder/', num_epoch=[0], 
+    #                train_accuracies_level1=test_epoch_level1class_accuracy, train_accuracies_level2=test_epoch_level2class_accuracy, 
+    #                train_accuracies_level3=test_epoch_level3class_accuracy, train_losses=test_epoch_loss,
+    #                test_accuracies_level1=test_epoch_level1class_accuracy, test_accuracies_level2=test_epoch_level2class_accuracy,
+    #                test_accuracies_level3=test_epoch_level3class_accuracy, test_losses=test_epoch_loss)
+
+    print(f'Testing Loss : {sum(epoch_loss)/(j+1)}')
+    print(f'Testing level1class accuracy : {sum(epoch_level1class_accuracy)/(j+1)}')
+    print(f'Testing level2class accuracy : {sum(epoch_level2class_accuracy)/(j+1)}')
+    print(f'Testing level3class accuracy : {sum(epoch_level3class_accuracy)/(j+1)}')
+    print('-------------------------------------------------------------------------------------------')
+    
+    with open('./saved/predictLabels3L.pkl', 'wb') as f:
+        objs = [level1_pred, 
+                level2_pred,
+                level3_pred,
+                level1_label,
+                level2_label,
+                level3_label]
+        pickle.dump(objs, f)
+        print("Predictions and labels ./saved/predictLabels3L.pkl")
+
+    
