@@ -76,10 +76,16 @@ def trainModel(alpha, save_path):
         print('Wrong optimizer specified', args.optimizer)
     
     if args.loss_function == "Balanced":
-        lossFnL1 = BalancedSoftmaxLoss(cls_num_list=len(labelsL1), reduction='mean') # Best loss function for LT datasets
-        lossFnL2 = BalancedSoftmaxLoss(cls_num_list=len(labelsL2), reduction='mean') # Best loss function for LT datasets
-        lossFnL3 = BalancedSoftmaxLoss(cls_num_list=len(labelsL3), reduction='mean') # Best loss function for LT datasets
-        print("Using Balanced Softmax Loss Function L1, L2, L3:", len(labelsL1), len(labelsL2), len(labelsL3))    
+        cls_num_L1 = train_dataset.get_cls_num_list(0)
+        lossFnL1 = BalancedSoftmaxLoss(cls_num_list=cls_num_L1, reduction='mean') # Best loss function for LT datasets
+        cls_num_L2 = train_dataset.get_cls_num_list(1)
+        lossFnL2 = BalancedSoftmaxLoss(cls_num_list=cls_num_L2, reduction='mean') # Best loss function for LT datasets
+        cls_num_L3 = train_dataset.get_cls_num_list(2)
+        lossFnL3 = BalancedSoftmaxLoss(cls_num_list=cls_num_L3, reduction='mean') # Best loss function for LT datasets
+        print("Using Balanced Softmax Loss Function")
+        print("Class list L1:", labelsL1, cls_num_L1)    
+        print("Class list L2:", labelsL2, cls_num_L2)    
+        print("Class list L3:", labelsL3, cls_num_L3)    
     else:
         lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
         lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function

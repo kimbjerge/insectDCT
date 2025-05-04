@@ -29,7 +29,7 @@ class LoadDataset(Dataset):
         self.hierarchyL1 = hierarchyL1
         self.hierarchyL2 = hierarchyL2
         self.unspecified = 'Unspecified'
-        self.data_list = self.path_to_list()
+        self.data_list, self.classListL1, self.classListL2, self.classListL3 = self.path_to_list()
         
         #check if the hierarchy dictionary is consistent
         for k,v in self.hierarchyL1.items():
@@ -52,6 +52,9 @@ class LoadDataset(Dataset):
         '''Reads the path of the file and its corresponding label
         '''
         data = []
+        classListL1 = {}
+        classListL2 = {}
+        classListL3 = {}
         for dirName in os.listdir(self.data_path):
             labelL1 = self.unspecified
             labelL2 = self.unspecified
@@ -80,8 +83,22 @@ class LoadDataset(Dataset):
                 if fileName.endswith('.jpg') or fileName.endswith('.JPG'):
                     record = [filePath + '/' + fileName, labelL1, labelL2, labelL3]
                     data.append(record)
+                    
+                # Counting number of samples for each class at each level
+                if labelL1 in classListL1.keys():
+                    classListL1[labelL1] += 1
+                else:
+                    classListL1[labelL1] = 1
+                if labelL2 in classListL2.keys():
+                    classListL2[labelL2] += 1
+                else:
+                    classListL2[labelL2] = 1
+                if labelL3 in classListL3.keys():
+                    classListL3[labelL3] += 1
+                else:
+                    classListL3[labelL3] = 1         
             
-        return data
+        return data, classListL1, classListL2, classListL3
 
 
     def getLabelIndex(self, classL, labels):
@@ -123,7 +140,21 @@ class LoadDataset(Dataset):
             'label_2': labelL2index,
             'label_3': labelL3index
         }
+    
+    
+    def get_cls_num_list(self, level):
         
+        cls_num_list = []
+        if level == 0:
+            cls_num_list = [self.classListL1[labelName] for labelName in self.labelsL1]
+        if level == 1:
+            cls_num_list = [self.classListL2[labelName] for labelName in self.labelsL2]
+        if level == 2:
+            cls_num_list = [self.classListL3[labelName] for labelName in self.labelsL3]
+            
+        return cls_num_list
+        
+    
     # NOT USED KBE???
     def getitemFlexible(self, idx):
         '''Returns a single item.
