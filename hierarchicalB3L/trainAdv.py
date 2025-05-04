@@ -6,6 +6,7 @@ import pickle
 import shutil
 from tqdm import tqdm
 import torch
+import torch.nn as nn
 import numpy as np
 from torch.utils.data import DataLoader
 from torch.optim import Adam, SGD
@@ -18,7 +19,7 @@ from hierarchical_loss import HierarchicalLossNetwork
 from resnet50tf import ResNet50
 from helper import calculate_accuracy
 from level_NI_dict import labelsL1, labelsL2, labelsL3
-
+from balanced_softmax_loss import BalancedSoftmaxLoss
 
 def checkHierarcy(HLN, level1_pred, level2_pred, level3_pred):    
          
@@ -73,9 +74,20 @@ def trainModel(alpha, save_path):
         print('SGD weight decay', args.weight_decay)
     if optimizer is None:
         print('Wrong optimizer specified', args.optimizer)
+    
+    if args.loss_function == "Balanced":
+        lossFnL1 = BalancedSoftmaxLoss(cls_num_list=len(labelsL1), reduction='mean') # Best loss function for LT datasets
+        lossFnL2 = BalancedSoftmaxLoss(cls_num_list=len(labelsL2), reduction='mean') # Best loss function for LT datasets
+        lossFnL3 = BalancedSoftmaxLoss(cls_num_list=len(labelsL3), reduction='mean') # Best loss function for LT datasets
+        print("Using Balanced Softmax Loss Function L1, L2, L3:", len(labelsL1), len(labelsL2), len(labelsL3))    
+    else:
+        lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        lossFnL3 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        print("Using Softmax Cross-entropy Loss Function")
         
     model = model.to(device)
-    HLN = HierarchicalLossNetwork(total_level=3, alpha=alpha, device=device, simple=True) 
+    HLN = HierarchicalLossNetwork([lossFnL1, lossFnL2, lossFnL3], total_level=3, alpha=alpha, device=device, simple=True) 
     
     train_epoch_loss = []
     train_epoch_level1class_accuracy = []

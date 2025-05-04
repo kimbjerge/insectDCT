@@ -10,7 +10,7 @@ class HierarchicalLossNetwork:
     '''Logics to calculate the loss of the model.
     '''
 
-    def __init__(self, device='cpu', total_level=3, alpha=0.5, p_loss=2.718281828459, simple=False): #p_loss = 3 values of alpha and beta KBE???
+    def __init__(self, lossFnLx, device='cpu', total_level=3, alpha=0.5, p_loss=2.718281828459, simple=False): #p_loss = 3 values of alpha and beta KBE???
         '''Param init.
         '''
         self.total_level = total_level
@@ -25,7 +25,8 @@ class HierarchicalLossNetwork:
         self.hierarchical_labelsL1 = hierarchyL1
         self.hierarchical_labelsL2 = hierarchyL2
         self.numeric_hierarchyL1, self.numeric_hierarchyL2 = self.words_to_indices()
-        self.simple = simple 
+        self.simple = simple
+        self.lossFn = lossFnLx
         if self.simple:
            print("Loss simple")
         else:
@@ -76,7 +77,8 @@ class HierarchicalLossNetwork:
         
         lloss = 0
         for l in range(self.total_level):
-            lloss += nn.CrossEntropyLoss()(predictions[l], true_labels[l])
+            #lloss += nn.CrossEntropyLoss()(predictions[l], true_labels[l])
+            lloss += self.lossFnLx[l](predictions[l], true_labels[l])
 
         return self.alpha * lloss
 

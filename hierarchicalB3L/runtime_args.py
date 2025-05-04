@@ -30,6 +30,7 @@ parser.add_argument('--graphs_folder', type=str, help='Specify the path to save 
 parser.add_argument('--epoch', type=int, help='Specify the number of epochs for the training.', default=20) # 30
 #parser.add_argument('--batch_size', type=int, help='Specify the batch size to be used during training/testing.', default=10)
 parser.add_argument('--batch_size', type=int, help='Specify the batch size to be used during training/testing.', default=20)
+parser.add_argument('--loss_function', type=str, help='Specify the loss function to be used during training. (Cross or Balanced)', default='Balanced')
 parser.add_argument('--optimizer', type=str, help='Specify the optimizer to be used during training. (Adam or SGD)', default='Adam')
 parser.add_argument('--learning_rate', type=float, help='Specify the learning rate (SGD or Adam) to be used during training.', default=1e-4)
 #parser.add_argument('--optimizer', type=str, help='Specify the optimizer to be used during training. (Adam or SGD)', default='SGD')
