@@ -26,7 +26,7 @@ class HierarchicalLossNetwork:
         self.hierarchical_labelsL2 = hierarchyL2
         self.numeric_hierarchyL1, self.numeric_hierarchyL2 = self.words_to_indices()
         self.simple = simple
-        self.lossFn = lossFnLx
+        self.lossFnLx = lossFnLx
         if self.simple:
            print("Loss simple")
         else:
