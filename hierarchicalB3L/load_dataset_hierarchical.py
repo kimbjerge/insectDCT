@@ -81,7 +81,7 @@ class LoadDataset(Dataset):
     
     def get_cls_num_list(self, level):
         
-        return self.hierarchicalDataset.get_cls_num_list()      
+        return self.hierarchicalDataset.get_cls_num_list(level)      
     
     # NOT USED KBE???
     def getitemFlexible(self, idx):
