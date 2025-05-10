@@ -27,7 +27,7 @@ class HierarchicalDatasetLoader():
     def create_labels_file_list(self):
         
         path_names = {}
-        for file_path in image_path_list:
+        for file_path in self.data_path_list:
             for path_name in sorted(os.listdir(file_path)):
                 full_path_name = file_path + '/' + path_name
                 if not path_name in path_names.keys():                
