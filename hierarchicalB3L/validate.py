@@ -150,6 +150,6 @@ if __name__=='__main__':
                 level2_label,
                 level3_label]
         pickle.dump(objs, f)
-        print("Predictions and labels ./saved/predictLabels3L.pkl")
+        print("Predictions and labels", predictedLablesFile)
 
     
