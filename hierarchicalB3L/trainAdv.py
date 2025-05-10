@@ -48,11 +48,13 @@ def trainModel(alpha, save_path):
     if not os.path.exists(save_path): 
         os.makedirs(save_path)
         print("Directory created", save_path)
+
+    print(args)
             
     image_path_list = []
     for subdir in args.path_list.split(','): # Scan subdirectories with datasets
         image_path_list.append(args.data_path+subdir)
-    
+        
     hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=args.split) # default 10% used for validation
     
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()

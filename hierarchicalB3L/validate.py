@@ -32,6 +32,8 @@ if __name__=='__main__':
         os.makedirs(args.graphs_folder)
         print("Directory created", args.graphs_folder)
 
+    print(args)
+
     image_path_list = []
     for subdir in args.path_list.split(','): # Scan subdirectories with datasets
         image_path_list.append(args.data_path+subdir)
