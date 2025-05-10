@@ -109,7 +109,7 @@ def trainModel(alpha, save_path):
         print("Using Softmax Cross-entropy Loss Function")
         
     model = model.to(device)
-    HLN = HierarchicalLossNetwork([lossFnL1, lossFnL2, lossFnL3], total_level=3, alpha=alpha, device=device, simple=True) 
+    HLN = HierarchicalLossNetwork(hierarchicalDataset, [lossFnL1, lossFnL2, lossFnL3], total_level=3, alpha=alpha, device=device, simple=True) 
     
     train_epoch_loss = []
     train_epoch_level1class_accuracy = []
