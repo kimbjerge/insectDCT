@@ -60,7 +60,7 @@ class HierarchicalDatasetLoader():
         count = 0
         for dirName in self.path_names.keys():
             dirSplit = dirName.split(' ')
-            lenSplit = len(dirSplit)
+            lenSplit = len(dirSplit) # File name syntax: "<order> <family> <genus> <species>"
             if lenSplit > 0:
                 labelL1 = dirSplit[0] # Order
                 labelL2 = labelL1
@@ -69,9 +69,9 @@ class HierarchicalDatasetLoader():
                 labelL2 = dirSplit[1] # Family
                 labelL3 = labelL2
             if lenSplit == 3:
-                labelL3 = dirSplit[2] # Genius
+                labelL3 = dirSplit[2] # Genus
             if lenSplit == 4:
-                labelL3 = dirSplit[2] + ' ' + dirSplit[3] # Genius + species
+                labelL3 = dirSplit[2] + ' ' + dirSplit[3] # Genius + species (Same level L3)
 
             if not labelL1 in self.hierarchyL1.keys():
                 self.hierarchyL1[labelL1] = []
@@ -98,25 +98,27 @@ class HierarchicalDatasetLoader():
                     if fileName.endswith('.jpg') or fileName.endswith('.JPG'):
                         record = [filePath + '/' + fileName, labelL1, labelL2, labelL3]
                         count += 1
-                        num_images = 1
                         if count % self.split_validate == 0:
                             self.data_list_val.append(record) # Use image for validation
-                            num_images = 0 # Set to zero if only counting training images
+                            num_images = [0, 1] # Validate image
                         else:   
                             self.data_list.append(record) # Use image for training
+                            num_images = [1, 0] # Test image
                         
                         # Counting number of samples for each class at each level
-                        # NB counting both training and validation images
                         if labelL1 in self.classListL1.keys():
-                            self.classListL1[labelL1] += num_images
+                            self.classListL1[labelL1][0] += num_images[0] # Test images
+                            self.classListL1[labelL1][1] += num_images[1] # Validate images
                         else:
                             self.classListL1[labelL1] = num_images
                         if labelL2 in self.classListL2.keys():
-                            self.classListL2[labelL2] += num_images
+                            self.classListL2[labelL2][0] += num_images[0]
+                            self.classListL2[labelL2][1] += num_images[1]
                         else:
                             self.classListL2[labelL2] = num_images
                         if labelL3 in self.classListL3.keys():
-                            self.classListL3[labelL3] += num_images
+                            self.classListL3[labelL3][0] += num_images[0]
+                            self.classListL3[labelL3][1] += num_images[1]
                         else:
                             self.classListL3[labelL3] = num_images 
                 
@@ -133,19 +135,19 @@ class HierarchicalDatasetLoader():
         else:
             return self.data_list
     
-    def get_cls_num_list(self, level):
+    def get_cls_num_list(self, level, countIdx=0):# 0 Test images, 1 Validate images
         
         cls_num_list = []
         if level == 0:
-            cls_num_list = [self.classListL1[labelName] for labelName in self.labelsL1]
+            cls_num_list = [self.classListL1[labelName][countIdx] for labelName in self.labelsL1]
         if level == 1:
-            cls_num_list = [self.classListL2[labelName] for labelName in self.labelsL2]
+            cls_num_list = [self.classListL2[labelName][countIdx] for labelName in self.labelsL2]
         if level == 2:
-            cls_num_list = [self.classListL3[labelName] for labelName in self.labelsL3]
+            cls_num_list = [self.classListL3[labelName][countIdx] for labelName in self.labelsL3]
             
         return cls_num_list
         
-#%% MAIN for testing
+#%% MAIN for testing HierarchicalDatasetLoader class
 if __name__=='__main__':
     
     image_path_list = ['/ArthropodsDataset/NI2classes',
@@ -163,7 +165,10 @@ if __name__=='__main__':
     print(path_names)
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
-    print("Labels L1", labelsL1, datasetLoader.get_cls_num_list(0))
-    print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1))
-    print("Labels L3", labelsL3, datasetLoader.get_cls_num_list(2))
+    print("=============================================================================================")
+    print("Labels L1", labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))
+    print("=============================================================================================")
+    print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))
+    print("=============================================================================================")
+    print("Labels L3", labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))
     

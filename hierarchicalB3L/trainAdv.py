@@ -62,8 +62,31 @@ def trainModel(alpha, save_path):
                        ]
     
     hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=10) # 10% used for validation
-    hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     
+    hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
+    trainL1 = hierarchicalDataset.get_cls_num_list(0, countIdx=0)
+    trainL2 = hierarchicalDataset.get_cls_num_list(1, countIdx=0)
+    trainL3 = hierarchicalDataset.get_cls_num_list(2, countIdx=0)
+    valL1 = hierarchicalDataset.get_cls_num_list(0, countIdx=1)
+    valL2 = hierarchicalDataset.get_cls_num_list(1, countIdx=1)
+    valL3 = hierarchicalDataset.get_cls_num_list(2, countIdx=1)
+    with open(save_path + 'labelsAdv3L.pkl', 'wb') as f:
+            objs = [image_path_list,
+                    hierarchyL1, # Hierarchy level dependency L2 -> L1
+                    hierarchyL2, # Hierarchy level dependency L3 -> L2
+                    labelsL1, # Labels at hierarchical level 1 (order)
+                    labelsL2, # Labels at hierarchical level 2 (family)
+                    labelsL3, # Labels at hierarchical level 3 (genus/species)
+                    trainL1, # Number of training images for labels at level 1
+                    trainL2, # Number of training images for labels at level 2
+                    trainL3, # Number of training images for labels at level 3
+                    valL1, # Number of validation images for labels at level 1
+                    valL2, # Number of validation images for labels at level 2
+                    valL3, # Number of validation images for labels at level 3
+                    ]
+            pickle.dump(objs, f)
+            print("Hierarchical labels labelsAdv3L.pkl saved in", save_path)
+            
     train_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
                                 transform=transforms.Compose([transforms.RandomAffine(40, scale=(.85, 1.15), shear=0),
                                     transforms.RandomHorizontalFlip(),
@@ -230,7 +253,7 @@ def trainModel(alpha, save_path):
             test_minimum_loss = test_loss_avg
             best_model_file = save_path + 'dhc_best.pth'
             shutil.copyfile(src_model_file, best_model_file)
-                
+         
         with open(save_path + 'resultsAdv3L.pkl', 'wb') as f:
             objs = [epoch_idx,
                     best_epoch_idx,
