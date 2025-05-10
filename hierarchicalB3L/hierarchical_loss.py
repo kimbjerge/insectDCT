@@ -3,13 +3,13 @@
 
 import torch
 import torch.nn as nn
-from hierarchical_loader import HierarchicalDatasetLoader
 
 class HierarchicalLossNetwork:
     '''Logics to calculate the loss of the model.
     '''
 
-    def __init__(self, hierarchicalDataset: HierarchicalDatasetLoader, lossFnLx, device='cpu', total_level=3, alpha=0.5, p_loss=2.718281828459, simple=False): #p_loss = 3 values of alpha and beta KBE???
+    def __init__(self, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, lossFnLx, 
+                 device='cpu', total_level=3, alpha=0.5, p_loss=2.718281828459, simple=False): #p_loss = 3 values of alpha and beta KBE???
         '''Param init.
         '''
         self.total_level = total_level
@@ -18,12 +18,11 @@ class HierarchicalLossNetwork:
         self.p_loss = p_loss
         print("Hierachical loss levels=%d, alpha=%.2f, beta = %.2f, ploss = %.4f" % (self.total_level, self.alpha, self.beta, self.p_loss))
         self.device = device
-        hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
+        self.hierarchical_labelsL1 = hierarchyL1
+        self.hierarchical_labelsL2 = hierarchyL2
         self.level_one_labels = labelsL1 
         self.level_two_labels = labelsL2
         self.level_three_labels = labelsL3
-        self.hierarchical_labelsL1 = hierarchyL1
-        self.hierarchical_labelsL2 = hierarchyL2
         self.numeric_hierarchyL1, self.numeric_hierarchyL2 = self.words_to_indices()
         self.simple = simple
         self.lossFnLx = lossFnLx
@@ -81,6 +80,7 @@ class HierarchicalLossNetwork:
             lloss += self.lossFnLx[l](predictions[l], true_labels[l])
 
         return self.alpha * lloss
+
 
     def calculate_dloss(self, predictions, true_labels):
         '''Calculate the dependence loss.

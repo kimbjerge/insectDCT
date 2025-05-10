@@ -132,7 +132,9 @@ def trainModel(alpha, save_path):
         print("Using Softmax Cross-entropy Loss Function")
         
     model = model.to(device)
-    HLN = HierarchicalLossNetwork(hierarchicalDataset, [lossFnL1, lossFnL2, lossFnL3], total_level=3, alpha=alpha, device=device, simple=True) 
+    HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, 
+                                  [lossFnL1, lossFnL2, lossFnL3], 
+                                  total_level=3, alpha=alpha, device=device, simple=True) 
     
     train_epoch_loss = []
     train_epoch_level1class_accuracy = []
@@ -281,6 +283,7 @@ def trainModel(alpha, save_path):
                     alpha]
             pickle.dump(objs, f)
             print("Optimizer optimizerAdv3L.pkl settings saved in", save_path)
+        
         
 #%% MAIN
 if __name__=='__main__':

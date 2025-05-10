@@ -40,11 +40,13 @@ class LoadDataset(Dataset):
                 if not subclass in self.labelsL3:
                     print(f"Level3 class missing! {subclass}")
 
+ 
     def getLabelIndex(self, classL, labels):
         if classL in labels:
             return labels.index(classL)
         else:
             return -1 # Unknown class
+
 
     def resize_image(self, img, size=(28,28)):
     
@@ -73,10 +75,12 @@ class LoadDataset(Dataset):
     
         return cv2.resize(mask, size, interpolation)
 
+
     def __len__(self):
         '''Returns the total amount of data.
         '''
         return len(self.data_list)
+
 
     def __getitem__(self, idx):
         '''Returns a single item.
@@ -107,10 +111,12 @@ class LoadDataset(Dataset):
             'label_2': labelL2index,
             'label_3': labelL3index
         }
+
     
     def get_cls_num_list(self, level):
         
         return self.hierarchicalDataset.get_cls_num_list(level)      
+
     
     # NOT USED KBE???
     def getitemFlexible(self, idx):

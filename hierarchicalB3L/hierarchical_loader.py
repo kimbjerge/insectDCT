@@ -24,6 +24,7 @@ class HierarchicalDatasetLoader():
         self.path_names = self.create_labels_file_list()
         self.create_hierarchy_labels()
     
+    
     def create_labels_file_list(self):
         
         path_names = {}
@@ -36,9 +37,11 @@ class HierarchicalDatasetLoader():
         
         return path_names
     
+    
     def get_path_names(self):
         
         return self.path_names
+    
     
     def create_hierarchy_labels(self):
         
@@ -126,14 +129,17 @@ class HierarchicalDatasetLoader():
         self.labelsL2 = sorted(self.labelsL2)
         self.labelsL3 = sorted(self.labelsL3)
     
+    
     def get_hierarchy_labels(self):
         return self.hierarchyL1, self.hierarchyL2, self.labelsL1, self.labelsL2, self.labelsL3
+
 
     def get_data_list(self, validate):
         if validate:
             return self.data_list_val
         else:
             return self.data_list
+    
     
     def get_cls_num_list(self, level, countIdx=0):# 0 Test images, 1 Validate images
         
@@ -147,6 +153,7 @@ class HierarchicalDatasetLoader():
             
         return cls_num_list
         
+    
 #%% MAIN for testing HierarchicalDatasetLoader class
 if __name__=='__main__':
     
@@ -155,10 +162,6 @@ if __name__=='__main__':
                        '/ArthropodsDataset/NItrain',
                        '/ArthropodsDataset/NIval'
                        ]
-    
-    image_path_list1 = ['/ArthropodsDataset/NItrain',
-                        '/ArthropodsDataset/NIval'
-                        ]
     
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     path_names = datasetLoader.get_path_names()

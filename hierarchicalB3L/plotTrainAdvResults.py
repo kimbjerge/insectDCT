@@ -13,10 +13,19 @@ import pandas as pd
 from scipy.stats import norm
 from sklearn import metrics
 from plot import plot_loss_acc
-from level_NI_dict import labelsL1, labelsL2, labelsL3
+#from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
-graph_folder = './graph_folder/'
 
+graph_folder = './graph_folder/'
+label_file = "./saved/labelsAdv3L.pkl"
+
+with open(label_file, 'rb') as f:
+    image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
+    print("Labels and hierarchy dependency loaded from ", label_file)
+    print("L1", labelsL1)
+    print("L2", labelsL2)
+    print("L3", labelsL3)
+        
 def plotAccuracy(resultFile):
 
     with open(resultFile, 'rb') as f:
@@ -153,8 +162,11 @@ def checkHierarcy(resultFile):
     with open(resultFile, 'rb') as f:
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
         print("Predictions and labels and loss loaded from ", resultFile)
-        
-    HLN = HierarchicalLossNetwork(total_level=3, device="cpu", simple=True)
+    
+    
+    HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, 
+                                  [0, 0, 0],
+                                  total_level=3, device="cpu", simple=True)
 
     level1p = np.argmax(level1_pred, axis=1)
     level2p = np.argmax(level2_pred, axis=1)
