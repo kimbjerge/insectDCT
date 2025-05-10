@@ -48,20 +48,12 @@ def trainModel(alpha, save_path):
     if not os.path.exists(save_path): 
         os.makedirs(save_path)
         print("Directory created", save_path)
-        
-    image_path_list_win = ['/ArthropodsDataset/NI2classes',
-                       '/ArthropodsDataset/NI2sorted',
-                       '/ArthropodsDataset/NItrain',
-                       '/ArthropodsDataset/NIval'
-                       ]
+            
+    image_path_list = []
+    for subdir in args.path_list.split(','): # Scan subdirectories with datasets
+        image_path_list.append(args.data_path+subdir)
     
-    image_path_list = ['/home/don/data/Arthropods/NI2classes',
-                       '/home/don/data/Arthropods/NI2sorted',
-                       '/home/don/data/Arthropods/NItrain',
-                       '/home/don/data/Arthropods/NIval'
-                       ]
-    
-    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=10) # 10% used for validation
+    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=args.split) # default 10% used for validation
     
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     trainL1 = hierarchicalDataset.get_cls_num_list(0, countIdx=0)
@@ -122,9 +114,13 @@ def trainModel(alpha, save_path):
         cls_num_L3 = train_dataset.get_cls_num_list(2)
         lossFnL3 = BalancedSoftmaxLoss(cls_num_list=cls_num_L3, reduction='mean') # Best loss function for LT datasets
         print("Using Balanced Softmax Loss Function")
+        print("=====================================================================================")
         print("Class list L1:", labelsL1, cls_num_L1)    
+        print("=====================================================================================")
         print("Class list L2:", labelsL2, cls_num_L2)    
+        print("=====================================================================================")
         print("Class list L3:", labelsL3, cls_num_L3)    
+        print("=====================================================================================")
     else:
         lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
         lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
@@ -288,5 +284,5 @@ def trainModel(alpha, save_path):
 #%% MAIN
 if __name__=='__main__':
     
-    trainModel(alpha=0.5, save_path="./saved/")
+    trainModel(alpha=0.5, save_path=args.model_save_path)
 

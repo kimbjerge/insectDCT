@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov 13 20:19:03 2022
+Modified on Sat April 10 18:19:03 2025
 
 @author: Kim Bjerge
 """
@@ -19,6 +19,7 @@ from hierarchical_loss import HierarchicalLossNetwork
 graph_folder = './graph_folder/'
 label_file = "./saved/labelsAdv3L.pkl"
 
+# Load labels shared by several functions
 with open(label_file, 'rb') as f:
     image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
     print("Labels and hierarchy dependency loaded from ", label_file)
@@ -264,23 +265,6 @@ if __name__=='__main__':
         # Result file                  , alpha value
         ['./saved/resultsAdv3L.pkl',     0.5]
         ]  
-    
-    """
-    resultFiles = [
-        # Result file                  , alpha value
-        ['./saved/resultsAdv3L0_01.pkl',     0.01],
-        ['./saved/resultsAdv3L0_10.pkl',     0.1],
-        ['./saved/resultsAdv3L0_20.pkl',     0.2],
-        ['./saved/resultsAdv3L0_30.pkl',     0.3],
-        ['./saved/resultsAdv3L0_40.pkl',     0.4],
-        ['./saved/resultsAdv3L0_50.pkl',     0.5],
-        ['./saved/resultsAdv3L0_60.pkl',     0.6],
-        ['./saved/resultsAdv3L0_70.pkl',     0.7],
-        ['./saved/resultsAdv3L0_80.pkl',     0.8],
-        ['./saved/resultsAdv3L0_90.pkl',     0.9],
-        ['./saved/resultsAdv3L0_99.pkl',     0.99]
-        ] 
-    """
     
     count = 1
     for resultFile, alpha in resultFiles:

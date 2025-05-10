@@ -14,17 +14,10 @@ def plot_loss_acc(path, num_epoch, train_accuracies_level1, train_accuracies_lev
     '''
     Plot line graphs for the accuracies and loss at every epochs for both training and testing.
     '''
-
+    
     #plt.clf()
 
     epochs = [x+1 for x in range(num_epoch+1)]
-
-    #train_level1_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":train_accuracies_level1, "Level":['L1 train']*(num_epoch+1), "Style":"train"})
-    #train_level2_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":train_accuracies_level2, "Level":['L2 train']*(num_epoch+1), "Style":"train"})
-    #train_level3_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":train_accuracies_level3, "Level":['L3 train']*(num_epoch+1), "Style":"train"})
-    #test_level1_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":test_accuracies_level1, "Level":['L1 validate']*(num_epoch+1), "Style":"val"})
-    #test_level2_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":test_accuracies_level2, "Level":['L2 validate']*(num_epoch+1), "Style":"val"})
-    #test_level3_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":test_accuracies_level3, "Level":['L3 validate']*(num_epoch+1), "Style":"val"})
  
     train_level1_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":train_accuracies_level1, "Level":['L1']*(num_epoch+1), "Mode":"train"})
     train_level2_accuracy_df = pd.DataFrame({"Epochs":epochs, "Accuracy":train_accuracies_level2, "Level":['L2']*(num_epoch+1), "Mode":"train"})
@@ -40,9 +33,6 @@ def plot_loss_acc(path, num_epoch, train_accuracies_level1, train_accuracies_lev
     data_levels = pd.concat([train_level1_accuracy_df, test_level1_accuracy_df, 
                              train_level2_accuracy_df, test_level2_accuracy_df, 
                              train_level3_accuracy_df, test_level3_accuracy_df])
-    #sns.lineplot(data=data_level1, x='Epochs', y='Accuracy', hue='Mode')
-    #plt.title('Level1 family Accuracy Graph')
-    #plt.savefig(path+f'accuracy_level1_epoch.png')
 
     plt.show()
     

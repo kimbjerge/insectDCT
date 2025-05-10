@@ -92,11 +92,6 @@ class ResNet50(nn.Module):
         level_1 = self.softmax_reg1(self.relu_lv1(self.linear_lvl1(x)))
         level_2 = self.softmax_reg2(self.relu_lv2(self.linear_lvl2(x)))
         level_3 = self.softmax_reg3(self.relu_lv3(self.linear_lvl3(x)))
-        
-        # Simple without relu
-        #level_1 = self.softmax_reg1(self.relu_lv1(self.linear_lvl1(x)))
-        #level_2 = self.softmax_reg2(self.relu_lv2(self.linear_lvl2(x)))
-        #level_3 = self.softmax_reg3(self.relu_lv3(self.linear_lvl3(x)))
                 
         return level_1, level_2, level_3
     

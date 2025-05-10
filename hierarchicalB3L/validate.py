@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov 27 21:26:08 2022
+Modified on Sat April 10 18:19:03 2025
 
 @author: Kim Bjerge
 """
@@ -10,32 +10,38 @@ import pickle
 from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
-from torchsummary import summary
+#from torchsummary import summary
 from torchvision import transforms
 
 from runtime_args import args
 from load_dataset import LoadDataset
+from hierarchical_loader import HierarchicalDatasetLoader
 from hierarchical_loss import HierarchicalLossNetwork
-from resnet50tf import ResNet50 #KBE??? (tf)
+from resnet50tf import ResNet50
 from helper import calculate_accuracy
-from plot import plot_loss_acc
-from level_NI_dict import labelsL1, labelsL2, labelsL3
-
+#from plot import plot_loss_acc
 
 #%% MAIN
 if __name__=='__main__':
    
     device = torch.device("cuda:0" if torch.cuda.is_available() and args.device == 'gpu' else 'cpu')
     
-    if not os.path.exists(args.graphs_folder) : os.makedirs(args.graphs_folder)
+    if not os.path.exists(args.graphs_folder) : 
+        os.makedirs(args.graphs_folder)
+        print("Directory created", args.graphs_folder)
+
+    image_path_list = []
+    for subdir in args.path_list.split(','): # Scan subdirectories with datasets
+        image_path_list.append(args.data_path+subdir)
     
-    test_dataset = LoadDataset(image_path=args.test_path, image_size=args.img_size, image_depth=args.img_depth, 
-    #test_dataset = LoadDataset(image_path=args.train_path, image_size=args.img_size, image_depth=args.img_depth, 
-                               transform=transforms.ToTensor())
+    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=args.split) # default 10% used for validation
+    hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
+    
+    test_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
+                               transform=transforms.ToTensor(), validate=(args.validate=="validate"))
 
     test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
     
-    #model = ResNet50tf(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) #KBE???
     model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
     model.load_state_dict(torch.load(args.model_save_path+args.weights, map_location=device))
     
@@ -105,7 +111,12 @@ if __name__=='__main__':
     print(f'Testing level3class accuracy : {sum(epoch_level3class_accuracy)/(j+1)}')
     print('-------------------------------------------------------------------------------------------')
     
-    with open('./saved/predictLabels3L.pkl', 'wb') as f:
+    if (args.validate == "validate"):
+        predictedLablesFile = './saved/predictLabels3Lval.pkl'
+    else:
+        predictedLablesFile = './saved/predictLabels3Ltrain.pkl'
+        
+    with open(predictedLablesFile, 'wb') as f:
         objs = [level1_pred, 
                 level2_pred,
                 level3_pred,
