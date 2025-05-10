@@ -14,11 +14,11 @@ from torch.optim import Adam, SGD
 from torchvision import transforms
 
 from runtime_args import args
-from load_dataset import LoadDataset
+from hierarchical_loader import HierarchicalDatasetLoader
 from hierarchical_loss import HierarchicalLossNetwork
+from load_dataset_hierarchical import LoadDataset
 from resnet50tf import ResNet50
 from helper import calculate_accuracy
-from level_NI_dict import labelsL1, labelsL2, labelsL3
 from balanced_softmax_loss import BalancedSoftmaxLoss
 
 def checkHierarcy(HLN, level1_pred, level2_pred, level3_pred):    
@@ -48,16 +48,32 @@ def trainModel(alpha, save_path):
     if not os.path.exists(save_path): 
         os.makedirs(save_path)
         print("Directory created", save_path)
+        
+    image_path_list = ['/ArthropodsDataset/NI2classes',
+                       '/ArthropodsDataset/NI2sorted',
+                       '/ArthropodsDataset/NItrain',
+                       '/ArthropodsDataset/NIval'
+                       ]
     
-    train_dataset = LoadDataset(image_path=args.train_path, image_size=args.img_size, image_depth=args.img_depth, 
+    image_path_list_l = ['/home/don/data/Arthropods/NI2classes',
+                       '/home/don/data/Arthropods/NI2sorted',
+                       '/home/don/data/Arthropods/NItrain',
+                       '/home/don/data/Arthropods/NIval'
+                       ]
+    
+    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=10) # 10% used for validation
+    hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
+    
+    train_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
                                 transform=transforms.Compose([transforms.RandomAffine(40, scale=(.85, 1.15), shear=0),
                                     transforms.RandomHorizontalFlip(),
                                     transforms.RandomVerticalFlip(),
                                     transforms.RandomPerspective(distortion_scale=0.2),
                                     transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5),
                                     transforms.ToTensor()]))
-    test_dataset = LoadDataset(image_path=args.test_path, image_size=args.img_size, image_depth=args.img_depth, 
-                               transform=transforms.ToTensor())
+    test_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
+                               transform=transforms.ToTensor(),
+                               validate=True)
     
     train_generator = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
