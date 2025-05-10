@@ -9,6 +9,7 @@ import os
 import pickle
 from tqdm import tqdm
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 #from torchsummary import summary
 from torchvision import transforms
@@ -20,6 +21,7 @@ from hierarchical_loss import HierarchicalLossNetwork
 from resnet50tf import ResNet50
 from helper import calculate_accuracy
 #from plot import plot_loss_acc
+from balanced_softmax_loss import BalancedSoftmaxLoss
 
 #%% MAIN
 if __name__=='__main__':
@@ -46,7 +48,31 @@ if __name__=='__main__':
     model.load_state_dict(torch.load(args.model_save_path+args.weights, map_location=device))
     
     model = model.to(device)
-    HLN = HierarchicalLossNetwork(total_level=3, device=device, simple=True) #KBE???
+    
+    if args.loss_function == "Balanced":
+        cls_num_L1 = test_dataset.get_cls_num_list(0)
+        lossFnL1 = BalancedSoftmaxLoss(cls_num_list=cls_num_L1, reduction='mean') # Best loss function for LT datasets
+        cls_num_L2 = test_dataset.get_cls_num_list(1)
+        lossFnL2 = BalancedSoftmaxLoss(cls_num_list=cls_num_L2, reduction='mean') # Best loss function for LT datasets
+        cls_num_L3 = test_dataset.get_cls_num_list(2)
+        lossFnL3 = BalancedSoftmaxLoss(cls_num_list=cls_num_L3, reduction='mean') # Best loss function for LT datasets
+        print("Using Balanced Softmax Loss Function")
+        print("=====================================================================================")
+        print("Class list L1:", labelsL1, cls_num_L1)    
+        print("=====================================================================================")
+        print("Class list L2:", labelsL2, cls_num_L2)    
+        print("=====================================================================================")
+        print("Class list L3:", labelsL3, cls_num_L3)    
+        print("=====================================================================================")
+    else:
+        lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        lossFnL3 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+        print("Using Softmax Cross-entropy Loss Function")
+        
+    HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3,
+                                  [lossFnL1, lossFnL2, lossFnL3],
+                                  total_level=3, device=device, simple=True)
      
     test_epoch_loss = []
     test_epoch_level1class_accuracy = []
