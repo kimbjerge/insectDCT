@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from runtime_args import args
-from load_dataset import LoadDataset
+from load_dataset_hierarchical import LoadDataset
 from hierarchical_loader import HierarchicalDatasetLoader
 from hierarchical_loss import HierarchicalLossNetwork
 from resnet50tf import ResNet50

@@ -28,7 +28,7 @@ parser.add_argument('--learning_rate', type=float, help='Specify the learning ra
 parser.add_argument('--momentum', type=float, help='Specify the SGD momentum to be used during training.', default=1e-4)
 parser.add_argument('--weight_decay', type=float, help='Specify the SGD weitht_decay to be used during training.', default=1e-4)
 parser.add_argument('--num_workers', type=int, help='Specify the number of workers to be used to load the data.', default=0)
-parser.add_argument('--img_size', type=int, help='Specify the size of the input image.', default=128)
+parser.add_argument('--img_size', type=int, help='Specify the size of the input image.', default=128) # 224 Wingscapes 8MP, 128 Logitech 2MP
 parser.add_argument('--img_depth', type=int, help='Specify the depth of the input image.', default=3)
 parser.add_argument('--device', type=str, help='Specify which device to be used for the evaluation. Either "cpu" or "gpu".', default='gpu')
 
