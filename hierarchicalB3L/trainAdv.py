@@ -49,13 +49,13 @@ def trainModel(alpha, save_path):
         os.makedirs(save_path)
         print("Directory created", save_path)
         
-    image_path_list = ['/ArthropodsDataset/NI2classes',
+    image_path_list_win = ['/ArthropodsDataset/NI2classes',
                        '/ArthropodsDataset/NI2sorted',
                        '/ArthropodsDataset/NItrain',
                        '/ArthropodsDataset/NIval'
                        ]
     
-    image_path_list_l = ['/home/don/data/Arthropods/NI2classes',
+    image_path_list = ['/home/don/data/Arthropods/NI2classes',
                        '/home/don/data/Arthropods/NI2sorted',
                        '/home/don/data/Arthropods/NItrain',
                        '/home/don/data/Arthropods/NIval'
