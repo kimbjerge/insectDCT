@@ -177,7 +177,11 @@ if __name__=='__main__':
                        '/ArthropodsDataset/NItrain',
                        '/ArthropodsDataset/NIval'
                        ]
-    
+    image_path_list = ['/home/don/data/ArthropodsAll/NI2classes',
+                       '/home/don/data/ArthropodsAll/NI2sorted',
+                       '/home/don/data/ArthropodsAll/NItrain',
+                       '/home/don/data/ArthropodsAll/NIval'
+                       ]
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     path_names = datasetLoader.get_path_names()
     print(path_names)
