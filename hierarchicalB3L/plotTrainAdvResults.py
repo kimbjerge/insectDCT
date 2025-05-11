@@ -16,9 +16,10 @@ from plot import plot_loss_acc
 #from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
 
-graph_folder = './graph_folder/'
-label_file = "./saved_224/labelsAdv3L.pkl"
+saved_folder = "./saved_128/"
+graph_folder = "./graph_folder/"
 
+label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
 with open(label_file, 'rb') as f:
     image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
@@ -265,7 +266,7 @@ def plotHistogram(resultFile):
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
         print("Predictions and labels and loss loaded from ", resultFile)
 
-    file = open("./saved_224/thresholds.csv", "w")
+    file = open(saved_folder+"thresholds.csv", "w")
     file.write("Level,ClassIdx,ClassName,Mean,Std,Threshold\n")
     level1_score = createScore(labelsL1, level1_pred, level1_label)
     print("Level 1")
@@ -302,7 +303,7 @@ if __name__=='__main__':
 
     resultFiles = [
         # Result file                  , alpha value
-        ['./saved_224/resultsAdv3L.pkl',     0.5]
+        [saved_folder+'resultsAdv3L.pkl',     0.5]
         ]  
     
     count = 1
@@ -344,10 +345,10 @@ if __name__=='__main__':
     plt.show()    
     print(alpha_values, best_epoch, acc_avg_levels)
 
-    resultFile = './saved_224/predictLabels3Ltrainval.pkl'    
+    resultFile = saved_folder+'predictLabels3Ltrain.pkl'    
     plotHistogram(resultFile)
     
-    resultFile = './saved_224/predictLabels3Lval.pkl'
+    resultFile = saved_folder+'predictLabels3Lval.pkl'
     level3False = plotConfusionMatrix(resultFile)
     checkList = checkHierarcy(resultFile)
     
