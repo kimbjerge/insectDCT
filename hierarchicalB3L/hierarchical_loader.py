@@ -56,11 +56,12 @@ class HierarchicalDatasetLoader():
         self.data_list = []
         self.data_list_val = []
         # Directories with label keys and number of images in each class
-        self.classListL1 = {}
-        self.classListL2 = {}
-        self.classListL3 = {}
+        classListL1 = {}
+        classListL2 = {}
+        classListL3 = {}
         
         count = 0
+        countHymen = 0
         for dirName in self.path_names.keys():
             dirSplit = dirName.split(' ')
             lenSplit = len(dirSplit) # File name syntax: "<order> <family> <genus> <species>"
@@ -100,6 +101,16 @@ class HierarchicalDatasetLoader():
                 for fileName in sorted(os.listdir(filePath)):
                     if fileName.endswith('.jpg') or fileName.endswith('.JPG'):
                         record = [filePath + '/' + fileName, labelL1, labelL2, labelL3]
+                        
+                        """
+                        if labelL2 == "Hymenoptera":
+                            countHymen += 1
+                            if countHymen == 1:
+                                print(countHymen, labelL1, labelL2, labelL3)
+                            if countHymen == 42:
+                                print(countHymen, labelL1, labelL2, labelL3)
+                        """
+                         
                         count += 1
                         if count % self.split_validate == 0:
                             self.data_list_val.append(record) # Use image for validation
@@ -109,26 +120,30 @@ class HierarchicalDatasetLoader():
                             num_images = [1, 0] # Train image
                         
                         # Counting number of samples for each class at each level
-                        if labelL1 in self.classListL1.keys():
-                            self.classListL1[labelL1][0] += num_images[0] # Train images
-                            self.classListL1[labelL1][1] += num_images[1] # Validate images
+                        if labelL1 in classListL1.keys():
+                            classListL1[labelL1][0] += num_images[0] # Train images
+                            classListL1[labelL1][1] += num_images[1] # Validate images
                         else:
-                            self.classListL1[labelL1] = num_images
-                        if labelL2 in self.classListL2.keys():
-                            self.classListL2[labelL2][0] += num_images[0]
-                            self.classListL2[labelL2][1] += num_images[1]
+                            classListL1[labelL1] = num_images.copy()
+                            
+                        if labelL2 in classListL2.keys():
+                            classListL2[labelL2][0] += num_images[0]
+                            classListL2[labelL2][1] += num_images[1]
                         else:
-                            self.classListL2[labelL2] = num_images
-                        if labelL3 in self.classListL3.keys():
-                            self.classListL3[labelL3][0] += num_images[0]
-                            self.classListL3[labelL3][1] += num_images[1]
+                            classListL2[labelL2] = num_images.copy()
+                            
+                        if labelL3 in classListL3.keys():
+                            classListL3[labelL3][0] += num_images[0]
+                            classListL3[labelL3][1] += num_images[1]
                         else:
-                            self.classListL3[labelL3] = num_images 
+                            classListL3[labelL3] = num_images.copy() 
                 
         self.labelsL1 = sorted(self.labelsL1)
         self.labelsL2 = sorted(self.labelsL2)
         self.labelsL3 = sorted(self.labelsL3)
-    
+        self.classListL1 = classListL1
+        self.classListL2 = classListL2
+        self.classListL3 = classListL3
     
     def get_hierarchy_labels(self):
         return self.hierarchyL1, self.hierarchyL2, self.labelsL1, self.labelsL2, self.labelsL3
@@ -169,9 +184,15 @@ if __name__=='__main__':
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
     print("=============================================================================================")
-    print("Labels L1", labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))
+    #print("Labels L1", labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))
+    print("Level 1               train validate")
+    [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))]
     print("=============================================================================================")
-    print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))
+    print("Level 3               train validate")
+    [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))]
+    #print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))
     print("=============================================================================================")
-    print("Labels L3", labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))
+    print("Level 3                         train validate")
+    [print(f'{l:<30} {t:>6} {v:>6}') for l, t, v in zip(labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))]
+    #print("Labels L3", labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))
     
