@@ -16,7 +16,7 @@ from plot import plot_loss_acc
 #from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
 
-saved_folder = "./saved_128/"
+saved_folder = "./saved/"
 graph_folder = "./graph_folder/"
 
 label_file = saved_folder+"labelsAdv3L.pkl"
@@ -345,7 +345,7 @@ if __name__=='__main__':
     plt.show()    
     print(alpha_values, best_epoch, acc_avg_levels)
 
-    resultFile = saved_folder+'predictLabels3Ltrain.pkl'    
+    resultFile = saved_folder+'predictLabels3Ltrainval.pkl'    
     plotHistogram(resultFile)
     
     resultFile = saved_folder+'predictLabels3Lval.pkl'
