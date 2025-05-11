@@ -60,11 +60,11 @@ if __name__=='__main__':
         lossFnL3 = BalancedSoftmaxLoss(cls_num_list=cls_num_L3, reduction='mean') # Best loss function for LT datasets
         print("Using Balanced Softmax Loss Function")
         print("=====================================================================================")
-        print("Class list L1:", labelsL1, cls_num_L1)    
+        print("Class list L1:", labelsL1, cls_num_L1, sum(cls_num_L1))    
         print("=====================================================================================")
-        print("Class list L2:", labelsL2, cls_num_L2)    
+        print("Class list L2:", labelsL2, cls_num_L2, sum(cls_num_L2))    
         print("=====================================================================================")
-        print("Class list L3:", labelsL3, cls_num_L3)    
+        print("Class list L3:", labelsL3, cls_num_L3, sum(cls_num_L3))    
         print("=====================================================================================")
     else:
         lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
