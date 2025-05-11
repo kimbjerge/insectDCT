@@ -106,11 +106,11 @@ class HierarchicalDatasetLoader():
                             num_images = [0, 1] # Validate image
                         else:   
                             self.data_list.append(record) # Use image for training
-                            num_images = [1, 0] # Test image
+                            num_images = [1, 0] # Train image
                         
                         # Counting number of samples for each class at each level
                         if labelL1 in self.classListL1.keys():
-                            self.classListL1[labelL1][0] += num_images[0] # Test images
+                            self.classListL1[labelL1][0] += num_images[0] # Train images
                             self.classListL1[labelL1][1] += num_images[1] # Validate images
                         else:
                             self.classListL1[labelL1] = num_images
@@ -141,7 +141,7 @@ class HierarchicalDatasetLoader():
             return self.data_list
     
     
-    def get_cls_num_list(self, level, countIdx=0):# 0 Test images, 1 Validate images
+    def get_cls_num_list(self, level, countIdx=0):# 0 Train images, 1 Validate images
         
         cls_num_list = []
         if level == 0:
