@@ -17,7 +17,7 @@ from plot import plot_loss_acc
 from hierarchical_loss import HierarchicalLossNetwork
 
 graph_folder = './graph_folder/'
-label_file = "./saved/labelsAdv3L.pkl"
+label_file = "./saved_224/labelsAdv3L.pkl"
 
 # Load labels shared by several functions
 with open(label_file, 'rb') as f:
@@ -79,7 +79,7 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     #print(matrix, matrixSum)        
         
     plt.rcParams.update({'font.size': font_size})
-    fig, ax = plt.subplots(figsize=(9, 7))
+    fig, ax = plt.subplots(figsize=(30, 30))
     ax.imshow(matrixAvg, cmap='Greens')
     
     #yLabels = []
@@ -116,24 +116,49 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
 
     
     level_p = np.argmax(level_pred, axis=1)
-    font_size = 16
+    font_size = 28
+    if level == 2:
+        font_size = 20        
     if level == 3:
-        font_size = 12
+        font_size = 14
     plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=False, font_size=font_size)
   
+    if level == 1:
+        f = open(graph_folder+"results.txt", "w")
+    else:
+        f = open(graph_folder+"results.txt", "a")
+        
     precision = metrics.precision_score(level_label, level_p, average='macro')
-    print("Level %d (macro) precision %.4f" % (level, precision))
+    text = f"Level {level} (macro) precision {precision:.4f}"
+    print(text)
+    f.write(text+"\n")
+
     recall = metrics.recall_score(level_label, level_p, average='macro')
-    print("Level %d (macro) recall    %.4f" % (level, recall))
+    text = f"Level {level} (macro) recall {recall:.4f}"
+    print(text)
+    f.write(text+"\n")
+
     f1score = metrics.f1_score(level_label, level_p, average='macro')
-    print("Level %d (macro) f1-score  %.4f" % (level, f1score))
+    text = f"Level {level} (macro) f1-score {f1score:.4f}"
+    print(text)
+    f.write(text+"\n")
     
     precision = metrics.precision_score(level_label, level_p, average='micro')
-    print("Level %d (micro) precision %.4f" % (level, precision))
+    text = f"Level {level} (micro) recall {precision:.4f}"
+    print(text)
+    f.write(text+"\n")
+
     recall = metrics.recall_score(level_label, level_p, average='micro')
-    print("Level %d (micro) recall    %.4f" % (level, recall))
+    text = f"Level {level} (micro) precision {recall:.4f}"
+    print(text)
+    f.write(text+"\n")
+
     f1score = metrics.f1_score(level_label, level_p, average='micro')
-    print("Level %d (micro) f1-score  %.4f" % (level, f1score))
+    text = f"Level {level} (micro) f1-score {f1score:.4f}"
+    print(text)
+    f.write(text+"\n")
+    f.close()
+    
     
     
 def plotConfusionMatrix(resultFile):
@@ -180,7 +205,7 @@ def checkHierarcy(resultFile):
     for idx in range(len(checkList)):
         if checkL3[idx] == False or checkL2[idx] == False:
             checkList[idx] = False
-            print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
+            #print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
     
     return checkList
 
@@ -199,11 +224,22 @@ def createScore(labels, level_pred, level_label):
             
     return scores
         
-def plotHist(level, labelsL, classIdx, score):
+def plotHist(level, labelsL, classIdx, score, file):
     
-    mu, std = norm.fit(score)
+    if len(score) > 0:
+        mu, std = norm.fit(score)
+    else:
+        mu = 0
+        std = 0
+    
+    #print(labelsL[classIdx], mu, std)
     classThreshold = round((mu - 2*std)*10)/10
-    print(mu, std, classThreshold)
+    if std == 0:
+        classThreshold = -1.0 # No threshold when standard deviation is zero 
+    print(level, classIdx, labelsL[classIdx], mu, std, classThreshold)
+    line = str(level) + ',' + str(classIdx) + ',' + labelsL[classIdx] + ',' + str(mu) + ',' + str(std) + ',' + str(classThreshold) + "\n" 
+    file.write(line)
+    
     # Plot histogram
     plt.rcParams.update({'font.size': 16})
     plt.hist(score, bins=50, density=True, alpha=0.6, color='b')
@@ -228,25 +264,28 @@ def plotHistogram(resultFile):
     with open(resultFile, 'rb') as f:
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
         print("Predictions and labels and loss loaded from ", resultFile)
-        
+
+    file = open("./saved_224/thresholds.csv", "w")
+    file.write("Level,ClassIdx,ClassName,Mean,Std,Threshold\n")
     level1_score = createScore(labelsL1, level1_pred, level1_label)
     print("Level 1")
     for classIdx in range(len(level1_score)):
         score = level1_score[classIdx]
-        plotHist(1, labelsL1, classIdx, score)
+        plotHist(1, labelsL1, classIdx, score, file)
         
     level2_score = createScore(labelsL2, level2_pred, level2_label)
     print("Level 2")
     for classIdx in range(len(level2_score)):
         score = level2_score[classIdx]
-        plotHist(2, labelsL2, classIdx, score)
+        plotHist(2, labelsL2, classIdx, score, file)
 
     level3_score = createScore(labelsL3, level3_pred, level3_label)
     print("Level 3")
     for classIdx in range(len(level3_score)):
         score = level3_score[classIdx]
-        plotHist(3, labelsL3, classIdx, score)
-
+        plotHist(3, labelsL3, classIdx, score, file)
+    
+    file.close()
     
 #%% MAIN
 if __name__=='__main__':
@@ -263,7 +302,7 @@ if __name__=='__main__':
 
     resultFiles = [
         # Result file                  , alpha value
-        ['./saved/resultsAdv3L.pkl',     0.5]
+        ['./saved_224/resultsAdv3L.pkl',     0.5]
         ]  
     
     count = 1
@@ -289,7 +328,7 @@ if __name__=='__main__':
     #g.set(xscale='log')
     g.set(ylim=(96.5,99.5))
     plt.title('Accuracy vs. alpha')
-    plt.savefig(graph_folder+'accuracy_alpha_A9.png')
+    plt.savefig(graph_folder+'accuracy_alpha.png')
     plt.show()    
     print(alpha_values, best_epoch, acc_avg_levels)
 
@@ -301,14 +340,14 @@ if __name__=='__main__':
     g = sns.lineplot(data=data_to_plot, x='Times', y='Accuracy', hue='Level', style='Level', markers=True)
     g.set(ylim=(96.5,99.5))
     plt.title('Accuracy vs. train times')
-    plt.savefig(graph_folder+'accuracy_train_alpha_A9.png')
+    plt.savefig(graph_folder+'accuracy_train_alpha.png')
     plt.show()    
     print(alpha_values, best_epoch, acc_avg_levels)
 
-    resultFile = './saved/predictLabels3Ltrain.pkl'    
+    resultFile = './saved_224/predictLabels3Ltrainval.pkl'    
     plotHistogram(resultFile)
     
-    resultFile = './saved/predictLabels3Lval.pkl'
+    resultFile = './saved_224/predictLabels3Lval.pkl'
     level3False = plotConfusionMatrix(resultFile)
     checkList = checkHierarcy(resultFile)
     

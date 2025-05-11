@@ -68,7 +68,7 @@ def plot_loss_acc(path, num_epoch, train_accuracies_level1, train_accuracies_lev
 
     sns.lineplot(data=data, x='Epochs', y='Loss', style='Mode')
     plt.xticks(np.arange(1, 20, 2))
-    plt.title('Loss')
+    plt.title('Avarge loss of levels L1,L2,L3')
 
     plt.savefig(path+f'loss_epoch.png')
     plt.show()
