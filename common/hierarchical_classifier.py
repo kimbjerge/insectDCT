@@ -147,7 +147,7 @@ if __name__=='__main__':
         class_dir_path = dataset_path + class_dir
         for file_name in os.listdir(class_dir_path):
             count += 1
-            file_name_path = class_dir_path + '/' + class_dir_path
+            file_name_path = class_dir_path + '/' + file_name
             print(file_name_path)
             image = cv2.imread(file_name_path)
             classifier.appendToBatch(image)
