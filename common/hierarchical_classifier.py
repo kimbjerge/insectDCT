@@ -98,8 +98,8 @@ class HierarchicalClassifier:
             image = self.resize_image(imageCrop, (self.img_size, self.img_size))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
-            image = transforms.ToTensor()(image)/255.0 #.unsqueeze_(0)
-            self.imagesInBatch[self.batch_idx] = image
+            image = transforms.ToTensor()(image) #.unsqueeze_(0)
+            self.imagesInBatch[self.batch_idx] = image/255.0
             self.batch_idx += 1
             return True
     
@@ -109,9 +109,9 @@ class HierarchicalClassifier:
         self.imagesInBatch = self.imagesInBatch.to(self.device)
         level1class_pred, level2class_pred, level3class_pred = self.model(self.imagesInBatch)
         
-        level1class_pred = nn.Softmax(dim=1)(level1class_pred)
-        level2class_pred = nn.Softmax(dim=1)(level2class_pred)
-        level3class_pred = nn.Softmax(dim=1)(level3class_pred)
+        #level1class_pred = nn.Softmax(dim=1)(level1class_pred)
+        #level2class_pred = nn.Softmax(dim=1)(level2class_pred)
+        #level3class_pred = nn.Softmax(dim=1)(level3class_pred)
         
         level1class_pred = level1class_pred.cpu().detach().numpy()
         level2class_pred = level2class_pred.cpu().detach().numpy()
