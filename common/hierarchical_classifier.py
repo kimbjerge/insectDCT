@@ -98,7 +98,7 @@ class HierarchicalClassifier:
             image = self.resize_image(imageCrop, (self.img_size, self.img_size))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
-            image = transforms.ToTensor()(image) #.unsqueeze_(0)
+            image = transforms.ToTensor()(image)/255.0 #.unsqueeze_(0)
             self.imagesInBatch[self.batch_idx] = image
             self.batch_idx += 1
             return True
