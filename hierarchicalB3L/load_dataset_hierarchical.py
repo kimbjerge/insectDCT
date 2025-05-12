@@ -106,7 +106,7 @@ class LoadDataset(Dataset):
         labelL3index = self.getLabelIndex(classL3, self.labelsL3)
         
         return {
-            'image':image/255.0,
+            'image':image, # KBE??? removed /255.0 - transform scale pixel values
             'label_1': labelL1index,
             'label_2': labelL2index,
             'label_3': labelL3index
