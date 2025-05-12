@@ -79,24 +79,30 @@ class HierarchicalClassifier:
     
     def classifyBatch(self):            
         self.imagesInBatch = self.imagesInBatch.to(self.device)
-        predictions = self.orderModel(self.imagesInBatch)
-        predictions = predictions.cpu().detach().numpy()
-        predicted_labels = np.argmax(predictions, axis=1)
+        level1class_pred, level2class_pred, level3class_pred = self.model(self.imagesInBatch)
+        level1class_pred = level1class_pred.cpu().detach().numpy()
+        level2class_pred = level2class_pred.cpu().detach().numpy()
+        level3class_pred = level3class_pred.cpu().detach().numpy()
+        predicted_labels1 = np.argmax(level1class_pred, axis=1)
+        predicted_labels2 = np.argmax(level2class_pred, axis=1)
+        predicted_labels3 = np.argmax(level3class_pred, axis=1)
         
         lines = []
-        for idx in range(len(predictions)):
-            predicted_label = predicted_labels[idx]
-            confidence_value = norm.cdf(predictions[idx][predicted_label], self.means[predicted_label], self.stds[predicted_label])
-            confidence_value = round(confidence_value*10000)/100
-            if predictions[idx][predicted_label] >= self.thresholds[predicted_label]:
-                sure_label = True
-            else:
-                sure_label = False
-            line = f"{self.labels[predicted_label]},{predicted_label},{confidence_value},{sure_label}"
-            #print(line)
+        for idx in range(len(predicted_labels1)):
+            predicted_label1 = predicted_labels1[idx]
+            predicted_label2 = predicted_labels2[idx]
+            predicted_label3 = predicted_labels3[idx]
+            #confidence_value = norm.cdf(predictions[idx][predicted_label], self.means[predicted_label], self.stds[predicted_label])
+            #confidence_value = round(confidence_value*10000)/100
+            #if predictions[idx][predicted_label] >= self.thresholds[predicted_label]:
+            #    sure_label = True
+            #else:
+            #    sure_label = False
+            line = f"{self.labelsL1[predicted_label1]},{predicted_label1},{self.labelsL2[predicted_label2]},{predicted_label2},{self.labelsL3[predicted_label3]},{predicted_label3}\n"
+            print(line)
             lines.append(line)
             
-        return lines, predictions
+        return lines
     
     def makePrediction(self, im, number=1):
         #resizedImg = cv2.resize(im, self.dim, interpolation = cv2.INTER_AREA)
@@ -152,7 +158,8 @@ if __name__=='__main__':
             image = cv2.imread(file_name_path)
             classifier.appendToBatch(image)
             if count % batch_size == 0:
-                lines, predictions = classifier.classifyBatch()
+                lines = classifier.classifyBatch()
+                #print(lines)
                 classifier.createBatch(batch_size)
         
     
