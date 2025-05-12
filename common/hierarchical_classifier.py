@@ -58,7 +58,34 @@ class HierarchicalClassifier:
         self.model = model
         
         return model
-
+    
+    def resize_image(self, img, size=(28,28)):
+    
+        h, w = img.shape[:2]
+        c = img.shape[2] if len(img.shape)>2 else 1 # Check for colored images
+    
+        if h == w: # Squared image
+            if h > size[0]:
+                return cv2.resize(img, size, cv2.INTER_AREA) # Shrink image
+            else:
+                return cv2.resize(img, size, cv2.INTER_CUBIC) # Enlarge image             
+    
+        dif = h if h > w else w
+    
+        interpolation = cv2.INTER_AREA if dif > (size[0]+size[1])//2 else cv2.INTER_CUBIC
+    
+        x_pos = (dif - w)//2
+        y_pos = (dif - h)//2
+    
+        if len(img.shape) == 2: # BW image
+            mask = np.zeros((dif, dif), dtype=img.dtype)
+            mask[y_pos:y_pos+h, x_pos:x_pos+w] = img[:h, :w]
+        else: # Colored image
+            mask = np.zeros((dif, dif, c), dtype=img.dtype)
+            mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = img[:h, :w, :]
+    
+        return cv2.resize(mask, size, interpolation)
+    
     def createBatch(self, batch_size):
         self.batch_idx = 0
         self.batch_size = batch_size
@@ -67,7 +94,7 @@ class HierarchicalClassifier:
         
     def appendToBatch(self, imageCrop):
         if self.batch_idx < self.batch_size:
-            image = cv2.resize(imageCrop, (self.img_size, self.img_size))
+            image = self.resize_image(imageCrop, (self.img_size, self.img_size))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
             image = transforms.ToTensor()(image) #.unsqueeze_(0)
