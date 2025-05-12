@@ -59,7 +59,7 @@ class HierarchicalClassifier:
         
         return model
     
-    def resize_image(self, img, size=(28,28)):
+    def resize_image(self, img, size=(128,128)):
     
         h, w = img.shape[:2]
         c = img.shape[2] if len(img.shape)>2 else 1 # Check for colored images
@@ -113,6 +113,7 @@ class HierarchicalClassifier:
         #level3class_pred = nn.Softmax(dim=1)(level3class_pred)
         
         level1class_pred = level1class_pred.cpu().detach().numpy()
+        print(level1class_pred)
         level2class_pred = level2class_pred.cpu().detach().numpy()
         level3class_pred = level3class_pred.cpu().detach().numpy()
         predicted_labels1 = np.argmax(level1class_pred, axis=1)

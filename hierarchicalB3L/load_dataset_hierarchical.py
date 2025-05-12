@@ -48,7 +48,7 @@ class LoadDataset(Dataset):
             return -1 # Unknown class
 
 
-    def resize_image(self, img, size=(28,28)):
+    def resize_image(self, img, size=(128,128)):
     
         h, w = img.shape[:2]
         c = img.shape[2] if len(img.shape)>2 else 1 # Check for colored images
