@@ -134,7 +134,7 @@ class HierarchicalClassifier:
 if __name__=='__main__':
     
     classifier = HierarchicalClassifier(img_size=128, device='cuda:0')
-    classifier.loadmodel("../models_save/hierarchicalClassifier_15052025.pth", 
+    classifier.loadmodel("../models_save/HierarchicalClassifier_15052025.pth", 
                          "../models_save/HierarchicalThresholds_15052025.csv")
     
     dataset_path = "/ArthropodsDataset/NI2classes/"
