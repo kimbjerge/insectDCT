@@ -133,7 +133,7 @@ class HierarchicalClassifier:
 #%% MAIN for testing HierarchicalClassifier class
 if __name__=='__main__':
     
-    classifier = HierarchicalClassifier(image_size=128)
+    classifier = HierarchicalClassifier(img_size=128)
     classifier.loadmodel("../models_save/hierarchicalClassifier_15052025.pth", 
                          "../models_save/HierarchicalThresholds_15052025.csv",
                          'gpu')
@@ -149,6 +149,7 @@ if __name__=='__main__':
         for file_name in os.listdir(class_dir_path):
             count += 1
             file_name_path = class_dir_path + '/' + class_dir_path
+            print(file_name_path)
             image = cv2.imread(file_name_path)
             classifier.appendToBatch(image)
             if count % batch_size == 0:
