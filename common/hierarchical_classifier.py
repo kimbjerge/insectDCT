@@ -49,8 +49,7 @@ class HierarchicalClassifier:
         self.thresholds = data_thresholds["Threshold"].to_list()
         self.means = data_thresholds["Mean"].to_list()
         self.stds = data_thresholds["Std"].to_list()
-        print(self.labels)            
-        
+        #print(self.labels)                   
         self.hierarchyL1 = hierarchyL1
         self.hierarchyL1 = hierarchyL2
         self.labelsL1 = labelsL1
@@ -131,7 +130,7 @@ class HierarchicalClassifier:
             #    sure_label = True
             #else:
             #    sure_label = False
-            line = f"{self.labelsL1[predicted_label1]},{predicted_label1},{self.labelsL2[predicted_label2]},{predicted_label2},{self.labelsL3[predicted_label3]},{predicted_label3}\n"
+            line = f"{self.labelsL1[predicted_label1]},{predicted_label1},{self.labelsL2[predicted_label2]},{predicted_label2},{self.labelsL3[predicted_label3]},{predicted_label3}"
             print(line)
             lines.append(line)
             
@@ -185,14 +184,14 @@ if __name__=='__main__':
     for class_dir in os.listdir(dataset_path):
         class_dir_path = dataset_path + class_dir
         for file_name in os.listdir(class_dir_path):
-            count += 1
-            file_name_path = class_dir_path + '/' + file_name
-            print(file_name_path)
-            image = cv2.imread(file_name_path)
-            classifier.appendToBatch(image)
-            if count % batch_size == 0:
-                lines = classifier.classifyBatch()
-                #print(lines)
-                classifier.createBatch(batch_size)
+            if file_name.endswith(".jpg"):
+                count += 1
+                file_name_path = class_dir_path + '/' + file_name
+                print(file_name_path)
+                image = cv2.imread(file_name_path)
+                classifier.appendToBatch(image)
+                if count % batch_size == 0:
+                    lines = classifier.classifyBatch()
+                    classifier.createBatch(batch_size)
         
     
