@@ -133,10 +133,9 @@ class HierarchicalClassifier:
 #%% MAIN for testing HierarchicalClassifier class
 if __name__=='__main__':
     
-    classifier = HierarchicalClassifier(img_size=128)
+    classifier = HierarchicalClassifier(img_size=128, device='cuda:0')
     classifier.loadmodel("../models_save/hierarchicalClassifier_15052025.pth", 
-                         "../models_save/HierarchicalThresholds_15052025.csv",
-                         'gpu')
+                         "../models_save/HierarchicalThresholds_15052025.csv")
     
     dataset_path = "/ArthropodsDataset/NI2classes/"
     dataset_path = "/home/don/data/Arthropods/NI2classes/"
