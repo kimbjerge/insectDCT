@@ -97,8 +97,8 @@ class HierarchicalClassifier:
             image = self.resize_image(imageCrop, (self.img_size, self.img_size))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
-            image = transforms.ToTensor()(image) #.unsqueeze_(0)
-            self.imagesInBatch[self.batch_idx] = image/255.0
+            image = transforms.ToTensor()(image)
+            self.imagesInBatch[self.batch_idx] = image
             self.batch_idx += 1
             return True
     
@@ -113,7 +113,7 @@ class HierarchicalClassifier:
         #level3class_pred = nn.Softmax(dim=1)(level3class_pred)
         
         level1class_pred = level1class_pred.cpu().detach().numpy()
-        print(level1class_pred)
+        #print(level1class_pred)
         level2class_pred = level2class_pred.cpu().detach().numpy()
         level3class_pred = level3class_pred.cpu().detach().numpy()
         predicted_labels1 = np.argmax(level1class_pred, axis=1)
@@ -172,11 +172,12 @@ class HierarchicalClassifier:
 #%% MAIN for testing HierarchicalClassifier class
 if __name__=='__main__':
     
+    #classifier = HierarchicalClassifier(img_size=128, device='cpu')
     classifier = HierarchicalClassifier(img_size=128, device='cuda:0')
     classifier.loadmodel("../models_save/HierarchicalClassifier_15052025.pth", 
                          "../models_save/HierarchicalThresholds_15052025.csv")
     
-    dataset_path = "/ArthropodsDataset/NI2classes/"
+    #dataset_path = "/ArthropodsDataset/NI2classes/"
     dataset_path = "/home/don/data/Arthropods/NI2classes/"
     
     count = 0
