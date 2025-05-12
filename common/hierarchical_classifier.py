@@ -8,6 +8,7 @@ from skimage import io
 from skimage.transform import resize
 import numpy as np
 import torch
+import torch.nn as nn
 from PIL import Image
 from torchvision import transforms
 
@@ -107,6 +108,11 @@ class HierarchicalClassifier:
     def classifyBatch(self):            
         self.imagesInBatch = self.imagesInBatch.to(self.device)
         level1class_pred, level2class_pred, level3class_pred = self.model(self.imagesInBatch)
+        
+        level1class_pred = nn.Softmax(dim=1)(level1class_pred)
+        level2class_pred = nn.Softmax(dim=1)(level2class_pred)
+        level3class_pred = nn.Softmax(dim=1)(level3class_pred)
+        
         level1class_pred = level1class_pred.cpu().detach().numpy()
         level2class_pred = level2class_pred.cpu().detach().numpy()
         level3class_pred = level3class_pred.cpu().detach().numpy()
