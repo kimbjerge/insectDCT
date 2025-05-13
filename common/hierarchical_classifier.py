@@ -1,21 +1,22 @@
+
 import os
 import pickle
-import cv2
-import pandas as pd
-from scipy.stats import norm
-from resnet50tf import ResNet50
-from skimage import io
-from skimage.transform import resize
-import numpy as np
 import torch
 import torch.nn as nn
-from PIL import Image
 from torchvision import transforms
+import numpy as np
+from PIL import Image
+import cv2
+import pandas as pd
+#from scipy.stats import norm
+#from skimage import io
+#from skimage.transform import resize
+from resnet50tf import ResNet50
 
-label_file = "../models_save/HierarchicalLabels3L_15052025.pkl"
+label_file = "../models_save/HierarchicalLabels3L_13052025.pkl"
 
 with open(label_file, 'rb') as f:
-    image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
+    _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
     print("Labels and hierarchy dependency loaded from ", label_file)
     print("=============================================================================================")
     print("L1 classes", labelsL1)
@@ -38,10 +39,11 @@ class HierarchicalClassifier:
  
     def loadmodel(self, model_weights, threshold_file):
             
-        model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
-        model.load_state_dict(torch.load(model_weights, map_location=self.device))
-        print('Loaded model: ', model_weights)    
-        model = model.to(self.device)
+        self.model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+        self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
+        print('Loaded model: ', model_weights)   
+        self.model.eval() # Very important! - else error in predictions
+        self.model = self.model.to(self.device)
 
         data_thresholds = pd.read_csv(threshold_file)
         self.levels = data_thresholds["Level"].to_list() 
@@ -49,16 +51,17 @@ class HierarchicalClassifier:
         self.thresholds = data_thresholds["Threshold"].to_list()
         self.means = data_thresholds["Mean"].to_list()
         self.stds = data_thresholds["Std"].to_list()
-        #print(self.labels)                   
+        
         self.hierarchyL1 = hierarchyL1
         self.hierarchyL1 = hierarchyL2
         self.labelsL1 = labelsL1
         self.labelsL2 = labelsL2
         self.labelsL3 = labelsL3
+    
+    def setmodel(self, model):
+        
         self.model = model
         
-        return model
-    
     def resize_image(self, img, size=(128,128)):
     
         h, w = img.shape[:2]
@@ -95,6 +98,7 @@ class HierarchicalClassifier:
     def appendToBatch(self, imageCrop):
         if self.batch_idx < self.batch_size:
             image = self.resize_image(imageCrop, (self.img_size, self.img_size))
+            #image = cv2.resize(imageCrop, (self.img_size, self.img_size), cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
             image = transforms.ToTensor()(image)
@@ -104,21 +108,21 @@ class HierarchicalClassifier:
     
         return False
     
-    def classifyBatch(self):            
+    def appendBatchToBatch(self, batch): # Tested ok
+        self.imagesInBatch = batch
+    
+    def classifyBatch(self, useSoftMax=True):   # Tested ok         
         self.imagesInBatch = self.imagesInBatch.to(self.device)
         level1class_pred, level2class_pred, level3class_pred = self.model(self.imagesInBatch)
         
-        #level1class_pred = nn.Softmax(dim=1)(level1class_pred)
-        #level2class_pred = nn.Softmax(dim=1)(level2class_pred)
-        #level3class_pred = nn.Softmax(dim=1)(level3class_pred)
+        if useSoftMax:
+            level1class_pred = nn.Softmax(dim=1)(level1class_pred)
+            level2class_pred = nn.Softmax(dim=1)(level2class_pred)
+            level3class_pred = nn.Softmax(dim=1)(level3class_pred)
         
-        level1class_pred = level1class_pred.cpu().detach().numpy()
-        #print(level1class_pred)
-        level2class_pred = level2class_pred.cpu().detach().numpy()
-        level3class_pred = level3class_pred.cpu().detach().numpy()
-        predicted_labels1 = np.argmax(level1class_pred, axis=1)
-        predicted_labels2 = np.argmax(level2class_pred, axis=1)
-        predicted_labels3 = np.argmax(level3class_pred, axis=1)
+        predicted_labels1 = np.argmax(level1class_pred.cpu().detach().numpy(), axis=1)
+        predicted_labels2 = np.argmax(level2class_pred.cpu().detach().numpy(), axis=1)
+        predicted_labels3 = np.argmax(level3class_pred.cpu().detach().numpy(), axis=1)
         
         lines = []
         for idx in range(len(predicted_labels1)):
@@ -151,32 +155,17 @@ class HierarchicalClassifier:
         idx = index[0][0]
         print(predictions, probability, idx, self.species[idx])
         return idx, self.species[idx], probability 
-
-
-    def makePredictionFile(self, imgFile):
-        img = io.imread(imgFile)
-        img = resize(img, self.dim, anti_aliasing = True)
-        #img = tf.keras.preprocessing.image.img_to_array(img)
-        img_pre = np.expand_dims(img, axis = 0)
-        
-        predictions = self.model.predict(img_pre)
-        #print(decode_predictions(predictions, top=2)[0])
-        predictions = predictions[0]
-        probability = np.amax(predictions)
-        index = np.where(predictions == probability)
-        idx = index[0][0]
-        #print(predictions, probability, idx, self.species[idx])
-        print(predictions, self.species[idx])
-        return idx, self.species[idx]
     
 #%% MAIN for testing HierarchicalClassifier class
 if __name__=='__main__':
     
+    device = 'cuda:0'
+        
     #classifier = HierarchicalClassifier(img_size=128, device='cpu')
     classifier = HierarchicalClassifier(img_size=128, device='cuda:0')
-    classifier.loadmodel("../models_save/HierarchicalClassifier_15052025.pth", 
-                         "../models_save/HierarchicalThresholds_15052025.csv")
-    
+    classifier.loadmodel("../models_save/HierarchicalClassifier_13052025.pth", 
+                         "../models_save/HierarchicalThresholds_13052025.csv")
+
     #dataset_path = "/ArthropodsDataset/NI2classes/"
     dataset_path = "/home/don/data/Arthropods/NI2classes/"
     
