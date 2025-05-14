@@ -184,10 +184,13 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains Ominiglot models
+
+    parser.add_argument('--useFlatClassifer', default='', type=bool) # Use flat classifier - default use hierarchical  
     parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
-    #parser.add_argument('--classifier', default='./models_save/ConvNeXtBase-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.89
-    #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-60-Ext-Finetuned.keras') # 128x128 F1 0.84
-    #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-90-Ext.keras')
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
+
     parser.add_argument('--video', default='')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')

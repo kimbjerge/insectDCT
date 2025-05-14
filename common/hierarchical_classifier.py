@@ -13,29 +13,17 @@ import pandas as pd
 #from skimage.transform import resize
 from resnet50tf import ResNet50
 
-label_file = "../models_save/HierarchicalLabels3L_13052025.pkl"
-
-with open(label_file, 'rb') as f:
-    _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
-    print("Labels and hierarchy dependency loaded from ", label_file)
-    print("=============================================================================================")
-    print("L1 classes", labelsL1, len(labelsL1))
-    print("=============================================================================================")
-    print("L2 classes", labelsL2, len(labelsL2))
-    print("=============================================================================================")
-    print("L3 classes", labelsL3, len(labelsL3))
-    print("=============================================================================================")
-    print("L2 -> L1 dependency", hierarchyL1)
-    print("=============================================================================================")
-    print("L3 -> L2 dependency", hierarchyL2)
-    print("=============================================================================================")
-
 class HierarchicalClassifier:
 
-    def __init__(self, img_size=128, img_depth=3, device='cpu'):
+    def __init__(self, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, img_depth=3, device='cpu'):
         self.img_size = img_size
         self.img_depth = img_depth
         self.device = device
+        self.hierarchyL1 = hierarchyL1
+        self.hierarchyL1 = hierarchyL2
+        self.labelsL1 = labelsL1
+        self.labelsL2 = labelsL2
+        self.labelsL3 = labelsL3
  
     def loadmodel(self, model_weights, threshold_file):
             
@@ -52,12 +40,6 @@ class HierarchicalClassifier:
         self.means = data_thresholds["Mean"].to_list()
         self.stds = data_thresholds["Std"].to_list()
         
-        self.hierarchyL1 = hierarchyL1
-        self.hierarchyL1 = hierarchyL2
-        self.labelsL1 = labelsL1
-        self.labelsL2 = labelsL2
-        self.labelsL3 = labelsL3
-    
     def setmodel(self, model):
         
         self.model = model
@@ -160,9 +142,26 @@ class HierarchicalClassifier:
 if __name__=='__main__':
     
     device = 'cuda:0'
-        
+    
+    label_file = "../models_save/HierarchicalLabels3L_13052025.pkl"
+    
+    with open(label_file, 'rb') as f:
+        _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
+        print("Labels and hierarchy dependency loaded from ", label_file)
+        print("=============================================================================================")
+        print("L1 classes", labelsL1, len(labelsL1))
+        print("=============================================================================================")
+        print("L2 classes", labelsL2, len(labelsL2))
+        print("=============================================================================================")
+        print("L3 classes", labelsL3, len(labelsL3))
+        print("=============================================================================================")
+        print("L2 -> L1 dependency", hierarchyL1)
+        print("=============================================================================================")
+        print("L3 -> L2 dependency", hierarchyL2)
+        print("=============================================================================================")
+    
     #classifier = HierarchicalClassifier(img_size=128, device='cpu')
-    classifier = HierarchicalClassifier(img_size=128, device='cuda:0')
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cuda:0')
     classifier.loadmodel("../models_save/HierarchicalClassifier_13052025.pth", 
                          "../models_save/HierarchicalThresholds_13052025.csv")
 
