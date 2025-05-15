@@ -12,6 +12,7 @@ import csv
 import torch
 import argparse
 import datetime 
+import pickle
 from common.cnn_classifier import CnnClassifier
 from common.hierarchical_classifier import HierarchicalClassifier
 from common.motionEnhancement import MotionEnhancement
@@ -38,6 +39,28 @@ labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syr
                      "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
                      "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"]
 
+def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128):
+    
+    with open(label_file, 'rb') as f:
+        _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
+        print("Labels and hierarchy dependency loaded from ", label_file)
+        print("=============================================================================================")
+        print("L1 classes", labelsL1, len(labelsL1))
+        print("=============================================================================================")
+        print("L2 classes", labelsL2, len(labelsL2))
+        print("=============================================================================================")
+        print("L3 classes", labelsL3, len(labelsL3))
+        print("=============================================================================================")
+        print("L2 -> L1 dependency", hierarchyL1)
+        print("=============================================================================================")
+        print("L3 -> L2 dependency", hierarchyL2)
+        print("=============================================================================================")
+    
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, device='cuda:0')
+    classifier.loadmodel(weights_file, threshold_file)
+    
+    return classifier
+    
 #%% Function to classify insects in 19 groups of taxa
 def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, height=imgHeight, border=1, createCrops=False): # Border=10 for crops
 
@@ -100,7 +123,12 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
     
     if useMotion and args.videoMIE == False:
         frame = imgPrev
-
+    
+    if args.classifier != '': # Use flat classifier
+        modelClassify = modelClassifier
+    if args.hierachical != '': # Use hierarchical classifier
+        modelClassify = modelHierarchicalClassifier
+   
     # View results
     insectFound = False
     insectsFound = 0
@@ -119,8 +147,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 x2 = int(round(xyxy[0][2]))
                 y2 = int(round(xyxy[0][3]))
                 
-                if args.classifier != '':
-                    speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
+                if 'modelClassify' in locals():
+                    speciesIdx, speciesName, probability = classifyInsect(modelClassify, frame,
                                                                           int(round(xywh[0][0])), 
                                                                           int(round(xywh[0][1])), 
                                                                           int(round(xywh[0][2])), 
@@ -185,11 +213,11 @@ if __name__=='__main__':
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains Ominiglot models
 
-    parser.add_argument('--useFlatClassifer', default='', type=bool) # Use flat classifier - default use hierarchical  
-    parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
+    #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
+    parser.add_argument('--classifier', default='')
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
 
     parser.add_argument('--video', default='')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
@@ -227,6 +255,10 @@ if __name__=='__main__':
         print(labelSpeciesNames)
         modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) 
         #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (128,128)) 
+        
+    if args.hierachical != '':
+        print("Loading hierarchical insect classifier model", args.hierachical)
+        modelHierarchicalClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128)
 
     # Open the input video file if specified
     video_path = args.video
