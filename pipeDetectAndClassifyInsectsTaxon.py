@@ -28,8 +28,10 @@ from PIL.ExifTags import TAGS
 results_dir = './detections/'
 crops_dic_insect = './crops/'
 
-imgWidth = 1920
-imgHeight = 1080
+#imgWidth = 1920
+#imgHeight = 1080
+imgWidth = 4224
+imgHeight = 2376
 
 labelNames = ['Insect'] # YOLO Only one label
 
@@ -277,7 +279,7 @@ if __name__=='__main__':
     parser.add_argument('--device', default='0') # used for YOLO GPU processing 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
-    parser.add_argument('--scale', default='1.0', type=float) # Scale factor used for creating result video
+    parser.add_argument('--scale', default='0.5', type=float) # Scale factor used for creating result video
     parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
