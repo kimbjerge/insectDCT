@@ -234,7 +234,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         color = (255,0,0) # Blue
                     insectsFound += 1
                                                         
-                    cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) #4
+                    cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
                     if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
@@ -243,11 +243,11 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         else:
                             insectName = speciesName
                     y = int(round(y1-20))
-                    cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 8, cv2.LINE_AA) # 1, 2
+                    cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
                 
     
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
-    cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+    cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
                 
     if insectFound or frames_after > 0:
         frames_after -= 1
@@ -268,6 +268,7 @@ if __name__=='__main__':
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
+    parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
@@ -322,9 +323,16 @@ if __name__=='__main__':
         csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
     else: # Process time-lapse images in directory
         imagesSubDir = args.images.split('/')[-2]
-        csvFilename = results_dir + imagesSubDir + '.csv' # use directory name
-        csvFilenameInfo  = results_dir + imagesSubDir + '-HI' + '.csv' # use directory name
-        args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
+        if args.project == "MAMBO":
+            imagesCamera = args.images.split('/')[-4]
+            imagesSubDir2 = args.images.split('/')[-3] 
+            csvFilename = results_dir + imagesCamera + '-' + imagesSubDir2 + '-' + imagesSubDir + '-CL.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + imagesCamera + '-' + imagesSubDir2 + '-' + imagesSubDir +  '-HI.csv' # directory name HI Hierarchical classifications
+            args.camera = imagesCamera
+        else:
+            csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+            args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
         if args.moviePredict != "": # Save results in a movie file 
             args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
     
