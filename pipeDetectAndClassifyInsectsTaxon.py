@@ -247,7 +247,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 
     
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
-    cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
+    cv2.putText(frame, dateTimeStr, (40,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # (20,40) 1, 2 HD
                 
     if insectFound or frames_after > 0:
         frames_after -= 1
