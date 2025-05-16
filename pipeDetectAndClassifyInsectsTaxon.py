@@ -88,7 +88,7 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
     imgCrop = image[y1:y2, x1:x2,  :].copy()
     
     if type(classifier) is HierarchicalClassifier:    
-        line, level, species, index, probability = classifier.makePrediction(imgCrop)
+        line, level, index, species, probability = classifier.makePrediction(imgCrop)
     else: # Flat CnnClassifier
         level = 0
         index, species, probability = classifier.makePrediction(imgCrop)
