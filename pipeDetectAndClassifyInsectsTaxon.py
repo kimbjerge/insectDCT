@@ -180,7 +180,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 x2 = int(round(xyxy[0][2]))
                 y2 = int(round(xyxy[0][3]))
                 
-                if type(modelClassifier) is HierarchicalClassifier or type(modelClassifier) is CnnClassifier:
+                if type(modelClassifier) is not int:
                     level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
                                                                                 int(round(xywh[0][0])), 
                                                                                 int(round(xywh[0][1])), 
@@ -223,7 +223,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     insectsFound += 1
                                                         
                     cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4)
-                    if args.classifier == '':
+                    if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
                         insectName = speciesName + ' (' + str(prob)+ ')'
@@ -355,9 +355,9 @@ if __name__=='__main__':
         for image_file in sorted(os.listdir(args.images)):
             if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
                 if useMotion and prevFilename != '':
-                    frame_time, dateTimeStr = getFrameTime(args.images, prevFilename.split('/')[-1], args.useTimeExif)
+                    frame_time, dateTimeStr = getFrameTime(args.images, prevFilename.split('/')[-1], args.useExifTime)
                 else:
-                    frame_time, dateTimeStr = getFrameTime(args.images, image_file, args.useTimeExif)
+                    frame_time, dateTimeStr = getFrameTime(args.images, image_file, args.useExifTime)
                 #if (frame_count % frame_stride == 0):  
                 print(image_file, dateTimeStr)
                 full_frame = cv2.imread(args.images + image_file)
