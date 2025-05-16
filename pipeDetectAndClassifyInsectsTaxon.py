@@ -34,6 +34,7 @@ labelNames = ['Insect'] # YOLO Only one label
 #                      "K11-Isopoda", "L12-Unspecified", "N13-Hymenoptera", "O14-Orthoptera", "P15-Rhagnoycha_fulva", 
 #                      "Q16-Satyrinae", "R17-Aglais_urticea", "S18-Odonata", "T19-Apis_mellifera"]
 
+# Specises for flat CnnClassifier with 19 classes
 labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syrphidae", 
                      "Lepidoptera", "Araneae", "Formidicidae", "Diptera", "Hemiptera", 
                      "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
@@ -85,8 +86,15 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
         y2 = height-1
         
     imgCrop = image[y1:y2, x1:x2,  :].copy()
-        
-    index, species, probability = classifier.makePrediction(imgCrop)
+    
+    if type(classifier) is HierarchicalClassifier:    
+        line, level, species, index, probability = classifier.makePrediction(imgCrop)
+    else: # Flat CnnClassifier
+        level = 0
+        index, species, probability = classifier.makePrediction(imgCrop)
+        line = species + ',' + str(level) + ',' + str(probability) 
+    
+    print(line)         
     
     if createCrops:
         if os.path.exists(crops_dic_insect + species) == False:
@@ -95,7 +103,7 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
         imgNameCrop = cropName + '_' + str(x1) + '_' + str(y1) + '_' + str(x2) + '_' + str(y2) + '.jpg'
         cv2.imwrite(crops_dic_insect + species + '/' + imgNameCrop, imgCrop)
     
-    return index, species, probability
+    return level, index, species, probability
 
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
 def getFrameTime(image_filename): 
@@ -123,11 +131,6 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
     
     if useMotion and args.videoMIE == False:
         frame = imgPrev
-    
-    if args.classifier != '': # Use flat classifier
-        modelClassify = modelClassifier
-    if args.hierachical != '': # Use hierarchical classifier
-        modelClassify = modelHierarchicalClassifier
    
     # View results
     insectFound = False
@@ -147,15 +150,16 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 x2 = int(round(xyxy[0][2]))
                 y2 = int(round(xyxy[0][3]))
                 
-                if 'modelClassify' in locals():
-                    speciesIdx, speciesName, probability = classifyInsect(modelClassify, frame,
-                                                                          int(round(xywh[0][0])), 
-                                                                          int(round(xywh[0][1])), 
-                                                                          int(round(xywh[0][2])), 
-                                                                          int(round(xywh[0][3])),
-                                                                          str(frame_count))
+                if 'modelClassifier' in locals():
+                    level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
+                                                                                int(round(xywh[0][0])), 
+                                                                                int(round(xywh[0][1])), 
+                                                                                int(round(xywh[0][2])), 
+                                                                                int(round(xywh[0][3])),
+                                                                                str(frame_count))
                     prob = int(round(probability*100))
                 else:
+                    level = 0
                     speciesIdx = 0
                     speciesName = "Unidentified"
                     prob = 0
@@ -167,11 +171,11 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
                 if args.CSVformat == "tracking": # Format used for tracing insects
                     #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n"
-                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesIdx+1, x1, y1, x2, y2, saveFilename]
+                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
                     #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,frame\n"
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
-                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, prob, True, -1, frame_count]
+                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, True, -1, frame_count]
                 
                 print(input_variable)
                 csv_writer.writerow(input_variable)
@@ -258,7 +262,7 @@ if __name__=='__main__':
         
     if args.hierachical != '':
         print("Loading hierarchical insect classifier model", args.hierachical)
-        modelHierarchicalClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128)
+        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128)
 
     # Open the input video file if specified
     video_path = args.video
@@ -279,9 +283,9 @@ if __name__=='__main__':
     print(csvFilename)
     csvfile = open(csvFilename, 'w', newline = '\n')
     if args.CSVformat == "tracking":
-        headerLine = "trap,trapId,date,time,orderConf,orderId,x1,y1,x2,y2,fileName\n"    
+        headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,x1,y1,x2,y2,fileName\n"    
     else:
-        headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,frameId\n"
+        headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,aboveTH,key,frameId\n"
         # Header line for tracking moths - includes species classifier
         #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,speciesLabel,speciesId,speciesConf\n"
     csvfile.write(headerLine)

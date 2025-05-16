@@ -60,28 +60,42 @@ class HierarchicalClassifier:
         for idx in range(len(checkList)):
             if checkL3[idx] == False or checkL2[idx] == False:
                 checkList[idx] = False
-                #print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
+                #print(self.labelsL1[level1p[idx]], self.labelsL2[level2p[idx]], self.labelsL3[level3p[idx]])
         
         return checkList
+    
+    def findLabelIndex(self, level, label):
 
-    def loadmodel(self, model_weights, threshold_file):
+        for idx in range(len(self.labels)):
+            if self.levels[idx] == level and self.labels[idx] == label:
+                return idx
             
-        self.model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
-        self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
-        print('Loaded model: ', model_weights)   
-        self.model.eval() # Very important! - else error in predictions
-        self.model = self.model.to(self.device)
+        print("Error not found label", label, "at level", level)
+        return -1
 
-        data_thresholds = pd.read_csv(threshold_file)
-        self.levels = data_thresholds["Level"].to_list() 
-        self.labels = data_thresholds["ClassName"].to_list()
-        self.thresholds = data_thresholds["Threshold"].to_list()
-        self.means = data_thresholds["Mean"].to_list()
-        self.stds = data_thresholds["Std"].to_list()
+    def checkAboveThreshold(self, level, output_score, predicted_label):
         
-    def setmodel(self, model):
+        if level == 1:
+            label = self.labelsL1[predicted_label]
+        if level == 2:
+            label = self.labelsL2[predicted_label]
+        if level == 3:
+            label = self.labelsL3[predicted_label]
         
-        self.model = model
+        predicted_index = self.findLabelIndex(level, label)
+        
+        if output_score >= self.thresholds[predicted_index]:
+            sure_label = True
+        else:
+            sure_label = False
+        
+        if self.stds[predicted_index] > 0: # Standard deviation different from zero
+            confidence_value = norm.cdf(output_score, self.means[predicted_index], self.stds[predicted_index])
+        else:
+            sure_label = True # Typically the case with one sample in the training dataset
+            confidence_value  = norm.cdf(output_score, self.means[predicted_index], 10.0) # Setting a high std value
+        
+        return confidence_value, sure_label
         
     def resize_image(self, img, size=(128,128)):
     
@@ -109,7 +123,26 @@ class HierarchicalClassifier:
             mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = img[:h, :w, :]
     
         return cv2.resize(mask, size, interpolation)
-    
+ 
+    def loadmodel(self, model_weights, threshold_file):
+            
+        self.model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+        self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
+        print('Loaded model: ', model_weights)   
+        self.model.eval() # Very important! - else error in predictions
+        self.model = self.model.to(self.device)
+
+        data_thresholds = pd.read_csv(threshold_file)
+        self.levels = data_thresholds["Level"].to_list() 
+        self.labels = data_thresholds["ClassName"].to_list()
+        self.thresholds = data_thresholds["Threshold"].to_list()
+        self.means = data_thresholds["Mean"].to_list()
+        self.stds = data_thresholds["Std"].to_list()
+        
+    def setmodel(self, model):
+        
+        self.model = model
+        
     def createBatch(self, batch_size):
         self.batch_idx = 0
         self.batch_size = batch_size
@@ -129,10 +162,14 @@ class HierarchicalClassifier:
     
         return False
     
-    def appendBatchToBatch(self, batch): # Tested ok
+    def appendBatchToBatch(self, batch): 
         self.imagesInBatch = batch
     
-    def classifyBatch(self, useSoftMax=True):   # Tested ok         
+
+    def classifyBatch(self, useSoftMax=True):       
+        """
+        Classify batch of images with hierarchal model without a following outlier and hierachy checking
+        """
         self.imagesInBatch = self.imagesInBatch.to(self.device)
         level1class_pred, level2class_pred, level3class_pred = self.model(self.imagesInBatch)
         
@@ -150,48 +187,17 @@ class HierarchicalClassifier:
             predicted_label1 = predicted_labels1[idx]
             predicted_label2 = predicted_labels2[idx]
             predicted_label3 = predicted_labels3[idx]
-            #confidence_value = norm.cdf(predictions[idx][predicted_label], self.means[predicted_label], self.stds[predicted_label])
-            #confidence_value = round(confidence_value*10000)/100
-            #if predictions[idx][predicted_label] >= self.thresholds[predicted_label]:
-            #    sure_label = True
-            #else:
-            #    sure_label = False
+
             line = f"{self.labelsL1[predicted_label1]},{predicted_label1},{self.labelsL2[predicted_label2]},{predicted_label2},{self.labelsL3[predicted_label3]},{predicted_label3}"
             print(line)
             lines.append(line)
             
         return lines
-    
-    def findLabelIndex(self, level, label):
-
-        for idx in range(len(self.labels)):
-            if self.levels[idx] == level and self.labels[idx] == label:
-                return idx
-            
-        print("Error not found label", label, "at level", level)
-        return -1
-
-    def checkAboveThreshold(self, level, output_score, predicted_label):
-        
-        if level == 1:
-            label = self.labelsL1[predicted_label]
-        if level == 2:
-            label = self.labelsL2[predicted_label]
-        if level == 3:
-            label = self.labelsL3[predicted_label]
-        
-        predicted_index = self.findLabelIndex(level, label)
-        
-        if output_score >= self.thresholds[predicted_index]:
-            sure_label = True
-        else:
-            sure_label = False
-        
-        confidence_value = norm.cdf(output_score, self.means[predicted_index], self.stds[predicted_index])
-        
-        return confidence_value, sure_label
 
     def makePrediction(self, imageCrop):
+        """
+        Classify single a image with the hierarchal model following outlier and hierachy checking
+        """
         
         self.createBatch(1)
         self.appendToBatch(imageCrop)
@@ -215,23 +221,16 @@ class HierarchicalClassifier:
         predicted_score2 = level2class_pred[0][predicted_label2]
         predicted_score3 = level3class_pred[0][predicted_label3]
  
+        # Checking that predictions are correct according to the hierachical taxonomic levels
+        checkList = self.checkHierarhcy(predicted_labels1, predicted_labels2, predicted_labels3)
+
+        # Labeling predictions unsure if ouput scores are below outlier thredsholds
         conf1, sure1 = self.checkAboveThreshold(1, predicted_score1, predicted_label1)
         conf2, sure2 = self.checkAboveThreshold(2, predicted_score2, predicted_label2)
         conf3, sure3 = self.checkAboveThreshold(3, predicted_score3, predicted_label3)
-
-        line1 =  f"{self.labelsL1[predicted_label1]},{predicted_label1},{conf1},{sure1},"
-        print(line1)
-        line2 = f"{self.labelsL2[predicted_label2]},{predicted_label2},{conf2},{sure2},"
-        print(line2)
-        line3 = f"{self.labelsL3[predicted_label3]},{predicted_label3},{conf3},{sure3}"
-        print(line3)
-        #line = line1 + line2 + line3
-
-        checkList = self.checkHierarhcy(predicted_labels1, predicted_labels2, predicted_labels3)
-        #print("Hierarchy check", checkList[0])
  
         label_name = "Unsure" 
-        predicted_label = -1 # Unsure label index at all levels
+        predicted_label = -1 # Unsure label index - outlier detection
         confidence = 0.0
         level = 0
         
@@ -259,8 +258,14 @@ class HierarchicalClassifier:
            label_name =  "Unsure" 
            confidence = 0.0
            level = 0
+
+        # Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked
+        line1 = f"{self.labelsL1[predicted_label1]},{predicted_label1},{conf1},{sure1},"
+        line2 = f"{self.labelsL2[predicted_label2]},{predicted_label2},{conf2},{sure2},"
+        line3 = f"{self.labelsL3[predicted_label3]},{predicted_label3},{conf3},{sure3},"
+        line = line1 + line2 + line3 + str(checkList[0])
         
-        return level, predicted_label, label_name, confidence 
+        return line, level, predicted_label, label_name, confidence 
     
 #%% MAIN for testing HierarchicalClassifier class
 if __name__=='__main__':
@@ -284,13 +289,13 @@ if __name__=='__main__':
         print("L3 -> L2 dependency", hierarchyL2)
         print("=============================================================================================")
     
-    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cpu')
-    #classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cuda:0')
+    #classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cpu')
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cuda:0')
     classifier.loadmodel("../models_save/HierarchicalClassifier_13052025.pth", 
                          "../models_save/HierarchicalThresholds_13052025.csv")
 
-    dataset_path = "/ArthropodsDataset/NI2classes/"
-    #dataset_path = "/home/don/data/Arthropods/NI2classes/"
+    #dataset_path = "/ArthropodsDataset/NI2classes/"
+    dataset_path = "/home/don/data/Arthropods/NI2classes/"
     
     count = 0
     batch_size = 10
@@ -303,9 +308,11 @@ if __name__=='__main__':
                 file_name_path = class_dir_path + '/' + file_name
                 print(file_name_path)
                 image = cv2.imread(file_name_path)
-                level, predicted_label, label_name, confidence = classifier.makePrediction(image)
-                print("Predicted ", label_name, level, predicted_label, confidence)
-                """
+                # Test processing single images
+                line, level, predicted_label, label_name, confidence = classifier.makePrediction(image)
+                print("Predicted:", label_name, level, predicted_label, confidence)
+                print(line)
+                """ Test processing images in batch
                 classifier.appendToBatch(image)
                 if count % batch_size == 0:
                     lines = classifier.classifyBatch()
