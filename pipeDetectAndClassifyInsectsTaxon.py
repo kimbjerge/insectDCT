@@ -142,7 +142,7 @@ def getFrameTime(filePath, image_filename, useTimeExif):
     
     image_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
 
-    return image_time
+    return image_time, dateTimeStr
 
 #%% Pipe line to process each frame using motion informed enhancement if useMotion=True
 def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, filename='', prevFilename=''):
@@ -354,11 +354,13 @@ if __name__=='__main__':
         for image_file in sorted(os.listdir(args.images)):
             if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
                 if useMotion and prevFilename != '':
-                    frame_time = getFrameTime(args.images, prevFilename.split('/')[-1], args.useTimeExif)
+                    frame_time, dateTimeStr = getFrameTime(args.images, prevFilename.split('/')[-1], args.useTimeExif)
                 else:
-                    frame_time = getFrameTime(args.images, image_file, args.useTimeExif)
-                #if (frame_count % frame_stride == 0):   
-                frame = cv2.imread(args.images + image_file)
+                    frame_time, dateTimeStr = getFrameTime(args.images, image_file, args.useTimeExif)
+                #if (frame_count % frame_stride == 0):  
+                print(image_file, dateTimeStr)
+                full_frame = cv2.imread(args.images + image_file)
+                frame = cv2.resize(full_frame, (imgWidth, imgHeight), cv2.INTER_AREA) # Downsize image to HD size
                 prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
                 frame_count += 1
 
