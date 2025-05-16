@@ -171,7 +171,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
                 if args.CSVformat == "tracking": # Format used for tracing insects
                     #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n"
-                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
+                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
                     #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,frame\n"
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
