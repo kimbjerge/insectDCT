@@ -157,7 +157,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
         frame, imgPrev = MIE.motion_image(frame)
 
     # Run YOLO inference on the frame
-    results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device)
+    results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device) # Automatic scales to HD image size
     #results = modelDetector.predict(frame, imgsz=imgWidth, batch=1, conf=args.confidence, device=args.device)
     
     if useMotion and args.videoMIE == False:
