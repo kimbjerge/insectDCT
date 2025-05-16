@@ -346,7 +346,7 @@ if __name__=='__main__':
     if args.CSVformat == "tracking":
         headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"    
     else:
-        headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
+        headerLine = "year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
         # Header line for tracking moths - includes species classifier
         #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,speciesLabel,speciesId,speciesConf\n"
     csvfile.write(headerLine)
