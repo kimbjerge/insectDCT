@@ -11,7 +11,7 @@ import pandas as pd
 from scipy.stats import norm
 #from skimage import io
 #from skimage.transform import resize
-from resnet50tf import ResNet50
+from common.resnet50tf import ResNet50
 
 class HierarchicalClassifier:
 
@@ -254,7 +254,7 @@ class HierarchicalClassifier:
                     level = 1
         
         if checkList[0] == False: # Wrong hierarchy - then unsure prediction
-           predicted_label = -2 # Unsure label index, wrong hierarchy
+           predicted_label = -1 # Unsure label index, wrong hierarchy (-2)
            label_name =  "Unsure" 
            confidence = 0.0
            level = 0
