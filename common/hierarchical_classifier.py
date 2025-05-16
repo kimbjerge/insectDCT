@@ -235,7 +235,7 @@ class HierarchicalClassifier:
         level = 0
         
         # Get label from sure levels
-        if sure1 and sure2 and sure3:
+        if sure2 and sure3:
             label_name = self.labelsL3[predicted_label3]
             predicted_label = predicted_label3
             confidence = conf3
