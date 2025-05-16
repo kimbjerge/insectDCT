@@ -151,8 +151,8 @@ class HierarchicalClassifier:
         
     def appendToBatch(self, imageCrop):
         if self.batch_idx < self.batch_size:
-            #image = self.resize_image(imageCrop, (self.img_size, self.img_size))
-            image = cv2.resize(imageCrop, (self.img_size, self.img_size), cv2.INTER_AREA)
+            image = self.resize_image(imageCrop, (self.img_size, self.img_size))
+            #image = cv2.resize(imageCrop, (self.img_size, self.img_size), cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
             image = transforms.ToTensor()(image)
