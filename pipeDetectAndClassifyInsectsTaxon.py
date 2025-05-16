@@ -194,6 +194,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     speciesIdx = -1
                     speciesName = "Unidentified"
                     prob = 0
+
+                taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
                 
                 if useMotion and prevFilename != '':
                     saveFilename = prevFilename
@@ -206,7 +208,6 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
                     #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
-                    taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
                                       conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, taxaSure, frame_count]
                 
