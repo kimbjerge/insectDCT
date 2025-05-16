@@ -330,7 +330,7 @@ if __name__=='__main__':
             resultName = imagesSubDir4 + '-' + imagesSubDir3 + '-' + imagesSubDir
             csvFilename = results_dir + resultName + '-CL.csv' # directory name CL final classifications
             csvFilenameInfo  = results_dir + resultName +  '-HI.csv' # directory name HI Hierarchical classifications
-            args.camera = imagesSubDir4 + '-' + imagesSubDir3 
+            args.camera = imagesSubDir4 + '/' + imagesSubDir3 
             if args.moviePredict != "": # Save results in a movie file 
                 args.moviePredict = resultName + '.avi'  # use same name as csv file   
         else:
