@@ -324,6 +324,7 @@ if __name__=='__main__':
     else: # Process time-lapse images in directory
         imagesSubDir = args.images.split('/')[-2]
         if args.project == "MAMBO":
+            # Format CSV result file names for project MAMBO
             imagesCamera = args.images.split('/')[-4]
             imagesSubDir2 = args.images.split('/')[-3] 
             csvFilename = results_dir + imagesCamera + '-' + imagesSubDir2 + '-' + imagesSubDir + '-CL.csv' # directory name CL final classifications
