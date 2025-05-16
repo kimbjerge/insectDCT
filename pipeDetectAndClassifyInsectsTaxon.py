@@ -157,7 +157,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
         frame, imgPrev = MIE.motion_image(frame)
 
     # Run YOLO inference on the frame
-    results = modelDetector.predict(frame, imgsz=imgWidth, batch=1, conf=args.confidence, device=args.device)
+    results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device)
+    #results = modelDetector.predict(frame, imgsz=imgWidth, batch=1, conf=args.confidence, device=args.device)
     
     if useMotion and args.videoMIE == False:
         frame = imgPrev
@@ -379,8 +380,8 @@ if __name__=='__main__':
                     frame_time, dateTimeStr = getFrameTime(args.images, image_file, args.useExifTime)
                 #if (frame_count % frame_stride == 0):  
                 print(image_file, dateTimeStr)
-                full_frame = cv2.imread(args.images + image_file)
-                frame = cv2.resize(full_frame, (imgWidth, imgHeight), cv2.INTER_AREA) # Downsize image to HD size
+                frame = cv2.imread(args.images + image_file)
+                #frame = cv2.resize(full_frame, (imgWidth, imgHeight), cv2.INTER_AREA) # Downsize image to HD size
                 prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
                 frame_count += 1
 
