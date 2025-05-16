@@ -204,8 +204,9 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
                     #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,frame\n"
+                    aboveTH = not (speciesIdx < 0) # Below threshold or wrong hierarchy
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
-                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, True, -1, frame_count]
+                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, aboveTH, -1, frame_count]
                 
                 print(input_variable)
                 csv_writer.writerow(input_variable)
@@ -253,7 +254,7 @@ if __name__=='__main__':
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
     
-    parser.add_argument('--useTimeExif', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
+    parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
@@ -265,7 +266,7 @@ if __name__=='__main__':
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
     parser.add_argument('--scale', default='1.0', type=float) # Scale factor used for creating result video
     parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)
-    parser.add_argument('--moviePredict', default='movie_predict_motion.avi') # Name of result movie with bounding boxes and classifications
+    parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
     
     args = parser.parse_args() 
