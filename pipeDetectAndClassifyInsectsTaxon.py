@@ -107,7 +107,7 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
         imgNameCrop = cropName + '_' + str(x1) + '_' + str(y1) + '_' + str(x2) + '_' + str(y2) + '.jpg'
         cv2.imwrite(crops_dic_insect + species + '/' + imgNameCrop, imgCrop)
     
-    return level, index, species, probability
+    return line, level, index, species, probability
 
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
 def getFrameTime(filePath, image_filename, useTimeExif): 
@@ -181,14 +181,15 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 y2 = int(round(xyxy[0][3]))
                 
                 if type(modelClassifier) is not int:
-                    level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
-                                                                                int(round(xywh[0][0])), 
-                                                                                int(round(xywh[0][1])), 
-                                                                                int(round(xywh[0][2])), 
-                                                                                int(round(xywh[0][3])),
-                                                                                str(frame_count))
+                    line,  level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
+                                                                                        int(round(xywh[0][0])), 
+                                                                                        int(round(xywh[0][1])), 
+                                                                                        int(round(xywh[0][2])), 
+                                                                                        int(round(xywh[0][3])),
+                                                                                        str(frame_count))
                     prob = int(round(probability*100))
                 else:
+                    line = ''
                     level = 0
                     speciesIdx = -1
                     speciesName = "Unidentified"
@@ -200,18 +201,25 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     saveFilename = filename
 
                 if args.CSVformat == "tracking": # Format used for tracing insects
-                    #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n"
-                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
+                    #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
+                    #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n" 
+                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
-                    #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,frame\n"
-                    aboveTH = not (speciesIdx < 0) # Below threshold or wrong hierarchy
+                    #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
+                    taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
-                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, aboveTH, -1, frame_count]
+                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, taxaSure, frame_count]
                 
                 print(input_variable)
                 csv_writer.writerow(input_variable)
                 csvfile.flush()
                 
+                if type(modelClassifier) is HierarchicalClassifier:
+                    #headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
+                    line += ',' + str(frame_count) + '\n'
+                    csvfileInfo.write(line)
+                    csvfileInfo.flush()
+                    
                 if saveMovie:
                     insectFound = True
                     frames_after = store_frames_after
@@ -226,7 +234,10 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
-                        insectName = speciesName + ' (' + str(prob)+ ')'
+                        if taxaSure:
+                            insectName = speciesName + ' (' + str(level) + '-' + str(prob) + ')'
+                        else:
+                            insectName = speciesName
                     y = int(round(y1-20))
                     cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
                 
@@ -308,6 +319,7 @@ if __name__=='__main__':
     else: # Process time-lapse images in directory
         imagesSubDir = args.images.split('/')[-2]
         csvFilename = results_dir + imagesSubDir + '.csv' # use directory name
+        csvFilenameInfo  = results_dir + imagesSubDir + '-HI' + '.csv' # use directory name
         args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
         if args.moviePredict != "": # Save results in a movie file 
             args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
@@ -316,13 +328,19 @@ if __name__=='__main__':
     print(csvFilename)
     csvfile = open(csvFilename, 'w', newline = '\n')
     if args.CSVformat == "tracking":
-        headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,x1,y1,x2,y2,fileName\n"    
+        headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"    
     else:
-        headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,aboveTH,key,frameId\n"
+        headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
         # Header line for tracking moths - includes species classifier
         #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,speciesLabel,speciesId,speciesConf\n"
     csvfile.write(headerLine)
     csv_writer = csv.writer(csvfile, delimiter = ',')
+    
+    csvfileInfo = 0
+    if type(modelClassifier) is HierarchicalClassifier:
+        csvfileInfo = open(csvFilenameInfo, 'w', newline = '\n')
+        headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
+        csvfileInfo.write(headerLine)
 
     saveMovie = False
     if args.moviePredict != "": # Save results in a movie file
@@ -369,3 +387,5 @@ if __name__=='__main__':
     csvfile.close()
     if saveMovie:
         movie_writer.release()
+    if csvfileInfo is not int:
+        csvfileInfo.close()
