@@ -150,7 +150,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 x2 = int(round(xyxy[0][2]))
                 y2 = int(round(xyxy[0][3]))
                 
-                if 'modelClassifier' in locals():
+                if type(modelClassifier) is HierarchicalClassifier or type(modelClassifier) is CnnClassifier:
                     level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
                                                                                 int(round(xywh[0][0])), 
                                                                                 int(round(xywh[0][1])), 
@@ -160,7 +160,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     prob = int(round(probability*100))
                 else:
                     level = 0
-                    speciesIdx = 0
+                    speciesIdx = -1
                     speciesName = "Unidentified"
                     prob = 0
                 
@@ -254,6 +254,7 @@ if __name__=='__main__':
     modelDetector = YOLO(args.yoloWeights)  # load a pretrained model (recommended for training)
     
     # Load the insect classifier model
+    modelClassifier = 0
     if args.classifier != '': # Classify detected insects into categories of taxa
         print("Loading insect classifier model", args.classifier)
         print(labelSpeciesNames)
