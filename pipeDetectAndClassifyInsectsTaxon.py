@@ -321,7 +321,7 @@ if __name__=='__main__':
     else: 
         # Processing time-lapse images
         for image_file in sorted(os.listdir(args.images)):
-            if image_file.endswith('.jpg'):
+            if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
                 if useMotion and prevFilename != '':
                     frame_time = getFrameTime(prevFilename.split('/')[-1])
                 else:
