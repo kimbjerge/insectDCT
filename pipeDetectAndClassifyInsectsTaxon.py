@@ -234,7 +234,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         color = (255,0,0) # Blue
                     insectsFound += 1
                                                         
-                    cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4)
+                    cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 6) #4
                     if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
@@ -243,7 +243,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         else:
                             insectName = speciesName
                     y = int(round(y1-20))
-                    cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+                    cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 3, (255,255,255), 4, cv2.LINE_AA) # 3, 2
                 
     
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
