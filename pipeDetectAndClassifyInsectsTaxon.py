@@ -326,16 +326,18 @@ if __name__=='__main__':
         if args.project == "MAMBO":
             # Format CSV result file names for project MAMBO
             imagesCamera = args.images.split('/')[-4]
-            imagesSubDir2 = args.images.split('/')[-3] 
-            csvFilename = results_dir + imagesCamera + '-' + imagesSubDir2 + '-' + imagesSubDir + '-CL.csv' # directory name CL final classifications
-            csvFilenameInfo  = results_dir + imagesCamera + '-' + imagesSubDir2 + '-' + imagesSubDir +  '-HI.csv' # directory name HI Hierarchical classifications
+            resultName = imagesCamera + '-' + args.images.split('/')[-3] + '-' + imagesSubDir
+            csvFilename = results_dir + resultName + '-CL.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + resultName +  '-HI.csv' # directory name HI Hierarchical classifications
             args.camera = imagesCamera
+            if args.moviePredict != "": # Save results in a movie file 
+                args.moviePredict = resultName + '.avi'  # use same name as csv file   
         else:
             csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
             csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
             args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
-        if args.moviePredict != "": # Save results in a movie file 
-            args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
+            if args.moviePredict != "": # Save results in a movie file 
+                args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
     
     # Create the CSV result file
     print(csvFilename)
