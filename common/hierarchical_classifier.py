@@ -126,7 +126,7 @@ class HierarchicalClassifier:
  
     def loadmodel(self, model_weights, threshold_file):
             
-        self.model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+        self.model = ResNet50(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True) 
         self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
         print('Loaded model: ', model_weights)   
         self.model.eval() # Very important! - else error in predictions
