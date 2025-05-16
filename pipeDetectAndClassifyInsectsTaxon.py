@@ -13,6 +13,7 @@ import torch
 import argparse
 import datetime 
 import pickle
+
 from common.cnn_classifier import CnnClassifier
 from common.hierarchical_classifier import HierarchicalClassifier
 from common.motionEnhancement import MotionEnhancement
@@ -20,6 +21,9 @@ from common.motionEnhancement import MotionEnhancement
 torch.cuda.empty_cache()
 gc.collect()
 from ultralytics import YOLO
+
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 results_dir = './detections/'
 crops_dic_insect = './crops/'
@@ -106,10 +110,36 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
     return level, index, species, probability
 
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
-def getFrameTime(image_filename): 
+def getFrameTime(filePath, image_filename, useTimeExif): 
 
-    nameSplit = image_filename.split('.')[0].split('_')
-    dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
+    if useTimeExif:
+        # open the image
+        image = Image.open(filePath+image_filename)
+         
+        # extracting the exif metadata
+        exifdata = image.getexif()
+         
+        # looping through all the tags present in exifdata
+        for tagid in exifdata:
+            # getting the tag name instead of tag id
+            tagname = TAGS.get(tagid, tagid)
+            if tagname == "DateTime": # Check tag date time
+                # passing the tagid to get its respective value
+                value = exifdata.get(tagid)
+                # printing the final result
+                #print(f"{tagname:25}: {value}")
+                
+                # reformat time stamp to "YYYYMMDDHHMMSS"
+                timestamp = value.replace(':', '')
+                dateTimeStr = timestamp.replace(' ', '')
+           
+        # close the image
+        image.close()
+    
+    else:    
+        nameSplit = image_filename.split('.')[0].split('_')
+        dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
+    
     image_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
 
     return image_time
@@ -222,7 +252,8 @@ if __name__=='__main__':
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
-
+    
+    parser.add_argument('--useTimeExif', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
@@ -323,9 +354,9 @@ if __name__=='__main__':
         for image_file in sorted(os.listdir(args.images)):
             if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
                 if useMotion and prevFilename != '':
-                    frame_time = getFrameTime(prevFilename.split('/')[-1])
+                    frame_time = getFrameTime(args.images, prevFilename.split('/')[-1], args.useTimeExif)
                 else:
-                    frame_time = getFrameTime(image_file)
+                    frame_time = getFrameTime(args.images, image_file, args.useTimeExif)
                 #if (frame_count % frame_stride == 0):   
                 frame = cv2.imread(args.images + image_file)
                 prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
