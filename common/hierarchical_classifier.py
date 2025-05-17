@@ -12,6 +12,7 @@ from scipy.stats import norm
 #from skimage import io
 #from skimage.transform import resize
 from common.resnet50tf import ResNet50
+#from resnet50tf import ResNet50
 
 class HierarchicalClassifier:
 
@@ -288,6 +289,21 @@ if __name__=='__main__':
         print("=============================================================================================")
         print("L3 -> L2 dependency", hierarchyL2)
         print("=============================================================================================")
+    
+    """
+    count = 1
+    for label in labelsL1:
+        print("\t", str(count), " ", label)
+        count += 1
+    count = 1
+    for label in labelsL2:
+        print("\t", str(count), " ", label)       
+        count += 1
+    count = 1
+    for label in labelsL3:
+        print("\t", str(count), " ", label)
+        count += 1
+    """
     
     #classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cpu')
     classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cuda:0')
