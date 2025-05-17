@@ -201,7 +201,7 @@ Content of *-HI.csv files which contain hierarchical taxonomic information for e
 
 LabelX, LabelIdX is ConfX is the name, id, confidence score on the taxonomic levels 1, 2 and 3.  <br />
 AboveX is True if the confidence scores is within the distribution of the training data. <br />
-Checked is True if the classification is correct according to the dependences in the taxanomic hierarchy.
+Checked is True if the classification is correct according to the dependences in the taxonomic hierarchy.
 
 Example of content with same frameId as in example above (*-CL.csv content):
 
