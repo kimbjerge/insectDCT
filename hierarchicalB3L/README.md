@@ -26,12 +26,12 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
 
 	year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId
 
-- trapDir is the directory of the source files <subdir3>/<subdir2>  <br />
-- detectConf is the confidence for the YOLO11 arthropod detector  <br />
-- detectId is always 0 and is the class id from YOLO11  <br />
+- trapDir is the directory of the source files subdir3/subdir2  <br />
+- detectConf is the confidence score of the YOLO11 arthropod detector  <br />
+- detectId is always 0 and is the class id determined by YOLO11  <br />
 - x1,y1,x2,y2 is the coordinates in the images for the upper left corner and lower right corner of the bounding box surrounding the detected arthropod  <br />
 - filename is the name of the image file with the format subdir1/name.JPG  <br />
-- taxaLabel is the order, family, genus or species name of the arthropod found by the hierarchical classifier
+- taxaLabel is the order, family, genus or species name of the arthropod found by the hierarchical classifier see names below (taxaLevel 1-3)
  
 - taxaId and taxaLevel will be updated with the following classification codes:
 
@@ -196,7 +196,7 @@ Example of *-CL.csv content:
 	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141629,43,0,1262,1123,1355,1224,101_WSCT/WSCT0442.JPG,Syrphidae,37,2,6,True,442
 	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,142529,62,0,778,1650,893,1716,101_WSCT/WSCT0451.JPG,Sphaerophoria scripta-complex,73,3,45,True,451 
 
-Content of *-HI.csv files which contain hierarchical taxonomic information for each detection (<subdir3>-<subdir2>-<subdir1>-CL.csv):
+Content of *-HI.csv files which contain hierarchical taxonomic information for each detection (subdir3-subdir2-subdir1-CL.csv):
 
 	Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId
 
@@ -204,7 +204,7 @@ LabelX, LabelIdX is ConfX is the name, id, confidence score on the taxonomic lev
 AboveX is True if the confidence scores is within the distribution of the training data. <br />
 Checked is True if the classification is correct according to the dependences in the taxanomic hierarchy.
 
-Example of content with same frameId as in ex:
+Example of content with same frameId as in example above (*-CL.csv content):
 
 	Hymenoptera,7,0.0016508539215075745,False,Halictidae,14,0.05190288999028045,True,Sphaerophoria scripta-complex,72,0.003527139374961427,False,False,441
 	Diptera,3,0.06632232090118803,True,Syrphidae,36,0.05682376443188935,True,Sphaerophoria scripta-complex,72,0.00486999349185118,False,True,442
