@@ -1,6 +1,6 @@
 # insectsDCT - Arthropod detector with hierarchical taxon classifier
 This project contains Python code for processing time-lapse recorded images (30-60 sec. intervals, resized to 1920x1080 pixel) from insect camera traps. 
-Code to detect, classify arthropods.
+Code to detect and classify arthropods.
 
 ## The algorithms used are described in the papers: 
 
@@ -15,7 +15,7 @@ Hierarchical classification of arthropods in three levels of taxonomic ranks:
 https://doi.org/10.1016/j.ecoinf.2023.102278
 
   
-1. Run the Python code to generate the CSV files for detection and classification
+1. Run the below Python code found in the root directory to generate the CSV files for detection and classification 
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0)
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
