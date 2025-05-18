@@ -290,7 +290,7 @@ if __name__=='__main__':
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
     fps=1/frame_stride
-    store_frames_after = 2
+    store_frames_after = 1 # Video 2
 
     prevFilename = ''
     useMotion = False
