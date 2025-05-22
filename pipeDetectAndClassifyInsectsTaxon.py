@@ -28,8 +28,11 @@ from PIL.ExifTags import TAGS
 results_dir = './detections/'
 crops_dic_insect = './crops/'
 
+# Jordan and Simon
 #imgWidth = 1920
 #imgHeight = 1080
+
+# MAMBO
 imgWidth = 4224
 imgHeight = 2376
 
@@ -244,11 +247,12 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                             insectName = speciesName
                     y = int(round(y1-20))
                     cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
-                
+                    #cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
     
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
     cv2.putText(frame, dateTimeStr, (40,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # (20,40) 1, 2 HD
-                
+    #cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # (20,40) 1, 2 HD
+              
     if insectFound or frames_after > 0:
         frames_after -= 1
         image = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
@@ -262,18 +266,22 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains Ominiglot models
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Color/weights/best.pt') #Directory that contains color models
 
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
     parser.add_argument('--classifier', default='')
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
+    parser.add_argument('--thresholdStd', default='2.0', type=float) # Use default threshold for "Unsure" of mean - 2.0*std 
     parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
+    #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
+    #parser.add_argument('--video', default='./datasets/beemoni12025_04_03_12_59_47.mp4') # 45 fps -> 5 fps (stride 5) Jordan
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion best F1-score 0.93
@@ -311,16 +319,22 @@ if __name__=='__main__':
         
     if args.hierachical != '':
         print("Loading hierarchical insect classifier model", args.hierachical)
-        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128)
+        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, stdThreshold=args.thresholdStd)
 
     # Open the input video file if specified
     video_path = args.video
     if video_path != '': # Process video file
         cap = cv2.VideoCapture(video_path)
         videoSplit = args.video.split('_')
-        dateTimeStr = "2024" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
+        dateTimeStr = "2025" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
         start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
-        csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
+        #csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
+        imagesSubDir = args.video.split('/')[-1]
+        imagesSubDir = imagesSubDir.split('.')[0]
+        csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
+        csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+        if args.moviePredict != "": # Save results in a movie file 
+            args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file  
     else: # Process time-lapse images in directory
         imagesSubDir = args.images.split('/')[-2]
         if args.project == "MAMBO":

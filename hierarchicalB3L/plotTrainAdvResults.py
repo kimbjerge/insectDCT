@@ -234,7 +234,8 @@ def plotHist(level, labelsL, classIdx, score, file):
         std = 0
     
     #print(labelsL[classIdx], mu, std)
-    classThreshold = round((mu - 2*std)*10)/10
+    #classThreshold = round((mu - 2*std)*10)/10 # Used in paper
+    classThreshold = round((mu - 3*std)*10)/10 # Less number of unsure
     if std == 0:
         classThreshold = -1.0 # No threshold when standard deviation is zero 
     print(level, classIdx, labelsL[classIdx], mu, std, classThreshold)

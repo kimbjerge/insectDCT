@@ -16,10 +16,12 @@ from common.resnet50tf import ResNet50
 
 class HierarchicalClassifier:
 
-    def __init__(self, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, img_depth=3, device='cpu'):
+    def __init__(self, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, 
+                  img_size=128, stdThreshold=2.0, img_depth=3, device='cpu'):
         self.img_size = img_size
         self.img_depth = img_depth
         self.device = device
+        self.stdThreshold = stdThreshold
         self.hierarchical_labelsL1 = hierarchyL1
         self.hierarchical_labelsL2 = hierarchyL2
         self.labelsL1 = labelsL1
@@ -85,7 +87,14 @@ class HierarchicalClassifier:
         
         predicted_index = self.findLabelIndex(level, label)
         
-        if output_score >= self.thresholds[predicted_index]:
+        if self.stdThreshold != 2.0: # Check if different threshold than 2xstd should be used
+            mu = self.means[predicted_index]
+            std = self.stds[predicted_index]
+            classThreshold = round((mu - self.stdThreshold*std)*100)/100 # Rounded 0.01
+        else:
+            classThreshold = self.thresholds[predicted_index] # Rounded 0.1
+        
+        if output_score >= classThreshold:
             sure_label = True
         else:
             sure_label = False
