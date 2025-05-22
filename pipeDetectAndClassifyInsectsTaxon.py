@@ -49,7 +49,7 @@ labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syr
                      "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
                      "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"]
 
-def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128):
+def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0):
     
     with open(label_file, 'rb') as f:
         _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
@@ -66,7 +66,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
         print("L3 -> L2 dependency", hierarchyL2)
         print("=============================================================================================")
     
-    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, device='cuda:0')
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, stdThreshold=stdThreshold, device='cuda:0')
     classifier.loadmodel(weights_file, threshold_file)
     
     return classifier
