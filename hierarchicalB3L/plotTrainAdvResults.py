@@ -16,7 +16,7 @@ from plot import plot_loss_acc
 #from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
 
-saved_folder = "./saved/"
+saved_folder = "./saved_128_final/"
 graph_folder = "./graph_folder/"
 
 label_file = saved_folder+"labelsAdv3L.pkl"
@@ -235,7 +235,7 @@ def plotHist(level, labelsL, classIdx, score, file):
     
     #print(labelsL[classIdx], mu, std)
     #classThreshold = round((mu - 2*std)*10)/10 # Used in paper
-    classThreshold = round((mu - 3*std)*10)/10 # Less number of unsure
+    classThreshold = round((mu - 3*std)*100)/100 # Less number of unsure
     if std == 0:
         classThreshold = -1.0 # No threshold when standard deviation is zero 
     print(level, classIdx, labelsL[classIdx], mu, std, classThreshold)

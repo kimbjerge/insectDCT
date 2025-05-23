@@ -17,7 +17,7 @@ from common.resnet50tf import ResNet50
 class HierarchicalClassifier:
 
     def __init__(self, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, 
-                  img_size=128, stdThreshold=2.0, img_depth=3, device='cpu'):
+                  img_size=128, stdThreshold=0.0, img_depth=3, device='cpu'):
         self.img_size = img_size
         self.img_depth = img_depth
         self.device = device
@@ -87,12 +87,12 @@ class HierarchicalClassifier:
         
         predicted_index = self.findLabelIndex(level, label)
         
-        if self.stdThreshold != 2.0: # Check if different threshold than 2xstd should be used
+        if self.stdThreshold != 0.0: # Check if different threshold should be used
             mu = self.means[predicted_index]
             std = self.stds[predicted_index]
             classThreshold = round((mu - self.stdThreshold*std)*100)/100 # Rounded 0.01
         else:
-            classThreshold = self.thresholds[predicted_index] # Rounded 0.1
+            classThreshold = self.thresholds[predicted_index] # Use CSV file with thresholds
         
         if output_score >= classThreshold:
             sure_label = True
@@ -317,7 +317,7 @@ if __name__=='__main__':
     #classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cpu')
     classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=128, device='cuda:0')
     classifier.loadmodel("../models_save/HierarchicalClassifier_13052025.pth", 
-                         "../models_save/HierarchicalThresholds_13052025.csv")
+                         "../models_save/HierarchicalThresholds_13052025_TH2.csv")
 
     #dataset_path = "/ArthropodsDataset/NI2classes/"
     dataset_path = "/home/don/data/Arthropods/NI2classes/"

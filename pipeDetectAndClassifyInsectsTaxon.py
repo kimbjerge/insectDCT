@@ -272,8 +272,9 @@ if __name__=='__main__':
     parser.add_argument('--classifier', default='')
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025.csv')
-    parser.add_argument('--thresholdStd', default='2.0', type=float) # Use default threshold for "Unsure" of mean - 2.0*std 
+    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH2.csv') # Use thresholds below = mean-2*std
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
+    parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
     parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
