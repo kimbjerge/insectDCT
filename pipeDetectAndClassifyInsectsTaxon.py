@@ -238,6 +238,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     insectsFound += 1
                                                         
                     cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
+                    #cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
                     if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
