@@ -193,7 +193,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                                                                                         int(round(xywh[0][2])), 
                                                                                         int(round(xywh[0][3])),
                                                                                         str(frame_count))
-                    prob = int(round(probability*100))
+                    prob = round(probability*10000)/100 # percentage with two decimals
                 else:
                     line = ''
                     level = 0
@@ -242,7 +242,11 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
                         if taxaSure:
-                            insectName = speciesName + ' (' + str(level) + '-' + str(prob) + ')'
+                            if prob < 10.0:
+                                probDisp = round(prob*10)/10 # display probability (%) with one decimal
+                            else:
+                                probDisp = int(round(prob)) # round to integer if more than 10%
+                            insectName = speciesName + ' (' + str(level) + '-' + str(probDisp) + ')'
                         else:
                             insectName = speciesName
                     y = int(round(y1-20))
