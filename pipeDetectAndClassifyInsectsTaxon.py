@@ -176,7 +176,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
         boxes = boxes.numpy()
         for box in boxes:
             xyxy = box.xyxy # top-left-x, top-left-y, bottom-right-x, bottom-right-y
-            xywh = boxes.xywh  # center-x, center-y, width, height
+            # Wrong xywh = boxes.xywh  # center-x, center-y, width, height KBE????
+            xywh = box.xywh  # center-x, center-y, width, height
             if xyxy.size > 0: # Save object found
                 #print(xyxy, box.cls, box.conf)
                 clas = int(box.cls[0])
