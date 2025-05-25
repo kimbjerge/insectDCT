@@ -146,11 +146,11 @@ def plotHistogram(trapName, selDataset):
     plt.savefig(save_dir + trapName + ".png")
     plt.show()
 
-def plotAllTraps(trapPath, trapNames, yearStr="2024"):
+def plotAllTraps(trapPath, trapNames, country='', yearStr="2024"):
 
     for trapName in trapNames:
         dateList, dayOfYear, selDataset = loadDetectionFiles(trapPath, trapName, taxaSure=False, vegetation=False)
-        plotHistogram(trapName + '-' + yearStr, selDataset)
+        plotHistogram(country + trapName + '-' + yearStr, selDataset)
     
 
     # %% Insect plots
@@ -164,4 +164,21 @@ if __name__ == '__main__':
     trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ukceh/detectionsTH3"
     trapNames = ["ukceh-UK_1_1", "ukceh-UK_1_2", "ukceh-UK_2_1", "ukceh-UK_2_2"]
     plotAllTraps(trapPath, trapNames)
+    
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3err"
+    trapNames = ["ecoinn-MT_1_1", "ecoinn-MT_1_2", "ecoinn-MT_2_1", "ecoinn-MT_2_2"]
+    plotAllTraps(trapPath, trapNames)
         
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3err"
+    trapNames = ["FR02_Bagnas-Cam.A", "FR02_Bagnas-Cam.B", "FR03_Parpalhon-Cam.A", "FR03_Parpalhon-Cam.B"]
+    plotAllTraps(trapPath, trapNames)
+        
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH2err"
+    trapNames = ["DE_1_1", "DE_1_2", "DE_1_2", "DE_2_2"]
+    plotAllTraps(trapPath, trapNames, country="ufz-")
+    
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3err"
+    trapNames = ["-01", "-02", "-03", "-05", "-06", "DK_1_1", "DK_1_2", "DK_2_1", "DK_2_2",  "DK_3_1", "DK_3_2"]
+    plotAllTraps(trapPath, trapNames, country="au")
+        
+    
