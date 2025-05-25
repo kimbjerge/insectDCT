@@ -72,7 +72,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
     return classifier
     
 #%% Function to classify insects in 19 groups of taxa
-def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, height=imgHeight, border=1, createCrops=False): # Border=10 for crops
+def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, height=imgHeight, border=1, createCrops=True): # Border=10 for crops
 
     w = (w + border*2)
     h = (h + border*2)
@@ -106,11 +106,12 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, he
     print(line)         
     
     if createCrops:
-        if os.path.exists(crops_dic_insect + species) == False:
-            print("Create directory:", crops_dic_insect + species)
-            os.mkdir(crops_dic_insect + species)
-        imgNameCrop = cropName + '_' + str(x1) + '_' + str(y1) + '_' + str(x2) + '_' + str(y2) + '.jpg'
-        cv2.imwrite(crops_dic_insect + species + '/' + imgNameCrop, imgCrop)
+        dirName = str(level) + '-' + species
+        if os.path.exists(crops_dic_insect + dirName) == False:
+            print("Create directory:", crops_dic_insect + dirName)
+            os.mkdir(crops_dic_insect + dirName)
+        imgNameCrop = cropName + '_' + str(xc) + '_' + str(yc) + '_' + str(w) + '_' + str(h) + '.jpg'
+        cv2.imwrite(crops_dic_insect + dirName + '/' + imgNameCrop, imgCrop)
     
     return line, level, index, species, probability
 
