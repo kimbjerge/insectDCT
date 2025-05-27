@@ -108,7 +108,7 @@ def loadDetectionFiles(trapPath, trapName, taxaSure=True, vegetation=False):
     else:
         selDataset1 = dataset
     if not vegetation:
-        selDataset2 = selDataset1.loc[dataset['taxaLabel'] != "Vegetation"]
+        selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Vegetation"]
     else:
         selDataset2 = selDataset1
     
@@ -128,12 +128,12 @@ def getTaxaList(selDataset):
     taxonsSorted = dict(sorted(taxons.items(), key=lambda item: item[1], reverse=True))              
     return taxonsSorted
     
-def plotHistogram(trapName, selDataset):
+def plotHistogram(trapName, selDataset, figsize=(10,10)):
     
     taxons = getTaxaList(selDataset)
     print(trapName, taxons)
     
-    figure = plt.figure(figsize=(10,10))
+    figure = plt.figure(figsize=figsize)
     ax = figure.add_subplot(1, 1, 1) 
     
     taxonsKey = list(taxons.keys())
@@ -151,34 +151,79 @@ def plotAllTraps(trapPath, trapNames, country='', yearStr="2024"):
     for trapName in trapNames:
         dateList, dayOfYear, selDataset = loadDetectionFiles(trapPath, trapName, taxaSure=False, vegetation=False)
         plotHistogram(country + trapName + '-' + yearStr, selDataset)
+
+def loadAllDetectionFiles(trapPathAll, trapNameAll, taxaSure=True, vegetation=False):
+
+    dataframes = []
+    for idx in range(len(trapPathAll)):
+        trapPath = trapPathAll[idx]
+        trapNames = trapNameAll[idx]
+        for trapName in trapNames:
+            detectFiles = trapPath + '/'  
+            for fileName in sorted(os.listdir(detectFiles)):
+                if trapName in fileName and "CL.csv" in fileName:
+                    print(trapName, detectFiles + fileName)
+                    data_df = pd.read_csv(detectFiles + fileName)
+                    dataframes.append(data_df) 
+
+    dataset = pd.concat(dataframes)
+    if taxaSure:
+        selDataset1 = dataset.loc[dataset['taxaSure'] == True]
+    else:
+        selDataset1 = dataset
+    if not vegetation:
+        selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Vegetation"]
+    else:
+        selDataset2 = selDataset1
     
+    return selDataset2    
 
     # %% Insect plots
 if __name__ == '__main__':
 
+    trapPathAll = []
+    trapNamesAll = {}
     
     trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/uva/detectionsTH3"
     trapNames = ["uva-NL11", "uva-NL21", "uva-NL22"]
     plotAllTraps(trapPath, trapNames)
+    trapPathAll.append(trapPath)
+    trapNamesAll[0] = trapNames
 
     trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ukceh/detectionsTH3"
     trapNames = ["ukceh-UK_1_1", "ukceh-UK_1_2", "ukceh-UK_2_1", "ukceh-UK_2_2"]
     plotAllTraps(trapPath, trapNames)
+    trapPathAll.append(trapPath)
+    trapNamesAll[1] = trapNames
     
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3err"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoin/errorsn/detectionsTH3err"
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3"
     trapNames = ["ecoinn-MT_1_1", "ecoinn-MT_1_2", "ecoinn-MT_2_1", "ecoinn-MT_2_2"]
     plotAllTraps(trapPath, trapNames)
+    trapPathAll.append(trapPath)
+    trapNamesAll[2] = trapNames
         
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3err"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/errors/detectionsTH3err"
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3"
     trapNames = ["FR02_Bagnas-Cam.A", "FR02_Bagnas-Cam.B", "FR03_Parpalhon-Cam.A", "FR03_Parpalhon-Cam.B"]
     plotAllTraps(trapPath, trapNames)
+    trapPathAll.append(trapPath)
+    trapNamesAll[3] = trapNames
         
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH2err"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/errors/detectionsTH2err"
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH3"
     trapNames = ["DE_1_1", "DE_1_2", "DE_1_2", "DE_2_2"]
     plotAllTraps(trapPath, trapNames, country="ufz-")
+    trapPathAll.append(trapPath)
+    trapNamesAll[4] = trapNames
     
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3err"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/errors/detectionsTH3err"
+    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3"
     trapNames = ["-01", "-02", "-03", "-05", "-06", "DK_1_1", "DK_1_2", "DK_2_1", "DK_2_2",  "DK_3_1", "DK_3_2"]
     plotAllTraps(trapPath, trapNames, country="au")
-        
+    trapPathAll.append(trapPath)
+    trapNamesAll[5] = trapNames
+    
+    selDataset = loadAllDetectionFiles(trapPathAll, trapNamesAll)
+    plotHistogram("All MAMBO demonstration sites 2024", selDataset, figsize=(14,14))
     
