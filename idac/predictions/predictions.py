@@ -110,6 +110,8 @@ class Predictions:
     # filterTime specifies in minutes how long time window used
     # to decide if predictions belongs to the same object
     # probability threshold for each class, default above 50%
+    #                 0      1   2    3       4         5     6  7  8   9   10
+    # headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
     def load_predictions(self, filename, selection = 'All', filterTime=0, threshold=[50,50,50,50,50,50,50,50]):
         
         file = open(filename, 'r')
@@ -169,6 +171,75 @@ class Predictions:
                 
         return foundObjects
 
+    # Load prediction CSV file
+    # filterTime specifies in minutes how long time window used
+    # to decide if predictions belongs to the same object
+    # probability threshold for each class, default above 50%
+    #                 0     1     2   3      4        5        6       7          8    9 10 11 12    13
+    # headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n" (New format)
+    def load_predictionsTaxon(self, filename, selection = 'All', filterTime=0):
+        
+        file = open(filename, 'r')
+        content = file.read()
+        file.close()
+        splitted = content.split('\n')
+        lines = len(splitted)
+        foundObjects = []
+        lastObjects = []
+        firstLine = True
+        for line in range(lines):
+            if firstLine: # Skip header line
+                firstLine = False
+            else:
+                subsplit = splitted[line].split(',')
+                if len(subsplit) == 14: # required 14 data values
+                    imgname = subsplit[13]
+                    imgpath = imgname.split('/')
+                    taxaConf = int(subsplit[4])
+                    taxaId = int(subsplit[6])
+                    taxaLevel = int(subsplit[7])
+                    # Check selection 
+                    if (selection == imgpath[0] or selection == 'All'):
+                        x1 = int(subsplit[9])
+                        y1 = int(subsplit[10])
+                        x2 = int(subsplit[11])
+                        y2 = int(subsplit[12])
+                        # Convert points of box to YOLO format: center point and w/h
+                        width = x2-x1
+                        height = y2-y1
+                        xc = x1 - round(width/2)
+                        if xc < 0: xc = 0
+                        yc = y1 - round(height/2)
+                        if yc < 0: yc = 0
+                        
+                        record = {'system': subsplit[0], # 1-5
+                        'camera': int(subsplit[1]), # 0 or 1
+                        'date' : int(subsplit[2]),
+                        'time' : int(subsplit[3]),
+                        'prob' : taxaConf, # Class probability 0-100%
+                        'class' : taxaId, # Classes 
+                        'className' : subsplit[5],
+                        'level' : taxaLevel,
+                        # Box position and size
+                        'x1' : x1,
+                        'y1' : y1,
+                        'x2' : x2,
+                        'y2' : y2,
+                        'xc' : xc,
+                        'yc' : yc,
+                        'w' : width,
+                        'h' : height,
+                        'image' : imgpath[1],
+                        'pathimage' : subsplit[13],
+                        'label' : 0} # Class label (Unknown = 0)
+                        
+                        lastObjects, newObject =  self.filter_prediction(lastObjects, record, filterTime)
+                        if newObject:
+                            foundObjects.append(record)
+                
+        return foundObjects
+    
+    
     # Find bounding boxes and classes found in image by filename
     def findboxes(self, filename, predictions):
          
