@@ -28,14 +28,17 @@ from PIL.ExifTags import TAGS
 results_dir = './detections/'
 crops_dic_insect = './crops/'
 
-# Jordan and Simon
-#imgWidth = 1920
-#imgHeight = 1080
+useMambo = True
 
 # MAMBO
-imgWidth = 4224
-imgHeight = 2376
-
+if useMambo:    
+    imgWidth = 4224
+    imgHeight = 2376
+else:
+# Jordan and Simon
+    imgWidth = 1920
+    imgHeight = 1080
+    
 labelNames = ['Insect'] # YOLO Only one label
 
 # labelSpeciesNames = ["A1-Coccinellidae", "B2-Coleoptera", "C3-Background", "D4-Bombus", "E5-Syrphidae", 
@@ -238,9 +241,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     if insectsFound % 3 == 2:
                         color = (255,0,0) # Blue
                     insectsFound += 1
-                                                        
-                    cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
-                    #cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
+                    
                     if type(modelClassifier) is int:
                         insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
                     else: # Species classifier used
@@ -253,12 +254,20 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                         else:
                             insectName = speciesName
                     y = int(round(y1-20))
-                    cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
-                    #cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
+                    
+                    if useMambo:                                    
+                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
+                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
+                    else:
+                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
+                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
     
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
-    cv2.putText(frame, dateTimeStr, (40,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # (20,40) 1, 2 HD
-    #cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # (20,40) 1, 2 HD
+    
+    if useMambo:
+        cv2.putText(frame, dateTimeStr, (40,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # (20,40) 1, 2 HD
+    else:
+        cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # (20,40) 1, 2 HD
               
     if insectFound or frames_after > 0:
         frames_after -= 1
