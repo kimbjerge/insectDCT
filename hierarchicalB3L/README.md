@@ -14,7 +14,7 @@ Hierarchical classification of arthropods in three levels of taxonomic ranks:
 "Hierarchical classification of insects with multitask learning and anomaly detection".  <br />
 https://doi.org/10.1016/j.ecoinf.2023.102278
 
-### Hierachical model weights and labels ###
+### Hierarchical model weights and labels ###
 
 Download the weights, labels, and thresholds from the below link. 
 Save and unzip the file to the sub directory: insectsDCT/models_save
