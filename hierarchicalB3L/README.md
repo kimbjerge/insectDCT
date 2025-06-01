@@ -14,6 +14,11 @@ Hierarchical classification of arthropods in three levels of taxonomic ranks:
 "Hierarchical classification of insects with multitask learning and anomaly detection".  <br />
 https://doi.org/10.1016/j.ecoinf.2023.102278
 
+Download the weights, labels, and thresholds from the below link. 
+Save and unzip the file to the sub directory: ../models_save
+
+https://drive.google.com/file/d/1kW6XRdADJgN8IWWfnLgGtl-0tAkoop1F/view?usp=drive_link
+
 Run the below Python code found in the root directory of this repository to generate the CSV files for detection and classification 
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0)
