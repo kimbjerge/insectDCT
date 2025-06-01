@@ -17,7 +17,7 @@ https://doi.org/10.1016/j.ecoinf.2023.102278
 ### Hierachical model weights and labels ###
 
 Download the weights, labels, and thresholds from the below link. 
-Save and unzip the file to the sub directory: ../models_save
+Save and unzip the file to the sub directory: insectsDCT/models_save
 
 https://drive.google.com/file/d/1kW6XRdADJgN8IWWfnLgGtl-0tAkoop1F/view?usp=drive_link
 
