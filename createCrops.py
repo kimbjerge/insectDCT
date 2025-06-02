@@ -38,7 +38,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
 
 def saveCrop(x1, y1, x2, y2, frameId, imagePath, cropDirName, dstPath, csvName, border=1):
     
-    print(imagePath, dstPath, cropDirName, frameId)
+    print(imagePath, dstPath+cropDirName)
     image = cv2.imread(imagePath)
     height, width, channels = image.shape
 
