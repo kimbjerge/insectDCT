@@ -67,6 +67,29 @@ class HierarchicalClassifier:
         
         return checkList
     
+    def getLabels(self, level, labelName):
+        
+        labelL3 = ''
+        labelL2 = ''
+        labelL1 = ''
+        if level == 1:
+            labelL1 = labelName
+        if level == 2:
+            labelL2 = labelName
+            for i, (k, v) in enumerate(self.hierarchical_labelsL1.items()):
+                if labelL2 in v:
+                    labelL1 = k
+        if level == 3:
+            labelL3 = labelName
+            for i, (k, v) in enumerate(self.hierarchical_labelsL2.items()):
+                if labelL3 in v:
+                    labelL2 = k
+            for i, (k, v) in enumerate(self.hierarchical_labelsL1.items()):
+                if labelL2 in v:
+                    labelL1 = k                  
+            
+        return labelL1, labelL2, labelL3
+        
     def findLabelIndex(self, level, label):
 
         for idx in range(len(self.labels)):
