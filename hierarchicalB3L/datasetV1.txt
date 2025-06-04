@@ -1,0 +1,244 @@
+=============================================================================================
+{'Aranaea': ['/home/don/data/ArthropodsAll/NI2classes/Aranaea'], 'Coleoptera': ['/home/don/data/ArthropodsAll/NI2classes/Coleoptera'], 'Coleoptera Cerambycidae Rhagonycha fulva': ['/home/don/data/ArthropodsAll/NI2classes/Coleoptera Cerambycidae Rhagonycha fulva'], 'Coleoptera Coccinellidae Coccinella septempunctata': ['/home/don/data/ArthropodsAll/NI2classes/Coleoptera Coccinellidae Coccinella septempunctata', '/home/don/data/ArthropodsAll/NItrain/Coleoptera Coccinellidae Coccinella septempunctata', '/home/don/data/ArthropodsAll/NIval/Coleoptera Coccinellidae Coccinella septempunctata'], 'Diptera': ['/home/don/data/ArthropodsAll/NI2classes/Diptera'], 'Diptera Syrphidae': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae'], 'Diptera Syrphidae Chrysotoxum': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Chrysotoxum'], 'Diptera Syrphidae Episyrphus balteatus': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Episyrphus balteatus', '/home/don/data/ArthropodsAll/NItrain/Diptera Syrphidae Episyrphus balteatus', '/home/don/data/ArthropodsAll/NIval/Diptera Syrphidae Episyrphus balteatus'], 'Diptera Syrphidae Eristalis': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Eristalis'], 'Diptera Syrphidae Eupeodes': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Eupeodes'], 'Diptera Syrphidae Eurimyia': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Eurimyia'], 'Diptera Syrphidae Helophilus': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Helophilus'], 'Diptera Syrphidae Meliscaeva cinctella': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Meliscaeva cinctella'], 'Diptera Syrphidae Myathropa florea': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Myathropa florea'], 'Diptera Syrphidae Platycheirus': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Platycheirus'], 'Diptera Syrphidae Scaeva pyrastri': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Scaeva pyrastri'], 'Diptera Syrphidae Scaeva selenitica': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Scaeva selenitica'], 'Diptera Syrphidae Sphaerophoria scripta-complex': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Sphaerophoria scripta-complex'], 'Diptera Syrphidae Syritta pipiens': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Syritta pipiens'], 'Diptera Syrphidae Syrphus': ['/home/don/data/ArthropodsAll/NI2classes/Diptera Syrphidae Syrphus'], 'Feathers': ['/home/don/data/ArthropodsAll/NI2classes/Feathers', '/home/don/data/ArthropodsAll/NI2sorted/Feathers'], 'Hemiptera': ['/home/don/data/ArthropodsAll/NI2classes/Hemiptera'], 'Hymenoptera': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera'], 'Hymenoptera Andrenidae Andrena': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Andrenidae Andrena'], 'Hymenoptera Apidae Apis mellifera': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Apis mellifera', '/home/don/data/ArthropodsAll/NItrain/Hymenoptera Apidae Apis mellifera', '/home/don/data/ArthropodsAll/NIval/Hymenoptera Apidae Apis mellifera'], 'Hymenoptera Apidae Bombus': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Bombus'], 'Hymenoptera Apidae Bombus hypnorum': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Bombus hypnorum'], 'Hymenoptera Apidae Bombus lapidarius': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Bombus lapidarius', '/home/don/data/ArthropodsAll/NItrain/Hymenoptera Apidae Bombus lapidarius', '/home/don/data/ArthropodsAll/NIval/Hymenoptera Apidae Bombus lapidarius'], 'Hymenoptera Apidae Bombus pascuorum': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Bombus pascuorum'], 'Hymenoptera Apidae Bombus terrestris': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Bombus terrestris', '/home/don/data/ArthropodsAll/NItrain/Hymenoptera Apidae Bombus terrestris', '/home/don/data/ArthropodsAll/NIval/Hymenoptera Apidae Bombus terrestris'], 'Hymenoptera Apidae Nomada': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Apidae Nomada'], 'Hymenoptera Colletidae Hylaeus': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Colletidae Hylaeus'], 'Hymenoptera Crabronidae': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Crabronidae'], 'Hymenoptera Formidicidae': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Formidicidae'], 'Hymenoptera Halictidae Halictus': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Halictidae Halictus'], 'Hymenoptera Halictidae Lasioglossum': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Halictidae Lasioglossum'], 'Hymenoptera Halictidae Sphecodes': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Halictidae Sphecodes'], 'Hymenoptera Ichneumonidae': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Ichneumonidae'], 'Hymenoptera Megachilidae Coelioxys': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Megachilidae Coelioxys'], 'Hymenoptera Megachilidae Megachile': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Megachilidae Megachile'], 'Hymenoptera Megachilidae Osmia': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Megachilidae Osmia'], 'Hymenoptera Pompilidae': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Pompilidae'], 'Hymenoptera Vespidae Ancistrocerus nigricornis': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Vespidae Ancistrocerus nigricornis'], 'Hymenoptera Vespidae Eumenes coronatus': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Vespidae Eumenes coronatus'], 'Hymenoptera Vespidae Vespula vulgaris': ['/home/don/data/ArthropodsAll/NI2classes/Hymenoptera Vespidae Vespula vulgaris', '/home/don/data/ArthropodsAll/NItrain/Hymenoptera Vespidae Vespula vulgaris', '/home/don/data/ArthropodsAll/NIval/Hymenoptera Vespidae Vespula vulgaris'], 'Isopoda': ['/home/don/data/ArthropodsAll/NI2classes/Isopoda'], 'Lepidoptera Hesperidae': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Hesperidae', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Hesperidae'], 'Lepidoptera Lycenidae Lycaena phlaeas': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Lycenidae Lycaena phlaeas', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Lycenidae Lycaena phlaeas'], 'Lepidoptera Moths': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Moths', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Moths'], 'Lepidoptera Nymphalidae Aglais urticae': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Aglais urticae', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Aglais urticae', '/home/don/data/ArthropodsAll/NItrain/Lepidoptera Nymphalidae Aglais urticae', '/home/don/data/ArthropodsAll/NIval/Lepidoptera Nymphalidae Aglais urticae'], 'Lepidoptera Nymphalidae Aglias io': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Aglias io'], 'Lepidoptera Nymphalidae Aphantopus hyperantus': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Aphantopus hyperantus', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Aphantopus hyperantus'], 'Lepidoptera Nymphalidae Coenonympha pamphilus': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Coenonympha pamphilus', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Coenonympha pamphilus'], 'Lepidoptera Nymphalidae Maniola jurtina': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Maniola jurtina', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Maniola jurtina'], 'Lepidoptera Nymphalidae Satyrinae': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera Nymphalidae Satyrinae'], 'Lepidoptera_fw': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera_fw', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera_fw'], 'Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw'], 'Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw': ['/home/don/data/ArthropodsAll/NI2classes/Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw', '/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw'], 'Mixed': ['/home/don/data/ArthropodsAll/NI2classes/Mixed'], 'Odonata': ['/home/don/data/ArthropodsAll/NI2classes/Odonata', '/home/don/data/ArthropodsAll/NI2sorted/Odonata'], 'Orthoptera': ['/home/don/data/ArthropodsAll/NI2classes/Orthoptera', '/home/don/data/ArthropodsAll/NI2sorted/Orthoptera'], 'Orthoptera Acrididae Chorthippus': ['/home/don/data/ArthropodsAll/NI2classes/Orthoptera Acrididae Chorthippus', '/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Acrididae Chorthippus'], 'Orthoptera Acrididae Chorthippus apricarius': ['/home/don/data/ArthropodsAll/NI2classes/Orthoptera Acrididae Chorthippus apricarius', '/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Acrididae Chorthippus apricarius'], 'Orthoptera Acrididae Omocestus viridulus': ['/home/don/data/ArthropodsAll/NI2classes/Orthoptera Acrididae Omocestus viridulus', '/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Acrididae Omocestus viridulus'], 'Orthoptera Tettigoniidae Pholidoptera griseoaptera': ['/home/don/data/ArthropodsAll/NI2classes/Orthoptera Tettigoniidae Pholidoptera griseoaptera', '/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Tettigoniidae Pholidoptera griseoaptera'], 'Slugs': ['/home/don/data/ArthropodsAll/NI2classes/Slugs', '/home/don/data/ArthropodsAll/NI2sorted/Slugs'], 'Snails': ['/home/don/data/ArthropodsAll/NI2classes/Snails', '/home/don/data/ArthropodsAll/NI2sorted/Snails'], 'Vegetation': ['/home/don/data/ArthropodsAll/NI2classes/Vegetation', '/home/don/data/ArthropodsAll/NI2sorted/Vegetation'], 'Birds': ['/home/don/data/ArthropodsAll/NI2sorted/Birds'], 'Frogs': ['/home/don/data/ArthropodsAll/NI2sorted/Frogs'], 'Larvae': ['/home/don/data/ArthropodsAll/NI2sorted/Larvae'], 'Lepidoptera': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera'], 'Lepidoptera Lycenidae': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Lycenidae'], 'Lepidoptera Nymphalidae Aglais io': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Aglais io'], 'Lepidoptera Nymphalidae Melitaea cinxia': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Nymphalidae Melitaea cinxia'], 'Lepidoptera Pieridae': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Pieridae'], 'Lepidoptera Satyrinae': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera Satyrinae'], 'Lepidoptera_fw Satyrinae_fw': ['/home/don/data/ArthropodsAll/NI2sorted/Lepidoptera_fw Satyrinae_fw'], 'Lizards': ['/home/don/data/ArthropodsAll/NI2sorted/Lizards'], 'Milipedes': ['/home/don/data/ArthropodsAll/NI2sorted/Milipedes'], 'Orthoptera Acrididae': ['/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Acrididae'], 'Orthoptera Tetrigidae Tetrix': ['/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Tetrigidae Tetrix'], 'Orthoptera Tettigoniidae Decticus verrucivorus': ['/home/don/data/ArthropodsAll/NI2sorted/Orthoptera Tettigoniidae Decticus verrucivorus'], 'Diptera Syrphidae Eristalis tenax': ['/home/don/data/ArthropodsAll/NItrain/Diptera Syrphidae Eristalis tenax', '/home/don/data/ArthropodsAll/NIval/Diptera Syrphidae Eristalis tenax'], 'Diptera Syrphidae Eupeodes corollae': ['/home/don/data/ArthropodsAll/NItrain/Diptera Syrphidae Eupeodes corollae', '/home/don/data/ArthropodsAll/NIval/Diptera Syrphidae Eupeodes corollae']}
+=============================================================================================
+Class directory hierarchy with 3 levels: order - family - genus/species
+-----------------------------------------------------------------------
+Aranaea
+Coleoptera
+Coleoptera Cerambycidae Rhagonycha fulva
+Coleoptera Coccinellidae Coccinella septempunctata
+Diptera
+Diptera Syrphidae
+Diptera Syrphidae Chrysotoxum
+Diptera Syrphidae Episyrphus balteatus
+Diptera Syrphidae Eristalis
+Diptera Syrphidae Eupeodes
+Diptera Syrphidae Eurimyia
+Diptera Syrphidae Helophilus
+Diptera Syrphidae Meliscaeva cinctella
+Diptera Syrphidae Myathropa florea
+Diptera Syrphidae Platycheirus
+Diptera Syrphidae Scaeva pyrastri
+Diptera Syrphidae Scaeva selenitica
+Diptera Syrphidae Sphaerophoria scripta-complex
+Diptera Syrphidae Syritta pipiens
+Diptera Syrphidae Syrphus
+Feathers
+Hemiptera
+Hymenoptera
+Hymenoptera Andrenidae Andrena
+Hymenoptera Apidae Apis mellifera
+Hymenoptera Apidae Bombus
+Hymenoptera Apidae Bombus hypnorum
+Hymenoptera Apidae Bombus lapidarius
+Hymenoptera Apidae Bombus pascuorum
+Hymenoptera Apidae Bombus terrestris
+Hymenoptera Apidae Nomada
+Hymenoptera Colletidae Hylaeus
+Hymenoptera Crabronidae
+Hymenoptera Formidicidae
+Hymenoptera Halictidae Halictus
+Hymenoptera Halictidae Lasioglossum
+Hymenoptera Halictidae Sphecodes
+Hymenoptera Ichneumonidae
+Hymenoptera Megachilidae Coelioxys
+Hymenoptera Megachilidae Megachile
+Hymenoptera Megachilidae Osmia
+Hymenoptera Pompilidae
+Hymenoptera Vespidae Ancistrocerus nigricornis
+Hymenoptera Vespidae Eumenes coronatus
+Hymenoptera Vespidae Vespula vulgaris
+Isopoda
+Lepidoptera Hesperidae
+Lepidoptera Lycenidae Lycaena phlaeas
+Lepidoptera Moths
+Lepidoptera Nymphalidae Aglais urticae
+Lepidoptera Nymphalidae Aglias io
+Lepidoptera Nymphalidae Aphantopus hyperantus
+Lepidoptera Nymphalidae Coenonympha pamphilus
+Lepidoptera Nymphalidae Maniola jurtina
+Lepidoptera Nymphalidae Satyrinae
+Lepidoptera_fw
+Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw
+Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw
+Mixed
+Odonata
+Orthoptera
+Orthoptera Acrididae Chorthippus
+Orthoptera Acrididae Chorthippus apricarius
+Orthoptera Acrididae Omocestus viridulus
+Orthoptera Tettigoniidae Pholidoptera griseoaptera
+Slugs
+Snails
+Vegetation
+Birds
+Frogs
+Larvae
+Lepidoptera
+Lepidoptera Lycenidae
+Lepidoptera Nymphalidae Aglais io
+Lepidoptera Nymphalidae Melitaea cinxia
+Lepidoptera Pieridae
+Lepidoptera Satyrinae
+Lepidoptera_fw Satyrinae_fw
+Lizards
+Milipedes
+Orthoptera Acrididae
+Orthoptera Tetrigidae Tetrix
+Orthoptera Tettigoniidae Decticus verrucivorus
+Diptera Syrphidae Eristalis tenax
+Diptera Syrphidae Eupeodes corollae
+=============================================================================================
+Level 1               train validate
+Aranaea                1658    184
+Birds                    74      9
+Coleoptera             7382    820
+Diptera                6991    777
+Feathers                154     17
+Frogs                    16      1
+Hemiptera               576     64
+Hymenoptera           15472   1719
+Isopoda                 767     85
+Larvae                  172     19
+Lepidoptera            2608    291
+Lepidoptera_fw         4743    527
+Lizards                  23      2
+Milipedes                69      8
+Mixed                  1390    154
+Odonata                 456     51
+Orthoptera             1300    144
+Slugs                   971    108
+Snails                  152     17
+Vegetation             4942    549
+=============================================================================================
+Level 3               train validate
+Acrididae              1240    138
+Andrenidae               49      6
+Apidae                13567   1507
+Aranaea                1658    184
+Birds                    74      9
+Cerambycidae            740     83
+Coccinellidae          6312    701
+Coleoptera              330     36
+Colletidae               49      5
+Crabronidae               5      1
+Diptera                 608     68
+Feathers                154     17
+Formidicidae            547     61
+Frogs                    16      1
+Halictidae               43      5
+Hemiptera               576     64
+Hesperidae              107     12
+Hymenoptera              38      4
+Ichneumonidae            17      2
+Isopoda                 767     85
+Larvae                  172     19
+Lepidoptera             140     16
+Lepidoptera_fw          233     25
+Lizards                  23      2
+Lycenidae                43      5
+Megachilidae             85      9
+Milipedes                69      8
+Mixed                  1390    154
+Moths                    38      5
+Nymphalidae            2235    248
+Nymphalidae_fw         3361    374
+Odonata                 456     51
+Orthoptera                4      0
+Pieridae                 35      4
+Pompilidae                6      1
+Satyrinae                10      1
+Satyrinae_fw           1149    128
+Slugs                   971    108
+Snails                  152     17
+Syrphidae              6383    709
+Tetrigidae                4      1
+Tettigoniidae            52      5
+Vegetation             4942    549
+Vespidae               1066    118
+=============================================================================================
+Level 3                         train validate
+Acrididae                         903    100
+Aglais io                          47      5
+Aglais urticae                   1605    178
+Aglais urticae_fw                 316     36
+Aglias io                           5      0
+Ancistrocerus nigricornis          11      1
+Andrena                            49      6
+Aphantopus hyperantus              32      4
+Apis mellifera                   8513    946
+Aranaea                          1658    184
+Birds                              74      9
+Bombus                            187     20
+Bombus hypnorum                    18      2
+Bombus lapidarius                1912    213
+Bombus pascuorum                   12      1
+Bombus terrestris                2923    325
+Chorthippus                       285     32
+Chorthippus apricarius             29      3
+Chrysotoxum                         4      0
+Coccinella septempunctata        6312    701
+Coelioxys                           1      0
+Coenonympha pamphilus              69      8
+Coleoptera                        330     36
+Crabronidae                         5      1
+Decticus verrucivorus               2      0
+Diptera                           608     68
+Episyrphus balteatus             2032    226
+Eristalis                           4      1
+Eristalis tenax                   283     31
+Eumenes coronatus                   3      0
+Eupeodes                          339     37
+Eupeodes corollae                3316    369
+Eurimyia                           50      6
+Feathers                          154     17
+Formidicidae                      547     61
+Frogs                              16      1
+Halictus                            6      1
+Helophilus                          5      0
+Hemiptera                         576     64
+Hesperidae                        107     12
+Hylaeus                            49      5
+Hymenoptera                        38      4
+Ichneumonidae                      17      2
+Isopoda                           767     85
+Larvae                            172     19
+Lasioglossum                       34      3
+Lepidoptera                       140     16
+Lepidoptera_fw                    233     25
+Lizards                            23      2
+Lycaena phlaeas                    37      4
+Lycenidae                           6      1
+Maniola jurtina                   476     53
+Maniola jurtina_fw               3045    338
+Megachile                          81      9
+Meliscaeva cinctella                8      1
+Melitaea cinxia                     1      0
+Milipedes                          69      8
+Mixed                            1390    154
+Moths                              38      5
+Myathropa florea                    1      0
+Nomada                              2      0
+Odonata                           456     51
+Omocestus viridulus                23      3
+Orthoptera                          4      0
+Osmia                               3      0
+Pholidoptera griseoaptera          50      5
+Pieridae                           35      4
+Platycheirus                        7      1
+Pompilidae                          6      1
+Rhagonycha fulva                  740     83
+Satyrinae                          10      1
+Satyrinae_fw                     1149    128
+Scaeva pyrastri                     5      1
+Scaeva selenitica                   7      1
+Slugs                             971    108
+Snails                            152     17
+Sphaerophoria scripta-complex     187     20
+Sphecodes                           3      1
+Syritta pipiens                    12      2
+Syrphidae                         113     12
+Syrphus                            10      1
+Tetrix                              4      1
+Vegetation                       4942    549
+Vespula vulgaris                 1052    117
