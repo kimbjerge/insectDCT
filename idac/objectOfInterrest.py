@@ -30,6 +30,7 @@ class ObjectOfInterrest:
         self.boxsizehist = []
         self.distance = 0
         self.timesec = 0
+        self.line = 0
 
     def updatecenterhist(self):
         self.centerx = int(self.x + self.w / 2)

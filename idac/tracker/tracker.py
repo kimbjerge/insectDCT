@@ -96,7 +96,7 @@ class Tracker:
         cost = Tracker.calc_cost_matrix(self, ooi1, ooi2)
         row_ind, col_ind = linear_sum_assignment(cost)
         time2 = time.time()
-        print('Cost took {:.3f} ms'.format((time2 - time1) * 1000.0))
+        #print('Cost took {:.3f} ms'.format((time2 - time1) * 1000.0))
 
         time1 = time.time()
         for i in range(len(row_ind)):
@@ -123,7 +123,7 @@ class Tracker:
             goods.append(ObjectOfInterrest(oi.x, oi.y, oi.w, oi.h, id))
             id = id + 1
         time2 = time.time()
-        print('Tracker took {:.3f} ms'.format((time2 - time1) * 1000.0))
+        #print('Tracker took {:.3f} ms'.format((time2 - time1) * 1000.0))
         # self.savedois = ooi1
         self.check_age(ooi1)
 
@@ -139,7 +139,7 @@ class Tracker:
         cost = Tracker.calc_time_cost_matrix(self, ooi1, ooi2)
         row_ind, col_ind = linear_sum_assignment(cost)
         time2 = time.time()
-        print('Cost took {:.3f} ms'.format((time2 - time1) * 1000.0))
+        #print('Cost took {:.3f} ms'.format((time2 - time1) * 1000.0))
 
         time1 = time.time()
         for i in range(len(row_ind)):
@@ -154,6 +154,7 @@ class Tracker:
                 ooi1[row_ind[i]].label = ooi2[col_ind[i]].label
                 ooi1[row_ind[i]].percent = ooi2[col_ind[i]].percent
                 ooi1[row_ind[i]].timesec = ooi2[col_ind[i]].timesec
+                ooi1[row_ind[i]].line = ooi2[col_ind[i]].line
                 ooi1[row_ind[i]].updatecenterhist()
                 obj = ooi1[row_ind[i]]
                 goods.append(obj)
@@ -170,10 +171,11 @@ class Tracker:
             obj.label = oi.label
             obj.percent = oi.percent
             obj.timesec = oi.timesec
+            obj.line = oi.line
             goods.append(obj)
             id = id + 1
         time2 = time.time()
-        print('Tracker took {:.3f} ms'.format((time2 - time1) * 1000.0))
+        #print('Tracker took {:.3f} ms'.format((time2 - time1) * 1000.0))
         # self.savedois = ooi1
         self.check_age(ooi1)
 

@@ -18,7 +18,7 @@ class Stats:
         self.details = {}
 
     def update_stats(self, oois, imname):
-        print(imname)
+        #print(imname)
         #Find info in filename
         #ind = imname.index('-')
         startdate =  imname[0:8]

@@ -122,6 +122,7 @@ class Predictions:
         foundObjects = []
         lastObjects = []
         firstLine = True
+        line_count = 1
         for line in range(lines):
             if firstLine: # Skip header line
                 firstLine = False
@@ -152,6 +153,7 @@ class Predictions:
                         'time' : int(subsplit[3]),
                         'prob' : prob, # Class probability 0-100%
                         'class' : objClass, # Classes 1-19
+                        'line' : line_count, # Line number - reference to detections (CSV)
                         # Box position and size
                         'x1' : x1,
                         'y1' : y1,
@@ -164,6 +166,8 @@ class Predictions:
                         'image' : imgpath[1],
                         'pathimage' : subsplit[10],
                         'label' : 0} # Class label (Unknown = 0)
+                        
+                        line_count += 1
                         
                         lastObjects, newObject =  self.filter_prediction(lastObjects, record, filterTime)
                         if newObject:
@@ -187,6 +191,7 @@ class Predictions:
         foundObjects = []
         lastObjects = []
         firstLine = True
+        line_count = 1
         for line in range(lines):
             if firstLine: # Skip header line
                 firstLine = False
@@ -195,7 +200,7 @@ class Predictions:
                 if len(subsplit) == 14: # required 14 data values
                     imgname = subsplit[13]
                     imgpath = imgname.split('/')
-                    taxaConf = int(subsplit[4])
+                    taxaConf = float(subsplit[4])
                     taxaId = int(subsplit[6])
                     taxaLevel = int(subsplit[7])
                     # Check selection 
@@ -217,9 +222,11 @@ class Predictions:
                         'date' : int(subsplit[2]),
                         'time' : int(subsplit[3]),
                         'prob' : taxaConf, # Class probability 0-100%
-                        'class' : taxaId, # Classes 
-                        'className' : subsplit[5],
-                        'level' : taxaLevel,
+                        'class' : self.species.index(subsplit[5])+1, # Class index to flat list of species names
+                        'taxaName' : subsplit[5], # Taxa name in hierarchy
+                        'taxaId' : taxaId, # TaxaId in level of hierarchy 
+                        'level' : taxaLevel, # Level in hierarchy
+                        'line' : line_count, # Line number - reference to detections (CSV file)
                         # Box position and size
                         'x1' : x1,
                         'y1' : y1,
@@ -232,6 +239,8 @@ class Predictions:
                         'image' : imgpath[1],
                         'pathimage' : subsplit[13],
                         'label' : 0} # Class label (Unknown = 0)
+
+                        line_count += 1
                         
                         lastObjects, newObject =  self.filter_prediction(lastObjects, record, filterTime)
                         if newObject:
@@ -249,9 +258,12 @@ class Predictions:
             if filename == predict['image']:
                 obj = ObjectOfInterrest(predict['x1'], predict['y1'], predict['w'], predict['h'])
                 obj.label = self.species[predict['class']-1]
-                obj.percent = self.getTimesec(predict['prob']) 
+                obj.percent = predict['prob'] 
                 obj.timesec = self.getTimesec(predict['time']) 
-                print(obj.label, obj.percent, obj.timesec)
+                obj.line = predict['line']
+                print("Taxa:", obj.label, "confidence:", obj.percent, "time:", predict['time'], "line:", obj.line)
+                #if 'taxaName' in predict.keys():
+                #    print(predict['taxaName'], predict['taxaId'], predict['level'])
                 ooi.append(obj)
                 count = count + 1
 

@@ -105,15 +105,16 @@ distance is the distance in pixels the insect was tracked   <br />
 
 Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DDTRS.csv):
 
-	id,date,time,percent,class,xc,yc,x1,y1,width,height,image
+	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName
 
 Example:
 
-	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,pi2_2025_02_21_11_57_31.jpg  
-	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,pi2_2025_02_21_11_57_32.jpg 
-	0,20250221,115734,63,Background,1278,700,1252,682,52,37,pi2_2025_02_21_11_57_34.jpg
+	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,3,pi2_2025_02_21_11_57_31.jpg  
+	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,4,pi2_2025_02_21_11_57_32.jpg 
+	0,20250221,115734,63,Background,1278,700,1252,682,52,37,5,pi2_2025_02_21_11_57_34.jpg
 
-percent is the confidence score same as confidence in the detecion CSV file
+taxaConf is the taxa confidence score same as confidence in the detection CSV file
+detectLine is the line number in the detection CSV file
 
 ## Training insect detector and classifier models ##
 
