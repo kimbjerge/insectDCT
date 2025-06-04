@@ -184,7 +184,10 @@ if __name__=='__main__':
                        ]
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     path_names = datasetLoader.get_path_names()
+    print("=============================================================================================")
     print(path_names)
+    print("=============================================================================================")
+    print(path_names.keys())
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
     print("=============================================================================================")
