@@ -52,7 +52,7 @@ labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syr
                      "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
                      "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"]
 
-def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0):
+def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0'):
     
     with open(label_file, 'rb') as f:
         _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
@@ -69,7 +69,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
         print("L3 -> L2 dependency", hierarchyL2)
         print("=============================================================================================")
     
-    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, stdThreshold=stdThreshold, device='cuda:0')
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, stdThreshold=stdThreshold, device=device)
     classifier.loadmodel(weights_file, threshold_file)
     
     return classifier
@@ -298,11 +298,11 @@ if __name__=='__main__':
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
     #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
-    #parser.add_argument('--video', default='./datasets/beemoni12025_04_03_12_59_47.mp4') # 45 fps -> 5 fps (stride 5) Jordan
+    #parser.add_argument('--video', default='./datasets/beemoni12025_04_03_12_59_47.mp4') # 45 fps -> 5 fps (stride 5) Jordanargs.device
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion best F1-score 0.93
-    parser.add_argument('--device', default='0') # used for YOLO GPU processing 
+    parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
     parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
@@ -336,7 +336,7 @@ if __name__=='__main__':
         
     if args.hierachical != '':
         print("Loading hierarchical insect classifier model", args.hierachical)
-        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, stdThreshold=args.thresholdStd)
+        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, stdThreshold=args.thresholdStd, device=args.device)
 
     # Open the input video file if specified
     video_path = args.video
