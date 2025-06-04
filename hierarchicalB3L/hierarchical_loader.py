@@ -187,7 +187,8 @@ if __name__=='__main__':
     print("=============================================================================================")
     print(path_names)
     print("=============================================================================================")
-    print("Class directory hierarchy with 3 levels: order - family - genus/species)")
+    print("Class directory hierarchy with 3 levels: order - family - genus/species")
+    print("-----------------------------------------------------------------------")
     for name in path_names.keys():
         print(name)
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
