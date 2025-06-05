@@ -50,6 +50,8 @@ README-conda-env-yolo11.txt - environment requirements
    - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
 
+To use the hierarchical classifier see description in: 
+
 ### CSV files in detections directory ###
 
 Content of *.csv files which contain lines for each detection (piX_YYYY_MM_DD.csv):
