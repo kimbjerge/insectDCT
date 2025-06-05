@@ -281,7 +281,7 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains Ominiglot models
+    parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains motion models
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Color/weights/best.pt') #Directory that contains color models
 
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85

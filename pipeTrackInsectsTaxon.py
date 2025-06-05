@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May  4 08:10:16 2020
+Created on Mon June 5 08:35:16 2025
 
 @author: Kim Bjerge
          Aarhus University
 """
 import time
+import os
+import argparse
 from skimage import io
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
@@ -18,6 +20,7 @@ from idac.tracksSave.tracksSave import TracksSave
 from PyQt5.QtGui import QImage
 import pickle
 
+#%% Convert class hierarchy to a flat structure with labels : L1, L2 and L3 and removed dublicates
 def createFlatSpeciesList(label_file):
     
     with open(label_file, 'rb') as f:
@@ -58,15 +61,10 @@ def getDateTime(image_filename):
     dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
     return dateTimeStr
 
+
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
-def run(dirName):
-    config_filename = './config/ITC_config.json'
-    conf = readconfig(config_filename)
-    conf['datareader']['datapath']
-    print(conf['datareader']['datapath'])
-    # Convert hierarchical labels to flat list of labels
-    conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFile"])
-    print(conf['moviemaker']['resultdir'])
+def run(trackName, imagePath, detectPath, trackPath, conf):
+    
     writemovie = conf['moviemaker']['writemovie']
     reader = DataReader(conf)
     gen = reader.getimage()
@@ -74,19 +72,17 @@ def run(dirName):
 
     tr = Tracker(conf)
     imod = Imagemod()
-    if dirName == '':
-        dirName = 'tracks'
-    mm = MovieMaker(conf, name=dirName + 'TR.avi')
+    mm = MovieMaker(conf, name=trackName+'TR.avi')
 
     stat = Stats(conf)
     predict = Predictions(conf)
-    tracksFilename = conf['moviemaker']['resultdir']+'/'+dirName+'TRS.csv'
+    tracksFilename = trackPath+trackName+'TRS.csv'
     print(tracksFilename)
     tracks = TracksSave(tracksFilename)
 
-    csvFilename = './detections/'+dirName+'-CL.csv'
+    csvFilename = detectPath+trackName+'-CL.csv'
 
-    predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0) # Skip if not moved within 5 minutes
+    predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0) # Skip if not moved within filterTime in seconds
     totPredictions, totFilteredPredictions = predict.getPredictions()
     total = len(predicted)
     startid = 0
@@ -107,7 +103,7 @@ def run(dirName):
             
         iterCount += 1
         print('Image nr. ' + str(iterCount) + '/' + str(total), file)
-        time1 = time.time()
+        #time1 = time.time()
         
         if firstTime == 1:
             firstTime = 0
@@ -125,7 +121,7 @@ def run(dirName):
             #print(stat.count)
 
             if writemovie:
-                file_name = conf['datareader']['datapath'] + '/' + filepath
+                file_name = imagePath+filepath
                 im = io.imread(file_name)
                 image = imod.drawoois(im, goods)
                 height, width, channel = image.shape
@@ -135,19 +131,19 @@ def run(dirName):
                 # Write frame
                 mm.writeframe(image, filedatetime)
 
-            time2 = time.time()
+            #time2 = time.time()
             #print('Processing image took {:.3f} ms'.format((time2 - time1) * 1000.0))
 
     if writemovie:
         mm.releasemovie()
         
     tracks.close()
-    resultdir = conf['moviemaker']['resultdir'] + '/'
-    stat.writedetails(resultdir + dirName + 'TR')
+    stat.writedetails(trackPath+trackName+'TR')
 
-    return stat, resultdir, iterCount, totPredictions, totFilteredPredictions
+    return stat, iterCount, totPredictions, totFilteredPredictions
 
 def print_totals(date, stat, resultdir):
+    
     record = str(date) + ','
     for spec in stat.species:
         print(spec, stat.count[spec])
@@ -166,26 +162,36 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    print('STARTING NOW. Please wait.....')
-
-    dirNames = [ 
-                'pi1_2025_02_21'
-                ]
+    print('Tracking insects based on detection files *-DL.csv')
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
+    parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
+    parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
+    args = parser.parse_args() 
+    print(args)
+    
+    # Read configuration file
+    config_filename = './config/Taxon_config.json'
+    conf = readconfig(config_filename)
+    
+    # Convert hierarchical labels to flat list of labels
+    conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFile"])
     
     imageCounts = 0
     totalPredictions = 0
     totalFilteredPredictions = 0
-    for dirName in dirNames:
-        print(dirName)
-        stat, resultdir, counts, totPred, totFiltered = run(dirName)
-        totalPredictions += totPred
-        totalFilteredPredictions += totFiltered
-        imageCounts += counts
-        if dirName == '':
-            date = 20250221
-        else:    
-            dirNameSplit = dirName.split('_')
-            date = int(dirNameSplit[1] + dirNameSplit[2] + dirNameSplit[3])  # format YYYYMMDD
-        print_totals(date, stat, resultdir)
+    for fileName in sorted(os.listdir(args.detections)): # fileName must be in format <trapId>_YYYY_MM_DD-CL.csv
+        if '-CL.csv' in fileName:
+            trackName = fileName.split('-')[0] 
+            print(fileName, trackName)
+            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf)
+            totalPredictions += totPred
+            totalFilteredPredictions += totFiltered
+            imageCounts += counts
+
+            trackNameSplit = trackName.split('_')
+            date = int(trackNameSplit[1] + trackNameSplit[2] + trackNameSplit[3])  # format YYYYMMDD
+            print_totals(date, stat, args.tracks)
         
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)
