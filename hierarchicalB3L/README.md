@@ -28,7 +28,7 @@ Run the below Python code found in the root directory of this repository to gene
    - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0)
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsectsTaxon.py (Performs tracking based on the CSV output files (*-CL.csv)
-   - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/" 
+   - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
        (Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files)
 
 
