@@ -218,4 +218,34 @@ Example of content with same frameId as in example above (*-CL.csv content):
 	Hymenoptera,7,0.0016508539215075745,False,Halictidae,14,0.05190288999028045,True,Sphaerophoria scripta-complex,72,0.003527139374961427,False,False,441
 	Diptera,3,0.06632232090118803,True,Syrphidae,36,0.05682376443188935,True,Sphaerophoria scripta-complex,72,0.00486999349185118,False,True,442
 	Diptera,3,0.47108301131483055,True,Syrphidae,36,0.38675071058276406,True,Sphaerophoria scripta-complex,72,0.4498128146023822,True,True,451
-	
+
+ ### CSV and JSON files in tracks directory ###
+
+Content of *.csv files which contain lines for each track (piX_YYYY_MM_DD-TR.csv):
+
+	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
+
+Where class is the name of the orderId and id is the track number
+
+Example:
+
+	0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171  
+	1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364
+
+counts is the number of detections minus one in a track (at least two detections to make a track)  <br />
+confidence is the number of times the class was predicted relative to all detections in the track   <br />
+size is the average pixel size of the tracked insect   <br />
+distance is the distance in pixels the insect was tracked   <br />
+
+Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DD-TRS.csv):
+
+	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName
+
+Example:
+
+	0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg
+	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg
+	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg
+
+taxaConf is the taxa confidence score same as confidence in the detection CSV file
+detectLine is the line number in the detection CSV file
