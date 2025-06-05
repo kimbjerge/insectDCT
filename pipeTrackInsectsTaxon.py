@@ -72,11 +72,11 @@ def run(trackName, imagePath, detectPath, trackPath, conf):
 
     tr = Tracker(conf)
     imod = Imagemod()
-    mm = MovieMaker(conf, name=trackName+'TR.avi')
+    mm = MovieMaker(conf, name=trackName+'-TR.avi')
 
     stat = Stats(conf)
     predict = Predictions(conf)
-    tracksFilename = trackPath+trackName+'TRS.csv'
+    tracksFilename = trackPath+trackName+'-TRS.csv'
     print(tracksFilename)
     tracks = TracksSave(tracksFilename)
 
@@ -138,7 +138,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf):
         mm.releasemovie()
         
     tracks.close()
-    stat.writedetails(trackPath+trackName+'TR')
+    stat.writedetails(trackPath+trackName+'-TR')
 
     return stat, iterCount, totPredictions, totFilteredPredictions
 
