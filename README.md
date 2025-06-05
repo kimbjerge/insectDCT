@@ -95,8 +95,8 @@ Where class is the name of the orderId and id is the track number
 
 Example:
 
-	0,20250221,11:57:31,11:58:23,52.00,Hymenoptera,18,36.84,3198.74,3171  
-	1,20250221,11:58:07,11:58:31,24.00,Hymenoptera,12,53.85,2686.08,1364
+	0,20250221,11:57:31,11:58:23,52,Hymenoptera,18,36.8,3199,3171  
+	1,20250221,11:58:07,11:58:31,24,Hymenoptera,12,53.9,2686,1364
 
 counts is the number of detections minus one in a track (at least two detections to make a track)  <br />
 confidence is the number of times the class was predicted relative to all detections in the track   <br />
