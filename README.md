@@ -52,7 +52,7 @@ README-conda-env-yolo11.txt - environment requirements
 
 To use the hierarchical classifier with many classes of taxons (approx. 80) see description in: 
 
-	https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
+         https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
 
 ### CSV files in detections directory ###
 
