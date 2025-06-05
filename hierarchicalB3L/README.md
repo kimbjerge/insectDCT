@@ -21,12 +21,13 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
 https://drive.google.com/file/d/1kW6XRdADJgN8IWWfnLgGtl-0tAkoop1F/view?usp=drive_link
 
-### Running the pipeline with hierarchical taxon classifier ###
+### Running the pipeline with hierarchical taxon classifier and tracker ###
 
-Run the below Python code found in the root directory of this repository to generate the CSV files for detection and classification 
+Run the below Python code found in the root directory of this repository to generate the CSV files for detection, classification and tracking 
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0)
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
+   - $ python pipeTrackInsectsTaxon.py (Performs tracking based on the CSV output files (*-CL.csv)
 
 ### CSV files in detections directory ###
 
