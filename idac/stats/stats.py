@@ -108,14 +108,14 @@ class Stats:
             #Format string
             if obj.counts >= self.mincounts: #JBN??? 4 should be same threshold as for statistic
                 towrite = '{\'id\': ' + str(obj.id) + ', ' + '\'startdate\': ' + obj.startdate + ', ' + '\'starttime\': ' + obj.starttime + ', ' + '\'endtime\': ' + obj.endtime + ', ' \
-                          + '\'duration\': ' + "%0.2f" % tdelta_seconds + ', ' + '\'class\': ' + '\'' + obj.label + '\', ' \
-                          + '\'counts\': ' + str(int(obj.counts)) + ', ' + '\'confidence\': ' + "%0.2f" % (conf*100) + ', ' + '\'size\': ' \
-                          + "%0.2f" % avg_blob + ', ' + '\'distance\': ' + str(distance) + '},' + '\n'
+                          + '\'duration\': ' + "%0.0f" % tdelta_seconds + ', ' + '\'class\': ' + '\'' + obj.label + '\', ' \
+                          + '\'counts\': ' + str(int(obj.counts)) + ', ' + '\'confidence\': ' + "%0.1f" % (conf*100) + ', ' + '\'size\': ' \
+                          + "%0.0f" % avg_blob + ', ' + '\'distance\': ' + str(distance) + '},' + '\n'
     
                 file.write(towrite)
                 
-                line = str(obj.id) + ',' + obj.startdate + ',' + obj.starttime + ',' + obj.endtime + ',' + "%0.2f" % tdelta_seconds + ',' \
-                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.2f" % (conf*100) + ','  + "%0.2f" % avg_blob + ',' + str(distance) + '\n'
+                line = str(obj.id) + ',' + obj.startdate + ',' + obj.starttime + ',' + obj.endtime + ',' + "%0.0f" % tdelta_seconds + ',' \
+                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.1f" % (conf*100) + ','  + "%0.0f" % avg_blob + ',' + str(distance) + '\n'
                 filecsv.write(line)
 
         file.close()
