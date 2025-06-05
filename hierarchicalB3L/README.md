@@ -247,5 +247,5 @@ Example:
 	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg
 	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg
 
-taxaConf is the taxa confidence score same as confidence in the detection CSV file
+taxaConf is the taxa confidence score same as confidence in the detection CSV file   <br />
 detectLine is the line number in the detection CSV file
