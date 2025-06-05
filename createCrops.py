@@ -107,7 +107,7 @@ def createCropDirName(level, labelL1, labelL2, labelL3):
 def createCrops(csvName, imgPath, dstPath, dataset, hierarchicalClassifier):
     
     for i, obj in dataset.iterrows():
-        if obj['taxaSure'] == True:
+        if obj['taxaLabel'] != "Unsure":
             labelL1, labelL2, labelL3 = hierarchicalClassifier.getLabels(obj['taxaLevel'], obj['taxaLabel'])
             cropDirName = createCropDirName(obj['taxaLevel'], labelL1, labelL2, labelL3)
             #print(obj['taxaLabel'], obj['taxaLevel'], labelL1, labelL2, labelL3, cropDirName)
@@ -118,7 +118,13 @@ def createCrops(csvName, imgPath, dstPath, dataset, hierarchicalClassifier):
         y1 = obj['y1']
         x2 = obj['x2']
         y2 = obj['y2']
-        imagePath = imgPath + obj['trapDir'] + '/' + obj['fileName']
+        
+        if 'trapDir' in obj.keys():
+            trapDir = obj['trapDir']
+        else:
+            trapDir = ''
+        
+        imagePath = imgPath + trapDir + '/' + obj['fileName']
         saveCrop(x1, y1, x2, y2, obj['frameId'], imagePath, cropDirName, dstPath, csvName)       
             
 if __name__=='__main__':
