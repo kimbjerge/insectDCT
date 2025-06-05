@@ -50,9 +50,9 @@ README-conda-env-yolo11.txt - environment requirements
    - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
 
-To use the hierarchical classifier see description in: 
+To use the hierarchical classifier with many classes of taxons (approx. 80) see description in: 
 
-https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
+	https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
 
 ### CSV files in detections directory ###
 
@@ -117,7 +117,7 @@ Example:
 	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,4,pi2_2025_02_21_11_57_32.jpg 
 	0,20250221,115734,63,Background,1278,700,1252,682,52,37,5,pi2_2025_02_21_11_57_34.jpg
 
-taxaConf is the taxa confidence score same as confidence in the detection CSV file
+taxaConf is the taxa confidence score same as confidence in the detection CSV file  <br />
 detectLine is the line number in the detection CSV file
 
 ## Training insect detector and classifier models ##
