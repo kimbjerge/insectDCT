@@ -52,6 +52,8 @@ README-conda-env-yolo11.txt - environment requirements
 
 To use the hierarchical classifier see description in: 
 
+https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
+
 ### CSV files in detections directory ###
 
 Content of *.csv files which contain lines for each detection (piX_YYYY_MM_DD.csv):
