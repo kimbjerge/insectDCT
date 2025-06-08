@@ -228,7 +228,7 @@ Content of *.csv files which contain lines for each track (piX_YYYY_MM_DD-TR.csv
 
 	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
 
-Where class is the name of the orderId and id is the track number
+Where class is the name of the taxonId at level 1-3 and id is the track number
 
 Example:
 
