@@ -42,6 +42,9 @@ def saveCrop(x1, y1, x2, y2, frameId, imagePath, cropDirName, dstPath, csvName, 
     image = cv2.imread(imagePath)
     height, width, channels = image.shape
 
+    x1_str = str(x1)
+    y1_str = str(y1)
+    
     # Compute center of object, width and height    
     w = (x2-x1)
     xc = x1 + int(round(w/2))
@@ -76,7 +79,7 @@ def saveCrop(x1, y1, x2, y2, frameId, imagePath, cropDirName, dstPath, csvName, 
     if os.path.exists(dstPath + cropDirName) == False:
         print("Create directory:", dstPath + cropDirName)
         os.mkdir(dstPath + cropDirName)
-    imgNameCrop = csvName +'-' + str(frameId) + '.jpg'
+    imgNameCrop = csvName +'-' + str(frameId) + '-' + x1_str + '-' + y1_str + '.jpg'
     print(dstPath + cropDirName + '/' + imgNameCrop)
     cv2.imwrite(dstPath + cropDirName + '/' + imgNameCrop, imgCrop)   
 
@@ -131,16 +134,16 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     
-    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3/') # Directory that contains CSV files
-    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/au/') # Directory that contains images
-    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH3/') # Directory that contains CSV files
+    parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsV1/') # Directory that contains CSV files
+    parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/au/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/') # Directory that contains images
-    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3/') # Directory that contains CSV files
+    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/cirad/') # Directory that contains images
-    parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3/') # Directory that contains CSV files
-    parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsV1/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/') # Directory that contains images
     
-    parser.add_argument('--cropsPath', default='./crops_ecoinn/') # Directory to save images crops
+    parser.add_argument('--cropsPath', default='./crops_au/') # Directory to save images crops
     
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
