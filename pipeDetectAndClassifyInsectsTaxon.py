@@ -75,8 +75,10 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
     return classifier
     
 #%% Function to classify insects in 19 groups of taxa
-def classifyInsect(classifier, image, xc, yc, w, h, cropName, width=imgWidth, height=imgHeight, border=1, createCrops=False): # Border=10 for crops
+def classifyInsect(classifier, image, xc, yc, w, h, cropName, border=1, createCrops=False): # Border=10 for crops
 
+    height, width, channels = image.shape
+    
     w = (w + border*2)
     h = (h + border*2)
     if h > w: 
