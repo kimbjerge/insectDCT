@@ -14,7 +14,7 @@ import argparse
 import datetime 
 import pickle
 
-from common.cnn_classifier import CnnClassifier
+#from common.cnn_classifier import CnnClassifier # Uncomment if flat classifier should be used
 from common.hierarchical_classifier import HierarchicalClassifier
 from common.motionEnhancement import MotionEnhancement
 
@@ -333,8 +333,7 @@ if __name__=='__main__':
     if args.classifier != '': # Classify detected insects into categories of taxa
         print("Loading insect classifier model", args.classifier)
         print(labelSpeciesNames)
-        modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) 
-        #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (128,128)) 
+        #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) # Uncomment if flat classifier should be used
         
     if args.hierachical != '':
         print("Loading hierarchical insect classifier model", args.hierachical)

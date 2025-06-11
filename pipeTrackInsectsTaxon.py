@@ -17,7 +17,7 @@ from idac.moviemaker.movie_maker import MovieMaker
 from idac.stats.stats import Stats
 from idac.predictions.predictions import Predictions
 from idac.tracksSave.tracksSave import TracksSave
-from PyQt5.QtGui import QImage
+#from PyQt5.QtGui import QImage
 import pickle
 
 #%% Convert class hierarchy to a flat structure with labels : L1, L2 and L3 and removed dublicates
@@ -125,8 +125,8 @@ def run(trackName, imagePath, detectPath, trackPath, conf):
                 im = io.imread(file_name)
                 image = imod.drawoois(im, goods)
                 height, width, channel = image.shape
-                bytesPerLine = 3 * width
-                qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
+                #bytesPerLine = 3 * width
+                #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
         
                 # Write frame
                 mm.writeframe(image, filedatetime)
