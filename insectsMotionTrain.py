@@ -9,5 +9,5 @@ model = YOLO('yolo11m.pt')  # load a pretrained model (recommended for training)
 
 # Train the model using MIE image datasets from "A deep learning pipeline .. floral environments" and "Motion informed object detection"
 
-results = model.train(data='./data/insectsMotion.yaml', batch=8, epochs=70, imgsz=1920, flipud=0.5, device=0, show=False, name='insects3Motion')
+results = model.train(data='./data/insects3Motion.yaml', batch=8, epochs=70, imgsz=1920, flipud=0.5, device=0, show=False, name='insects3Motion')
 #results = model.train(data='insectsMotion.yaml', batch=20, epochs=60, imgsz=1280, device=0, show=False)
