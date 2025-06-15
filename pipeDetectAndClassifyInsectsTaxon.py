@@ -285,6 +285,7 @@ if __name__=='__main__':
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains motion models
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Color/weights/best.pt') #Directory that contains color models
+    parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
     parser.add_argument('--classifier', default='')
@@ -326,7 +327,14 @@ if __name__=='__main__':
         MIE = MotionEnhancement()
     
     # Load the YOLO11 insect detector model
-    modelDetector = YOLO(args.yoloWeights)  # load a pretrained model (recommended for training)
+    if args.optimized == "ncnn":
+        yoloNCNN = args.yoloWeights.replace(".pt", "_ncnn_model")
+        if not os.path.exists(yoloNCNN):
+            modelDetector = YOLO(args.yoloWeights)
+            modelDetector.export(format="ncnn", half=False) # export model to optimized NCNN format (FP16)
+        modelDetector = YOLO(yoloNCNN) # load optimized NCNN model   
+    else:
+        modelDetector = YOLO(args.yoloWeights)  # load trained model
     
     # Load the insect classifier model
     modelClassifier = 0
