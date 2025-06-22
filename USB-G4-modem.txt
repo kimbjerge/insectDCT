@@ -1,0 +1,62 @@
+
+
+sudo /sbin/usb_modeswitch -v 3566 -p 2001 -W -R -w 400
+
+/etc/udev/rules.d/40-huawei.rules:
+# This is part of USB_ModeSwitch version 1.x.x
+#
+ACTION!="add", GOTO="modeswitch_rules_end"
+SUBSYSTEM!="usb", GOTO="modeswitch_rules_end"
+
+# All known install partitions are on interface 0
+ATTRS{bInterfaceNumber}!="00", GOTO="modeswitch_rules_end"
+
+# only storage class devices are handled; negative
+# filtering here would exclude some quirky devices
+ATTRS{bDeviceClass}=="e0", GOTO="modeswitch_rules_begin"
+ATTRS{bInterfaceClass}=="e0", GOTO="modeswitch_rules_begin"
+GOTO="modeswitch_rules_end"
+
+LABEL="modeswitch_rules_begin"
+# Huawei E3372-325
+ATTRS{idVendor}=="3566", ATTRS{idProduct}=="2001", RUN+="/sbin/usb_modeswitch -v 3566 -p 2001 -W -R -w 400"
+ATTRS{idVendor}=="3566", ATTRS{idProduct}=="2001", RUN+="/sbin/usb_modeswitch -v 3566 -p 2001 -W -R"
+
+LABEL="modeswitch_rules_end"
+
+pi@raspberrypi:~ $ ifconfig
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether d8:3a:dd:b9:dd:dc  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 106
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 20  bytes 2991 (2.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 20  bytes 2991 (2.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+usb0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.8.103  netmask 255.255.255.0  broadcast 192.168.8.255
+        inet6 fe80::e877:6985:d0ba:89d5  prefixlen 64  scopeid 0x20<link>
+        ether fa:db:83:d0:08:00  txqueuelen 1000  (Ethernet)
+        RX packets 17  bytes 1924 (1.8 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 46  bytes 9388 (9.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.158  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::f833:38d5:e05b:af10  prefixlen 64  scopeid 0x20<link>
+        ether d8:3a:dd:b9:dd:dd  txqueuelen 1000  (Ethernet)
+        RX packets 101  bytes 61431 (59.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 103  bytes 16115 (15.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
