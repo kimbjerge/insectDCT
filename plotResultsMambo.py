@@ -178,7 +178,7 @@ def loadAllDetectionFiles(trapPathAll, trapNameAll, taxaSure=True, vegetation=Fa
     
     return selDataset2    
 
-    # %% Insect plots
+# %% Insect plots
 if __name__ == '__main__':
 
     trapPathAll = []
