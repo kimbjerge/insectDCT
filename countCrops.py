@@ -56,7 +56,8 @@ def printStat(classes, path, below=True):
     
     plt.ylabel('Taxa')
     plt.xlabel('Observations')
-    plt.xscale('log')
+    if not below:
+        plt.xscale('log') # Only log scale above
     plt.legend((p1[0], p2[0], p3[0]), ('True Positive', 'FP-Arthropods', 'FP-Background'))
     plt.tight_layout()
     plt.savefig('plots/'+cropsName+'_'+fName+'.png')
