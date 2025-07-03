@@ -5,30 +5,72 @@ Created on Wed Jul  2 21:47:08 2025
 @author: Kim Bjerge
 """
 import os
+import matplotlib.pyplot as plt
+import numpy as np
 
     
 trueIdx = 0 # True positive crops (Correct predictions)
 falseAIdx = 1 # False positive arthropods (Wrong prediction)
 falseBIdx = 2 # False positive background (Plant parts - wrong prediction)
 
-def printStat(classes):
+def printStat(classes, path, below=True):
     
+    insects = []
+    precisions = []
+    truePs = []
+    falseAs = []
+    falseBs = []
     for keyName in classes.keys():
         total = sum(classes[keyName])
         trueP = classes[keyName][trueIdx]
         falseA = classes[keyName][falseAIdx]
         falseB = classes[keyName][falseBIdx]
         precision = round(trueP/total*1000)/10
-        print(keyName, sum(classes[keyName]), trueP, falseA, falseB, precision)
+        if (below and precision < 75 and total > 10) or (not below and precision >= 75 and total > 10):
+            print(keyName, total, trueP, falseA, falseB, precision)
+            insects.append(keyName)
+            precisions.append(precision)
+            truePs.append(trueP)
+            falseAs.append(falseA)
+            falseBs.append(falseB)
+    
+    
+    plt.figure(figsize=(12,8))
+    p1 = plt.barh(insects, truePs)
+    bottom = np.zeros(len(insects))
+    bottom += truePs
+    p2 = plt.barh(insects, falseAs, left=bottom)
+    bottom += falseAs
+    p3 = plt.barh(insects, falseBs, left=bottom)
+    
+    cropsName = path.split('/')[-2] 
+    
+    if below:
+        titleName = 'Arthropods ' + cropsName + ' (P<75%,N>10)'
+        fName='Below'
+    else:
+        titleName = 'Arthropods ' + cropsName + ' (P>75%,N>10)'
+        fName='Above'
         
+    plt.title(titleName)
+    
+    plt.ylabel('Taxa')
+    plt.xlabel('Observations')
+    plt.xscale('log')
+    plt.legend((p1[0], p2[0], p3[0]), ('True Positive', 'FP-Arthropods', 'FP-Background'))
+    plt.tight_layout()
+    plt.savefig('plots/'+cropsName+'_'+fName+'.png')
+    plt.show()
+
 
 # %% Insect plots
 if __name__ == '__main__':
         
-    cropPaths = [#"/ArthropodsCrops/crops_au/",
-                 #"/ArthropodsCrops/crops_ufz/",
-                 #"/ArthropodsCrops/crops_ni2_1/",
-                 "/ArthropodsCrops/crops_ni2_2/"]
+    cropPaths = ["/ArthropodsCrops/crops_au/",
+                 "/ArthropodsCrops/crops_ufz/",
+                 "/ArthropodsCrops/crops_ni2_1/",
+                 "/ArthropodsCrops/crops_ni2_2/"
+                 ]
     
     for cropPath in cropPaths:    
         classes = {}
@@ -54,7 +96,8 @@ if __name__ == '__main__':
         
         print("===================================================")        
         print(cropPath)
-        printStat(classes)
+        printStat(classes, cropPath, below=True)
+        printStat(classes, cropPath, below=False)
                 
             
                 
