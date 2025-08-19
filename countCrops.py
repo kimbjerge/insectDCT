@@ -5,6 +5,7 @@ Created on Wed Jul  2 21:47:08 2025
 @author: Kim Bjerge
 """
 import os
+import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -14,6 +15,16 @@ falseAIdx = 1 # False positive arthropods (Wrong prediction)
 falseBIdx = 2 # False positive background (Plant parts - wrong prediction)
 
 def printStat(classes, path, below=True):
+    
+    
+    fileName = 'results.csv'
+    if os.path.exists(fileName):
+        csvFile = open('results.csv', 'a', newline = '\n')
+    else:
+        csvFile = open('results.csv', 'w', newline = '\n')
+        csvFile.write("partner,animal,total,truePositive,falseAnimal,falseBackground,precision\n")
+
+    csv_writer = csv.writer(csvFile, delimiter = ',')
     
     insects = []
     precisions = []
@@ -26,6 +37,13 @@ def printStat(classes, path, below=True):
         falseA = classes[keyName][falseAIdx]
         falseB = classes[keyName][falseBIdx]
         precision = round(trueP/total*1000)/10
+        
+        partner = path.split('/')[-2]
+        partner = partner.split('_')[1]
+        input_variable = [partner, keyName, total, trueP, falseA, falseB, precision]
+        csv_writer.writerow(input_variable)
+        csvFile.flush()
+
         if (below and precision < 75 and total > 10) or (not below and precision >= 75 and total > 10):
             print(keyName, total, trueP, falseA, falseB, precision)
             insects.append(keyName)
@@ -34,6 +52,7 @@ def printStat(classes, path, below=True):
             falseAs.append(falseA)
             falseBs.append(falseB)
     
+    csvFile.close()
     
     plt.figure(figsize=(12,8))
     p1 = plt.barh(insects, truePs)
@@ -60,7 +79,7 @@ def printStat(classes, path, below=True):
         plt.xscale('log') # Only log scale above
     plt.legend((p1[0], p2[0], p3[0]), ('True Positive', 'FP-Arthropods', 'FP-Background'))
     plt.tight_layout()
-    plt.savefig('plots/'+cropsName+'_'+fName+'.png')
+    plt.savefig('/ArthropodsCrops/plots/'+cropsName+'_'+fName+'.png')
     plt.show()
 
 
@@ -68,9 +87,13 @@ def printStat(classes, path, below=True):
 if __name__ == '__main__':
         
     cropPaths = ["/ArthropodsCrops/crops_au/",
+                 "/ArthropodsCrops/crops_cirad/",
+                 "/ArthropodsCrops/crops_ecoinn/",
                  "/ArthropodsCrops/crops_ufz/",
-                 "/ArthropodsCrops/crops_ni2_1/",
-                 "/ArthropodsCrops/crops_ni2_2/"
+                 "/ArthropodsCrops/crops_ukceh/",
+                 "/ArthropodsCrops/crops_uva/",
+                 #"/ArthropodsCrops/crops_ni2_1/",
+                 #"/ArthropodsCrops/crops_ni2_2/"
                  ]
     
     for cropPath in cropPaths:    
