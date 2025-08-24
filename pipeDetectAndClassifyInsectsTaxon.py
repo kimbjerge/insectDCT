@@ -32,8 +32,10 @@ useMambo = True
 
 # MAMBO
 if useMambo:    
-    imgWidth = 4224
-    imgHeight = 2376
+    imgWidth = 3840 # Grade Pro 8MP
+    imgHeight = 2160
+    #imgWidth = 4224
+    #imgHeight = 2376
 else:
 # Jordan and Simon
     imgWidth = 1920
