@@ -291,10 +291,18 @@ if __name__=='__main__':
 
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
     parser.add_argument('--classifier', default='')
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
+    
+    # First model trained on dataset from NI2 and NI1 (Nature Impact - Wingscapes cameras and Logitech webcameras)
+    #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH2.csv') # Use thresholds below = mean-2*std
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
+    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
+    
+    # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
+    
     parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
     parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
     
