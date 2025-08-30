@@ -49,9 +49,11 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
 - filename is the name of the image file with the format subdir1/name.JPG  <br />
 - taxaLabel is the order, family, genus or species name of the arthropod found by the hierarchical classifier see names below (taxaLevel 1-3)
  
-- taxaId and taxaLevel will be updated with the following classification codes:
+- taxaId and taxaLevel will be updated with the following classification codes
 
-taxaLevel 1: (Order)
+Hierarchical taxa of classes in the first model HierarchicalClassifier_13052025:
+
+taxaLevel 1: (Order )
 
 	1   Aranaea
 	2   Birds
