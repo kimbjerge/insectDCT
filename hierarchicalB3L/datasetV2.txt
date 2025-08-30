@@ -1,0 +1,244 @@
+=============================================================================================
+Class directory hierarchy with 3 levels: order - family - genus/species
+-----------------------------------------------------------------------
+Apoidea Apidae Apis mellifera
+Apoidea Apidae Bombus
+Apoidea Apidae Bombus hypnorum
+Apoidea Apidae Bombus lapidarius
+Apoidea Apidae Bombus pascuorum
+Apoidea Apidae Bombus terrestris
+Apoidea Apoidea_small
+Apoidea Halictidae Halictidae striped
+Apoidea Halictidae Sphecodes
+Apoidea Megachilidae
+Aranaea
+Coleoptera
+Coleoptera Cerambycidae Rhagonycha fulva
+Coleoptera Coccinellidae Coccinella septempunctata
+Diptera
+Diptera Syrphidae
+Diptera Syrphidae Chrysotoxum
+Diptera Syrphidae Episyrphus balteatus
+Diptera Syrphidae Eristalis
+Diptera Syrphidae Eupeodes
+Diptera Syrphidae Eurimyia
+Diptera Syrphidae Helophilus
+Diptera Syrphidae Meliscaeva cinctella
+Diptera Syrphidae Myathropa florea
+Diptera Syrphidae Platycheirus
+Diptera Syrphidae Scaeva pyrastri
+Diptera Syrphidae Scaeva selenitica
+Diptera Syrphidae Sphaerophoria scripta-complex
+Diptera Syrphidae Syritta pipiens
+Diptera Syrphidae Syrphus
+Feathers
+Hemiptera
+Hymenoptera Crabronidae
+Hymenoptera Formidicidae
+Hymenoptera Ichneumonidae
+Hymenoptera Pompilidae
+Hymenoptera Vespidae Ancistrocerus nigricornis
+Hymenoptera Vespidae Eumenes coronatus
+Hymenoptera Vespidae Vespula vulgaris
+Isopoda
+Lepidoptera Hesperidae
+Lepidoptera Lycenidae Lycaena phlaeas
+Lepidoptera Moths
+Lepidoptera Nymphalidae Aglais io
+Lepidoptera Nymphalidae Aglais urticae
+Lepidoptera Nymphalidae Aphantopus hyperantus
+Lepidoptera Nymphalidae Coenonympha pamphilus
+Lepidoptera Nymphalidae Maniola jurtina
+Lepidoptera Nymphalidae Satyrinae
+Lepidoptera_fw
+Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw
+Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw
+Odonata
+Orthoptera Acrididae Chorthippus
+Orthoptera Acrididae Chorthippus apricarius
+Orthoptera Acrididae Omocestus viridulus
+Orthoptera Tettigoniidae Pholidoptera griseoaptera
+Slugs
+Snails
+Vegetation
+Birds
+Frogs
+Larvae
+Lepidoptera
+Lepidoptera Lycenidae
+Lepidoptera Nymphalidae Melitaea cinxia
+Lepidoptera Pieridae
+Lepidoptera Satyrinae
+Lepidoptera_fw Satyrinae_fw
+Lizards
+Milipedes
+Orthoptera Acrididae
+Orthoptera Tetrigidae Tetrix
+Orthoptera Tettigoniidae Decticus verrucivorus
+Apoidea
+Apoidea Andrenidae Andrena red_abdomen
+Apoidea Andrenidae Andrena reddish
+Apoidea Apidae Bombus sylvarum
+Dermaptera
+Diptera Bombyliidae
+Diptera Sarcophagidae
+Diptera Syrphidae Helophilus trivittatus
+Diptera Syrphidae Xanthogramma dives
+Hymenoptera Vespidae
+Lepidoptera Nymphalidae Lasiommata megera
+=============================================================================================
+Level 1               train validate
+Apoidea               18054   2005
+Aranaea                1801    200
+Birds                    78      8
+Coleoptera             7547    839
+Dermaptera               41      4
+Diptera                8621    958
+Feathers                154     17
+Frogs                    15      2
+Hemiptera               585     65
+Hymenoptera            2034    226
+Isopoda                 792     88
+Larvae                  172     19
+Lepidoptera            2870    318
+Lepidoptera_fw         4754    529
+Lizards                  22      3
+Milipedes                70      7
+Odonata                 457     50
+Orthoptera             1343    151
+Slugs                  1073    119
+Snails                  196     22
+Vegetation             5148    572
+=============================================================================================
+Level 3               train validate
+Acrididae              1288    144
+Andrenidae              113     13
+Apidae                15130   1681
+Apoidea                 249     27
+Apoidea_small           792     88
+Aranaea                1801    200
+Birds                    78      8
+Bombyliidae             228     25
+Cerambycidae            740     83
+Coccinellidae          6377    708
+Coleoptera              430     48
+Crabronidae               7      1
+Dermaptera               41      4
+Diptera                 766     85
+Feathers                154     17
+Formidicidae            871     97
+Frogs                    15      2
+Halictidae              504     56
+Hemiptera               585     65
+Hesperidae              107     12
+Ichneumonidae            21      2
+Isopoda                 792     88
+Larvae                  172     19
+Lepidoptera             140     16
+Lepidoptera_fw          244     27
+Lizards                  22      3
+Lycenidae                44      4
+Megachilidae           1266    140
+Milipedes                70      7
+Moths                    39      4
+Nymphalidae            2495    277
+Nymphalidae_fw         3361    374
+Odonata                 457     50
+Pieridae                 35      4
+Pompilidae                7      1
+Sarcophagidae           374     42
+Satyrinae                10      1
+Satyrinae_fw           1149    128
+Slugs                  1073    119
+Snails                  196     22
+Syrphidae              7253    806
+Tetrigidae                5      0
+Tettigoniidae            50      7
+Vegetation             5148    572
+Vespidae               1128    125
+=============================================================================================
+Level 3                         train validate
+Acrididae                         941    105
+Aglais io                          53      6
+Aglais urticae                   1604    179
+Aglais urticae_fw                 317     35
+Ancistrocerus nigricornis          11      1
+Andrena red_abdomen                62      7
+Andrena reddish                    51      6
+Aphantopus hyperantus              33      3
+Apis mellifera                   9027   1002
+Apoidea                           249     27
+Apoidea_small                     792     88
+Aranaea                          1801    200
+Birds                              78      8
+Bombus                            212     24
+Bombus hypnorum                    18      2
+Bombus lapidarius                2124    236
+Bombus pascuorum                  143     16
+Bombus sylvarum                   323     36
+Bombus terrestris                3283    365
+Bombyliidae                       228     25
+Chorthippus                       295     33
+Chorthippus apricarius             29      3
+Chrysotoxum                         4      1
+Coccinella septempunctata        6377    708
+Coenonympha pamphilus             325     36
+Coleoptera                        430     48
+Crabronidae                         7      1
+Decticus verrucivorus               1      1
+Dermaptera                         41      4
+Diptera                           766     85
+Episyrphus balteatus             2170    241
+Eristalis                         293     33
+Eumenes coronatus                   3      0
+Eupeodes                         3713    412
+Eurimyia                           50      6
+Feathers                          154     17
+Formidicidae                      871     97
+Frogs                              15      2
+Halictidae striped                484     53
+Helophilus                          5      0
+Helophilus trivittatus            129     14
+Hemiptera                         585     65
+Hesperidae                        107     12
+Ichneumonidae                      21      2
+Isopoda                           792     88
+Larvae                            172     19
+Lasiommata megera                   3      0
+Lepidoptera                       140     16
+Lepidoptera_fw                    244     27
+Lizards                            22      3
+Lycaena phlaeas                    37      4
+Lycenidae                           7      0
+Maniola jurtina                   476     53
+Maniola jurtina_fw               3044    339
+Megachilidae                     1266    140
+Meliscaeva cinctella                8      1
+Melitaea cinxia                     1      0
+Milipedes                          70      7
+Moths                              39      4
+Myathropa florea                    1      0
+Odonata                           457     50
+Omocestus viridulus                23      3
+Pholidoptera griseoaptera          49      6
+Pieridae                           35      4
+Platycheirus                        7      1
+Pompilidae                          7      1
+Rhagonycha fulva                  740     83
+Sarcophagidae                     374     42
+Satyrinae                          10      1
+Satyrinae_fw                     1149    128
+Scaeva pyrastri                    11      1
+Scaeva selenitica                   7      1
+Slugs                            1073    119
+Snails                            196     22
+Sphaerophoria scripta-complex     544     60
+Sphecodes                          20      3
+Syritta pipiens                    12      2
+Syrphidae                         246     27
+Syrphus                            48      5
+Tetrix                              5      0
+Vegetation                       5148    572
+Vespidae                           56      6
+Vespula vulgaris                 1058    118
+Xanthogramma dives                  5      1
