@@ -19,7 +19,11 @@ https://doi.org/10.1016/j.ecoinf.2023.102278
 Download the weights, labels, and thresholds from the below link. 
 Save and unzip the file to the sub directory: insectsDCT/models_save
 
+First model (HierarchicalClassifier_13052025) trained on images recorded with Wingscapes Bird cameras and Logitech webcameras (NI1+NI2)  <br />
 https://drive.google.com/file/d/1kW6XRdADJgN8IWWfnLgGtl-0tAkoop1F/view?usp=drive_link
+
+Second model (HierarchicalClassifierV2_30082025) trained on additional images recorded with Raspberry Pi3 cameras (UFZ)  <br />
+https://drive.google.com/file/d/18KyLunb939JnLENi3LE-F7C3Ed9aREQq/view?usp=drive_link
 
 ### Running the pipeline with hierarchical taxon classifier and tracker ###
 
