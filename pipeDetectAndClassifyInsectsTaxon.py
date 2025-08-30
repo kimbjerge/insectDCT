@@ -28,7 +28,7 @@ from PIL.ExifTags import TAGS
 results_dir = './detections/'
 crops_dic_insect = './crops/'
 
-useMambo = True
+useMambo = False
 
 # MAMBO
 if useMambo:    
