@@ -28,17 +28,19 @@ from PIL.ExifTags import TAGS
 results_dir = './detections/'
 crops_dic_insect = './crops/'
 
-useMambo = False
+useMambo = True
 
 # MAMBO
-if useMambo:    
-    imgWidth = 3840 # Grade Pro 8MP
-    imgHeight = 2160
-    #imgWidth = 4224
+if useMambo:   
+    imgWidth = 5120 # Grade Pro 16MP
+    imgHeight = 2880
+    #imgWidth = 3840 # Grade Pro 8MP
+    #imgHeight = 2160
+    #imgWidth = 4224 # Wingscapes
     #imgHeight = 2376
 else:
 # Jordan and Simon
-    imgWidth = 1920
+    imgWidth = 1920 # Logitech and Pi3
     imgHeight = 1080
     
 labelNames = ['Insect'] # YOLO Only one label
