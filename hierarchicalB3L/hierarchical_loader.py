@@ -213,7 +213,7 @@ if __name__=='__main__':
     print("Level 1               train validate")
     [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))]
     print("=============================================================================================")
-    print("Level 3               train validate")
+    print("Level 2               train validate")
     [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))]
     #print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))
     print("=============================================================================================")
