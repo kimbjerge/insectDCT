@@ -177,11 +177,26 @@ if __name__=='__main__':
                        '/ArthropodsDataset/NItrain',
                        '/ArthropodsDataset/NIval'
                        ]
-    image_path_list = ['/home/don/data/Arthropods/NI2classes',
+    image_path_listV1 = ['/home/don/data/Arthropods/NI2classes',
                        '/home/don/data/Arthropods/NI2sorted',
                        '/home/don/data/Arthropods/NItrain',
                        '/home/don/data/Arthropods/NIval'
                        ]
+    image_path_listV2 = ['/home/don/data/Arthropods/NI2classesV2',
+                       '/home/don/data/Arthropods/NI2sortedV2',
+                       '/home/don/data/Arthropods/NItrainV2',
+                       '/home/don/data/Arthropods/NIvalV2'
+                       '/home/don/data/Arthropods/sorted_orchard_crops'
+                       ]
+    image_path_list = ['/home/don/data/Arthropods/NI2classesV2',
+                       '/home/don/data/Arthropods/NI2sortedV2',
+                       '/home/don/data/Arthropods/NItrainV2',
+                       '/home/don/data/Arthropods/NIvalV2',
+                       '/home/don/data/Arthropods/sorted_orchard_crops',
+                       '/home/don/data/Arthropods/NI2_MAMBO',
+                       '/home/don/data/Arthropods/GBIF_crops'
+                      ]
+
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     path_names = datasetLoader.get_path_names()
     print("=============================================================================================")
@@ -189,7 +204,7 @@ if __name__=='__main__':
     print("=============================================================================================")
     print("Class directory hierarchy with 3 levels: order - family - genus/species")
     print("-----------------------------------------------------------------------")
-    for name in path_names.keys():
+    for name in sorted(path_names.keys()):
         print(name)
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
