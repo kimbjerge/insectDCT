@@ -18,6 +18,7 @@ from hierarchical_loader import HierarchicalDatasetLoader
 from hierarchical_loss import HierarchicalLossNetwork
 from load_dataset_hierarchical import LoadDataset
 from resnet50tf import ResNet50
+from convNext import ConvNextBase
 from helper import calculate_accuracy
 from balanced_softmax_loss import BalancedSoftmaxLoss
 
@@ -95,7 +96,13 @@ def trainModel(alpha, save_path):
     train_generator = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
     
-    model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+    if args.model == 'ConvNextBase':
+        model = ConvNextBase(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+        print("Training ConvNext-Base model")
+    else:        
+        model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
+        print("Training ResNet50 model")
+
     optimizer = None
     if args.optimizer == 'Adam':
         optimizer = Adam(model.parameters(), lr=args.learning_rate)
