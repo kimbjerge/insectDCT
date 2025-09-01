@@ -19,14 +19,15 @@ class ConvNextBase(nn.Module):
         self.model_ft = convnext_base(weights=ConvNeXt_Base_Weights.IMAGENET1K_V1) # 80.86, 25.6M
     
         # overwrite the 'fc' layer
-        print("In features", self.model_ft.classifier[2].in_features)
+        num_in_features = self.model_ft.classifier[2].in_features
+        print("In features", num_in_features)
         self.model_ft.classifier[2] =  nn.Identity() # Do nothing just pass input to output
  
         self.layers = len(num_classes)
         
         # At least one layer
         self.drop = nn.Dropout(p=0.5)
-        self.linear_lvl1 = nn.Linear(self.model_ft.classifier[2].in_features, self.out_channels)
+        self.linear_lvl1 = nn.Linear(num_in_features, self.out_channels)
         self.relu_lv1 = nn.ReLU(inplace=False)
         self.softmax_reg1 = nn.Linear(self.out_channels, num_classes[0])
         
@@ -34,13 +35,13 @@ class ConvNextBase(nn.Module):
             print("ConvNext-Base Simple: Dropout + ReLU")
 
             if self.layers > 1:
-                self.linear_lvl2 = nn.Linear(self.model_ft.classifier[2].in_features, self.out_channels)
+                self.linear_lvl2 = nn.Linear(num_in_features, self.out_channels)
                 self.relu_lv2 = nn.ReLU(inplace=False)
                 self.softmax_reg2 = nn.Linear(self.out_channels, num_classes[1])
                 print("Layer 2")
                 
             if self.layers > 2:
-                self.linear_lvl3 = nn.Linear(self.model_ft.classifier[2].in_features, self.out_channels)
+                self.linear_lvl3 = nn.Linear(num_in_features, self.out_channels)
                 self.relu_lv3 = nn.ReLU(inplace=False)
                 self.softmax_reg3 = nn.Linear(self.out_channels, num_classes[2])
                 print("layer 3")
