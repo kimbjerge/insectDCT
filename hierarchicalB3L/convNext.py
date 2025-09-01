@@ -14,7 +14,7 @@ class ConvNextBase(nn.Module):
         super(ConvNextBase, self).__init__()
 
         self.simple = simple
-        self.out_channels = 512
+        self.out_channels = 256
         
         self.model_ft = convnext_base(weights=ConvNeXt_Base_Weights.IMAGENET1K_V1) # 80.86, 25.6M
     
