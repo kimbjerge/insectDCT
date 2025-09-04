@@ -365,8 +365,9 @@ if __name__=='__main__':
         #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) # Uncomment if flat classifier should be used
         
     if args.hierachical != '':
-        print("Loading hierarchical insect classifier model", args.hierachical)
-        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, stdThreshold=args.thresholdStd, device=args.device)
+        print("Loading hierarchical insect classifier model", args.hierachical, args.modelType)
+        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, 
+                                                       stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
 
     # Open the input video file if specified
     video_path = args.video
