@@ -165,13 +165,13 @@ class HierarchicalClassifier:
         if modelName == "ResNet50":
             self.model = ResNet50(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True) 
         if modelName == "ConvNextLarge":
-            self.model = ConvNextBase(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True, ConvNext="Large") 
+            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Large") 
         if modelName == "ConvNextBase":
-            self.model = ConvNextBase(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True, ConvNext="Base") 
+            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Base") 
         if modelName == "ConvNextSmall":
-            self.model = ConvNextBase(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True, ConvNext="Small") 
+            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Small") 
         if modelName == "ConvNextTiny":
-            self.model = ConvNextBase(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True, ConvNext="Tiny") 
+            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Tiny") 
         
         self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
         print('Loaded model: ', model_weights)   
