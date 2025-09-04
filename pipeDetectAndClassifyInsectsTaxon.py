@@ -56,7 +56,7 @@ labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syr
                      "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
                      "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"]
 
-def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0'):
+def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0', modelName="ResNet50"):
     
     with open(label_file, 'rb') as f:
         _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
@@ -74,7 +74,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
         print("=============================================================================================")
     
     classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, stdThreshold=stdThreshold, device=device)
-    classifier.loadmodel(weights_file, threshold_file)
+    classifier.loadmodel(weights_file, threshold_file, modelName=modelName)
     
     return classifier
     
@@ -300,10 +300,19 @@ if __name__=='__main__':
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH2.csv') # Use thresholds below = mean-2*std
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
     
+    parser.add_argument('--modelType', default="ResNet50") # Support for ResNet50 and ConvNextBase (CNB)
+
     # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
+    
+    # Weights, labels and thresholds for ResNet50
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
+
+    # Weights, labels and thresholds for ConvNextBase (CNB)
+    parser.add_argument('--CNBhierachical', default='./models_save/HierarchicalClassifier_CNB_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    parser.add_argument('--CNBlabels', default='./models_save/HierarchicalLabels3L_CNB_V3_05092025.pkl') # Hierarchical taxon of labels with 3 layers
+    parser.add_argument('--CNBthresholds', default='./models_save/HierarchicalThresholds3S_CNB_V3_05092025.csv') # Use thresholds below = mean-3*std
     
     parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
     parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
