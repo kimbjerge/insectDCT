@@ -366,7 +366,16 @@ if __name__=='__main__':
         
     if args.hierachical != '':
         print("Loading hierarchical insect classifier model", args.hierachical, args.modelType)
-        modelClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128, 
+        if args.modelType == "ResNet50":
+            hierarchicalWeights = args.hierachical
+            hierarchicalLabels = args.labels
+            hierarchicalThresholds = args.thresholds
+        if args.modelType == "ConvNextBase":
+            hierarchicalWeights = args.CNBhierachical
+            hierarchicalLabels = args.CNBlabels
+            hierarchicalThresholds = args.CNBthresholds
+            
+        modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
 
     # Open the input video file if specified
