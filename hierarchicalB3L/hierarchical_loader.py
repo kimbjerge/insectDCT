@@ -193,14 +193,14 @@ if __name__=='__main__':
                        '/home/don/data/Arthropods/NItrainV2',
                        '/home/don/data/Arthropods/NIvalV2',
                        '/home/don/data/Arthropods/sorted_orchard_crops',
-                       '/home/don/data/Arthropods/NI2_MAMBO',
-                       '/home/don/data/Arthropods/GBIF_crops'
+                       '/home/don/data/Arthropods/NI2_MAMBOV2',
+                       '/home/don/data/Arthropods/GBIF_cropsV2'
                       ]
 
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     path_names = datasetLoader.get_path_names()
-    print("=============================================================================================")
-    print(path_names)
+    #print("=============================================================================================")
+    #print(path_names)
     print("=============================================================================================")
     print("Class directory hierarchy with 3 levels: order - family - genus/species")
     print("-----------------------------------------------------------------------")
@@ -210,14 +210,14 @@ if __name__=='__main__':
     data_set = datasetLoader.get_data_list(validate=False)
     print("=============================================================================================")
     #print("Labels L1", labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))
-    print("Level 1               train validate")
+    print("Level 1               train validate", len(labelsL1))
     [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1))]
     print("=============================================================================================")
-    print("Level 2               train validate")
+    print("Level 2               train validate", len(labelsL2))
     [print(f'{l:<20} {t:>6} {v:>6}') for l, t, v in zip(labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))]
     #print("Labels L2", labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1))
     print("=============================================================================================")
-    print("Level 3                         train validate")
+    print("Level 3                         train validate", len(labelsL3))
     [print(f'{l:<30} {t:>6} {v:>6}') for l, t, v in zip(labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))]
     #print("Labels L3", labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1))
     
