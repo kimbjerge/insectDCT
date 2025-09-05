@@ -25,6 +25,9 @@ https://drive.google.com/file/d/1kW6XRdADJgN8IWWfnLgGtl-0tAkoop1F/view?usp=drive
 Second model (HierarchicalClassifierV2_30082025) trained on additional images recorded with Raspberry Pi3 cameras (UFZ)  <br />
 https://drive.google.com/file/d/18KyLunb939JnLENi3LE-F7C3Ed9aREQq/view?usp=drive_link
 
+Third model (HierarchicalClassifierV3_05092025) trained on additional images recorded in MAMBO and NI2 with GBIF data  <br />
+https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive_link
+
 ### Running the pipeline with hierarchical taxon classifier and tracker ###
 
 Run the below Python code found in the root directory of this repository to generate the CSV files for detection, classification and tracking 
