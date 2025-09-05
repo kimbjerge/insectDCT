@@ -304,12 +304,17 @@ if __name__=='__main__':
 
     # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
     
-    # Weights, labels and thresholds for ResNet50
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
+    # Weights, labels and thresholds for ResNet50 with dataset V2 (+UFZ Pi3Cam)
+    #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
+    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
+    
+    # Weights, labels and thresholds for ResNet50 with dataset V3 (+GBIF +NI2_MAMBO)
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    parser.add_argument('--labels', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V3_05092025.csv') # Use thresholds below = mean-3*std
 
-    # Weights, labels and thresholds for ConvNextBase (CNB)
+    # Weights, labels and thresholds for ConvNextBase (CNB) with dataset V3 (+GBIF +NI2_MAMBO)
     parser.add_argument('--CNBhierachical', default='./models_save/HierarchicalClassifier_CNB_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     parser.add_argument('--CNBlabels', default='./models_save/HierarchicalLabels3L_CNB_V3_05092025.pkl') # Hierarchical taxon of labels with 3 layers
     parser.add_argument('--CNBthresholds', default='./models_save/HierarchicalThresholds3S_CNB_V3_05092025.csv') # Use thresholds below = mean-3*std
