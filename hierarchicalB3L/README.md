@@ -32,7 +32,8 @@ https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive
 
 Run the below Python code found in the root directory of this repository to generate the CSV files for detection, classification and tracking 
 
-   - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0 - default uses ResNet50 CNN model)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase (Performs detection and classification using ConvNextBase CNN model)
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
    - $ python pipeTrackInsectsTaxon.py (Performs tracking based on the CSV output files (*-CL.csv)
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
