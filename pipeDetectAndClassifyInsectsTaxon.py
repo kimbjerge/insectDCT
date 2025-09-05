@@ -311,7 +311,7 @@ if __name__=='__main__':
     
     # Weights, labels and thresholds for ResNet50 with dataset V3 (+GBIF +NI2_MAMBO)
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pkl')
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl')
     parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V3_05092025.csv') # Use thresholds below = mean-3*std
 
     # Weights, labels and thresholds for ConvNextBase (CNB) with dataset V3 (+GBIF +NI2_MAMBO)
