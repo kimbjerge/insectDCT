@@ -372,7 +372,6 @@ if __name__=='__main__':
         #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) # Uncomment if flat classifier should be used
         
     if args.hierachical != '':
-        print("Loading hierarchical insect classifier model", args.hierachical, args.modelType)
         if args.modelType == "ResNet50":
             hierarchicalWeights = args.hierachical
             hierarchicalLabels = args.labels
@@ -385,7 +384,8 @@ if __name__=='__main__':
             hierarchicalWeights = hierarchicalWeights.replace('V3', args.dataset)
             hierarchicalLabels = hierarchicalLabels.replace('V3', args.dataset)
             hierarchicalThresholds = hierarchicalThresholds.replace('V3', args.dataset)
-            print("Using model trained on dataset", args.dataset, hierarchicalWeights)
+            
+        print("Loading hierarchical insect classifier model", hierarchicalWeights, args.modelType, args.dataset)
             
         modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
