@@ -301,6 +301,7 @@ if __name__=='__main__':
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
     
     parser.add_argument('--modelType', default="ResNet50") # Support for ResNet50 and ConvNextBase (CNB)
+    parser.add_argument('--dataset', default="V3") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data
 
     # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
     
@@ -380,6 +381,11 @@ if __name__=='__main__':
             hierarchicalWeights = args.CNBhierachical
             hierarchicalLabels = args.CNBlabels
             hierarchicalThresholds = args.CNBthresholds
+        if args.dataset != 'V3': # Select model weights trained on dataset V3 or V4
+            hierarchicalWeights = hierarchicalWeights.replace('V3', args.dataset)
+            hierarchicalLabels = hierarchicalLabels.replace('V3', args.dataset)
+            hierarchicalThresholds = hierarchicalThresholds.replace('V3', args.dataset)
+            print("Using model trained on dataset", args.dataset, hierarchicalWeights)
             
         modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
