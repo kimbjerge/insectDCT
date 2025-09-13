@@ -340,9 +340,14 @@ if __name__=='__main__':
     parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
+    parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
     
     args = parser.parse_args() 
     print(args)
+    
+    if args.resultsDir != "":
+        results_dir = args.resultsDir
+        print("Store results files (csv, avi) in", results_dir)
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
     fps=1/frame_stride
