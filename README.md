@@ -150,3 +150,4 @@ Copy the NI2-19cls.zip to datasets and unpack the file
 
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
  - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
+ - plotResultsMAMBO.py and plotResultsNI2.py - reads CSV files with detections and classifications and plots histograms of taxa of arthoropods
