@@ -146,3 +146,8 @@ Copy the NI2-19cls.zip to datasets and unpack the file
 
  - training-ClassificationExtended19Cls.py - used for training SOAT CNNs including: ResNetv50, EfficientNetB4, MobileNetv2, InceptionV3, DenseNet201, ConvNeXtTiny and ConvNeXtBase
 
+## Additional helper functions ##
+
+ - createCrops.py - creates crops of insect images found by the insect detector and classifier
+ - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
+ - plotResultsMAMBO.py and plotResultsNI2.py - reads CSV files with detections and classifications and plots histograms of taxa of arthoropods
