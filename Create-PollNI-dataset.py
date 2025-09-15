@@ -35,7 +35,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             h = detection['y2'] - detection['y1']
             xc = detection['x1'] + 0.5*w
             yc = detection['y1'] + 0.5*h
-            line = "1 " + str(xc/IMG_WIDTH) + " " + str(yc/IMG_HEIGHT) + " " + str(w/IMG_WIDTH) + " " + str(h/IMG_HEIGHT)
+            line = "0 " + str(xc/IMG_WIDTH) + " " + str(yc/IMG_HEIGHT) + " " + str(w/IMG_WIDTH) + " " + str(h/IMG_HEIGHT)
             print(line)
             labelFile.write(line + "\n")
         labelFile.close()
