@@ -58,7 +58,7 @@ def createLabelsAndImages(cameraSystem, selDataset, data_df, pathToRecordedFiles
     
 if __name__=='__main__':
     
-    cameraSystem = "S3" # S4, S5
+    cameraSystem = "S4" # S2, S3, S4
     numInsects = 600
     numUnsure = 300
     numVegetation = 300
