@@ -169,6 +169,7 @@ if __name__ == '__main__':
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
     parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
+    parser.add_argument('--dataset', default="V2") #dataset V2 (ResNet), dataset V3 (ResNet or ConvNextBase)
     args = parser.parse_args() 
     print(args)
     
@@ -177,7 +178,11 @@ if __name__ == '__main__':
     conf = readconfig(config_filename)
     
     # Convert hierarchical labels to flat list of labels
-    conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFile"])
+    if args.dataset == 'V2':
+        conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFile"])
+    else:
+        conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
+        
     
     imageCounts = 0
     totalPredictions = 0
