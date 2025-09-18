@@ -168,7 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
-    parser_add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
+    parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
     args = parser.parse_args() 
     print(args)
     
