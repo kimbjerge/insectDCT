@@ -57,8 +57,12 @@ def createFlatSpeciesList(label_file):
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
 def getDateTime(image_filename): 
 
-    nameSplit = image_filename.split('.')[0].split('_')
-    dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
+    if args.dateFormat == 'YYYY_MM_DD':
+        nameSplit = image_filename.split('.')[0].split('_')
+        dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
+    else: # Format 'YYYYMMMDD'
+        dateTimeStr = image_filename.split('.')[0]
+    
     return dateTimeStr
 
 
