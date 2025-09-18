@@ -168,6 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
+    parser_add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
     args = parser.parse_args() 
     print(args)
     
@@ -190,8 +191,12 @@ if __name__ == '__main__':
             totalFilteredPredictions += totFiltered
             imageCounts += counts
 
-            trackNameSplit = trackName.split('_')
-            date = int(trackNameSplit[1] + trackNameSplit[2] + trackNameSplit[3])  # format YYYYMMDD
+            if args.dateFormat == 'YYYY_MM_DD':
+                trackNameSplit = trackName.split('_')
+                date = int(trackNameSplit[1] + trackNameSplit[2] + trackNameSplit[3])  # format YYYYMMDD
+            else: # Assumed 'YYYYMMDD'
+                date = int(trackName)  # format YYYYMMDD
+             
             print_totals(date, stat, args.tracks)
         
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)
