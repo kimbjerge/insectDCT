@@ -42,6 +42,11 @@ class Stats:
                     self.idhistory[obj.id][2] = obj.label
             else:
                 self.idhistory[obj.id] = [1, np.zeros(len(self.species)), '']
+                
+                #KBE corrected counting number of detections in track
+                index = self.species.index(obj.label)                      
+                self.idhistory[obj.id][1][index] += 1
+                
                 obj.starttime = time
                 obj.endtime = time
                 obj.startdate = startdate
@@ -86,9 +91,9 @@ class Stats:
             #Calculate confidence
             ind = self.species.index(obj.label)
             if obj.label == 'unknown' and obj.counts is not 0:
-                conf = (self.idhistory[obj.id][1][ind]*2) / (obj.counts)
+                conf = (self.idhistory[obj.id][1][ind]*2) / (obj.counts + 1) # KBE
             elif obj.counts is not 0:
-                conf = self.idhistory[obj.id][1][ind] / (obj.counts)
+                conf = self.idhistory[obj.id][1][ind] / (obj.counts + 1) # KBE
 
             #Distance
             distance = obj.distance
