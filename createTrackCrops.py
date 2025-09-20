@@ -72,6 +72,9 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
             axes[i].imshow(imgCrop)
             axes[i].axis('off')  # Hide axes
 
+            del image 
+            del imgCrop
+
         i += 1
         
     plt.suptitle(taxa + " Id " + str(trackId) + " Len " + str(i) + " Conf " + str(confidence) + " Date " + str(trackDate))
@@ -82,8 +85,8 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
         os.mkdir(pathToDestCrops + taxa)
     fileName = row['fileName'].replace('/', '_').replace(".jpg", "") + "_" + str(trackId) + ".png"
     plt.savefig(pathToDestCrops + taxa + "/" + fileName)
-    plt.show()
-        
+    #plt.show()
+    plt.close('all')
     
 def calcConfidence(trackRows):
 
@@ -137,6 +140,7 @@ def analyseTracks(data_fp, pathToRecordData, pathToDestCrops):
         else: #New track
             if validTrack: # Save valid track
                 saveTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, trackRows)
+            del trackRows
             trackRows = []
             trackId = currTrackId
             elmCnt = 1
@@ -157,6 +161,7 @@ if __name__=='__main__':
             if "-TRS" in filename:
                 print("Reading", filename)
                 data_df = pd.read_csv(pathToSrcDataset+filename)
+                data_df = data_df.sort_values(by=['id', 'time'])
                 if firstTime:
                     data_frames = data_df.copy()
                     firstTime = False
