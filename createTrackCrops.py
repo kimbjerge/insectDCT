@@ -73,7 +73,11 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
     plt.suptitle(taxa + " Id " + str(trackId) + " Len " + str(i) + " Conf " + str(confidence) + " Date " + str(trackDate))
     plt.tight_layout(pad=1.0)
 
-    plt.savefig(pathToDestCrops + taxa + "_" + str(trackId) + "_" + row['fileName'].replace(".jpg", ".png"))
+    if os.path.exists(pathToDestCrops + taxa) == False:
+        print("Create directory:", pathToDestCrops + taxa)
+        os.mkdir(pathToDestCrops + taxa)
+    fileName = row['fileName'].replace('/', '_').replace(".jpg", "") + "_" + str(trackId) + ".png"
+    plt.savefig(pathToDestCrops + taxa + "/" + fileName)
     plt.show()
         
     
