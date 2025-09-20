@@ -89,19 +89,13 @@ def calcConfidence(trackRows):
 
     labels = {}
     counts = 0
-    first = True
     for row in trackRows:   
-        cnt = 1
-        if first:
-            cnt = 0
-            first = False 
-            
         taxa = row['taxaLabel']
-        counts += cnt
+        counts += 1
         if taxa not in labels.keys():
-            labels[taxa] = cnt
+            labels[taxa] = 1
         else:
-            labels[taxa] += cnt
+            labels[taxa] += 1
 
     maximum = 0
     taxa = ""
@@ -110,7 +104,7 @@ def calcConfidence(trackRows):
             maximum = value
             taxa = key
    
-    confidence = int(1000*maximum/counts) # Newer version not +1
+    confidence = int(1000*maximum/counts)
     confidence = confidence/10
     
     return confidence, taxa, counts 
