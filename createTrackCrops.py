@@ -29,6 +29,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
             imageFilePath = pathToRecordData + str(trackDate) + '/' + row['fileName']
             print(imageFilePath)
             image = cv2.imread(imageFilePath)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
             height, width, channels = image.shape
             
@@ -58,10 +59,13 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
             # get image crop of object
             imgCrop = image[y1:y2, x1:x2,  :].copy()
             if taxa == row['taxaLabel']:
-                color = [0, 0, 255]
+                color = [0, 0, 255] # Blue
             else:
-                color = [255, 0, 0]
-                plt.title(row['taxaLabel'])
+                if row['taxaLabel'] == "Unsure":
+                    color = [255, 255, 0] # Yellow
+                else:
+                    color = [255, 0, 0] # Red
+                axes[i].set_title(row['taxaLabel'])
             for r in range(wh2*2):
                 imgCrop[r, 0, :] = color 
                 imgCrop[r, 1, :] = color 
