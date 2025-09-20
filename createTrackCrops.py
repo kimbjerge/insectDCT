@@ -66,7 +66,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
                 else:
                     color = [255, 0, 0] # Red
                 axes[i].set_title(row['taxaLabel'])
-            for r in range(wh2*2):
+            for r in range(imgCrop.shape[0]):
                 imgCrop[r, 0, :] = color 
                 imgCrop[r, 1, :] = color 
             axes[i].imshow(imgCrop)
