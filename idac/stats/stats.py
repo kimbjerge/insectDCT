@@ -91,9 +91,9 @@ class Stats:
             #Calculate confidence
             ind = self.species.index(obj.label)
             if obj.label == 'unknown' and obj.counts is not 0:
-                conf = (self.idhistory[obj.id][1][ind]*2) / (obj.counts + 1) # KBE
+                conf = (self.idhistory[obj.id][1][ind]*2) / obj.counts
             elif obj.counts is not 0:
-                conf = self.idhistory[obj.id][1][ind] / (obj.counts + 1) # KBE
+                conf = self.idhistory[obj.id][1][ind] / obj.counts
 
             #Distance
             distance = obj.distance
