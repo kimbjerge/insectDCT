@@ -13,8 +13,9 @@ import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
-validTrackLength = 3
-validTrackConfidence = 50
+validTrackLength = 3 # Overwritten by args parameter validNum
+validTrackConfidence = 50 # Overwritten by args parameter validConfTH
+showAxis = 'off' # Or 'on'
 
 def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, confidence, trackRows):
     
@@ -31,7 +32,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
 
         if i < rows*cols:                
             imageFilePath = pathToRecordData + row['fileName']
-            print(imageFilePath)
+            #print(imageFilePath)
             image = cv2.imread(imageFilePath)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
@@ -74,11 +75,15 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
                 imgCrop[r, 0, :] = color 
                 imgCrop[r, 1, :] = color 
             axes[i].imshow(imgCrop)
-            axes[i].axis('off')  # Hide axes
-
+            axes[i].axis(showAxis)  # Hide axes
+     
             del image 
             del imgCrop
 
+        i += 1
+     
+    while i < rows*cols:
+        axes[i].axis(showAxis)  # Hide axes
         i += 1
         
     plt.suptitle(taxa + " Id " + str(trackId) + " Len " + str(i) + " Conf " + str(confidence) + " Date " + str(trackDate))
@@ -151,27 +156,35 @@ def analyseTracks(data_fp, pathToRecordData, pathToDestCrops):
             validTrack = False
             trackRows.append(row)
             trackDate = row['date']
+
+    if validTrack: # Save last valid track
+        saveTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, trackRows)
              
 if __name__=='__main__':
             
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
-    parser.add_argument('--images', default='./images/pi1_2025_02_21') #Directory that contains the image files
+    parser.add_argument('--images', default='./images') #Directory that contains the image files
     parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
     #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/RTNI/trackCrops') # Optimized for embedded processing (ncnn)
-    
+
+    parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
+    parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
+
     args = parser.parse_args() 
     print(args)
     
+    validTrackLength = args.validNum 
+    validTrackConfidence = args.validConfTH
+
     pathToSrcDataset = args.tracks + '/'
     pathToRecordData = args.images + '/'
     pathToDestCrops = args.resultsDir + '/'
     
     firstTime = True
-    # File format: S2_123-Aug09_1_88-20190808104930.jpg
     for filename in sorted(os.listdir(pathToSrcDataset)):
         if (filename.endswith('.csv')):
             if "-TRS" in filename:
