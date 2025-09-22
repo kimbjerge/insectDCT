@@ -2,10 +2,14 @@
 """
 Created on Fri Sep 19 10:07:04 2025
 
+Creates plots of tracks with crops of detected insect taxa in a sequence of images 
+Used the *-TRS.csv files as inputs from the insect tracker
+
 @author: Kim Bjerge
 """
 import os
 import cv2
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -26,7 +30,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
     for row in trackRows:
 
         if i < rows*cols:                
-            imageFilePath = pathToRecordData + str(trackDate) + '/' + row['fileName']
+            imageFilePath = pathToRecordData + row['fileName']
             print(imageFilePath)
             image = cv2.imread(imageFilePath)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -150,9 +154,21 @@ def analyseTracks(data_fp, pathToRecordData, pathToDestCrops):
              
 if __name__=='__main__':
             
-    pathToSrcDataset = '/RTNI/tracks/'
-    pathToRecordData = 'O:/Tech_TTH-KBE/NI/RT/'
-    pathToDestCrops = '/RTNI/trackCrops/'
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
+    parser.add_argument('--images', default='./images/pi1_2025_02_21') #Directory that contains the image files
+    parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='/RTNI/trackCrops') # Optimized for embedded processing (ncnn)
+    
+    args = parser.parse_args() 
+    print(args)
+    
+    pathToSrcDataset = args.tracks + '/'
+    pathToRecordData = args.images + '/'
+    pathToDestCrops = args.resultsDir + '/'
     
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
@@ -161,11 +177,6 @@ if __name__=='__main__':
             if "-TRS" in filename:
                 print("Reading", filename)
                 data_df = pd.read_csv(pathToSrcDataset+filename)
-                data_df = data_df.sort_values(by=['id', 'time'])
-                if firstTime:
-                    data_frames = data_df.copy()
-                    firstTime = False
-                else:    
-                    data_frames = pd.concat([data_frames, data_df])
-                    
-    analyseTracks(data_frames, pathToRecordData, pathToDestCrops)
+                data_df = data_df.sort_values(by=['id', 'time'])  
+                pathToRecordDataSubDir = pathToRecordData + filename.split('-')[0] + '/'
+                analyseTracks(data_df, pathToRecordDataSubDir, pathToDestCrops)
