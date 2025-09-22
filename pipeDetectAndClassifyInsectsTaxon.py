@@ -346,7 +346,7 @@ if __name__=='__main__':
     print(args)
     
     if args.resultsDir != "":
-        results_dir = args.resultsDir
+        results_dir = args.resultsDir + '/'
         print("Store results files (csv, avi) in", results_dir)
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
