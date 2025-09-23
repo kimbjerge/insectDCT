@@ -28,6 +28,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
     axes = axes.flatten()
 
     i = 0
+    length = 0
     for row in trackRows:
 
         if i < rows*cols:                
@@ -81,12 +82,13 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
             del imgCrop
 
         i += 1
+        length += 1
      
     while i < rows*cols:
         axes[i].axis(showAxis)  # Hide axes
         i += 1
         
-    plt.suptitle(taxa + " Id " + str(trackId) + " Len " + str(i) + " Conf " + str(confidence) + " Date " + str(trackDate))
+    plt.suptitle(taxa + " Id " + str(trackId) + " Len " + str(length) + " Conf " + str(confidence) + " Date " + str(trackDate))
     plt.tight_layout(pad=1.0)
 
     if os.path.exists(pathToDestCrops + taxa) == False:
@@ -173,6 +175,7 @@ if __name__=='__main__':
 
     parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
     parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
+    #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
 
     args = parser.parse_args() 
     print(args)
