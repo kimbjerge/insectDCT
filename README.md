@@ -352,7 +352,11 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 
 ## Additional helper functions ##
 
+ - plotResultsMAMBO.py and plotResultsNI2.py - examples of reading CSV files with detections and classifications and plots histograms of taxa of arthoropods
+   
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
  - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
- - createTrackCrops.py - based on the *_TRS.csv files it create files of insects crops in the valid tracks (Id) in a 4x4 matrix plot 
- - plotResultsMAMBO.py and plotResultsNI2.py - reads CSV files with detections and classifications and plots histograms of taxa of arthoropods
+ - createTrackCrops.py - based on the *_TRS.csv files it create files of insects crops in the valid tracks (Id) in a 4x4 matrix plot (See example below)
+
+   ![Alt text](ExTrackCrops.png)
+   
