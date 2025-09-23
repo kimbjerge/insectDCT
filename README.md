@@ -19,6 +19,11 @@ Estimating flower cover with color and semantic segmentation and classification 
 "A deep learning pipeline for time-lapse camera monitoring of floral environments and insect populations".  <br />
 https://doi.org/10.1016/j.ecoinf.2024.102861 
 
+Hierarchical classification of arthropods in three levels of taxonomic ranks:
+
+"Hierarchical classification of insects with multitask learning and anomaly detection".  <br />
+https://doi.org/10.1016/j.ecoinf.2023.102278
+
 Tracking insects in low-framerate video recordings (<1fps):
 
 "Towards edge processing of images from insect camera traps".  <br />
