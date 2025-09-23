@@ -1,7 +1,11 @@
 # insectsDCT
-This project contains Python code for processing time-lapse images (resized to 1920x1080 pixel) from insect camera traps. 
-Code to detect, classify, and track insects with a background of plants and flowers.
-(detection, classification, tracking. Floral cover estimation will be added later.)
+This project contains Python code for processing time-lapse recorded images from insect camera traps. 
+It contains code to detect, classify, and track insects with various backgrounds of plants and flowers.
+(Detection, classification, and tracking, where floral cover estimation will be added later.)
+
+Tracking should be used for high time-lapse recordings (0.33 - 1fps); otherwise, typical time-lapse intervals are 30 - 60 seconds.
+Full-sized images are resized to 1920x1080 pixels for detection with YOLO11.
+Insects detected with bounding boxes are cropped with rectangular windows and resized to 128x128 pixels for classification with CNN models.
 
 ## The algorithms used are described in the papers: 
 
@@ -35,10 +39,10 @@ README-conda-env-yolo11.txt - environment requirements
 The modes below are trained on datasets collected with Wingscape's Bird cameras, Logitech Webcams, and Pi Cameras. 
 Background images contain vegetation of Sedum, Red clover, Sea rocket, Common mallow, and different grasses.
 
-V3. Third model (HierarchicalClassifierV3_05092025) trained on images recorded with above cameras and backgrounds supplemented with GBIF data  <br />
+V3. Third model (HierarchicalClassifierV3_05092025) trained on images recorded with cameras and backgrounds mentioned above and supplemented with GBIF data  <br />
 https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive_link
 
-V4. Forth model (HierarchicalClassifierV4_05092025) trained on all images as in V3 but without GBIF data  <br />
+V4. Forth model (HierarchicalClassifierV4_05092025) trained on same images as in V3 but without GBIF data  <br />
 https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
 
 Download the weights, labels, and thresholds from the above links. 
@@ -48,7 +52,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
 1. Download the repository and install it with the same directory structure.
 
-2. Download weights and labels for the classifier and unzip to: models_save/
+2. Download weights, labels and thresholds for the hierachical classifier and unzip to: models_save/
    
 4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
@@ -56,25 +60,34 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
    - Anaconda: $ conda activate yolo11
   
-6. Run the Python code to generate the CSV files for detection and tracking.
+6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
-   - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0 - default uses ResNet50 CNN model)
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase (Performs detection and classification using ConvNextBase model - best model)
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4 (Performs detection and classification using dataset V4 instead of V3)
-   - $ python pipeTrackInsectsTaxon.py (Performs tracking based on the CSV output files (*-CL.csv))
+   - $ python pipeDetectAndClassifyInsectsTaxon.py
+     # Performs detection and classification with ResNet50 on CUDA:0
+     
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu
+     # Performs detection and classification with ResNet50 on CPU
+     
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase
+     # Performs detection and classification using ConvNextBase model (best performing model)
+     
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4
+     # Performs detection and classification using dataset V4 instead of V3
+     
+   - $ python pipeTrackInsectsTaxon.py
+     # Performs tracking based on the CSV output files (./detections/*-CL.csv)
    
    See code for additional parameters for the above python script.
 
-7. Run the Python code to generate images of insect crops for taxa classification and tracking.
+7. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
-       (Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files)
+       # Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
        
    - $ python createTrackCrops.py --validConfTH 50  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
-       (Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files)
+       # Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
 
-To use the flat classifier with few classes of taxons see description in: 
+To use a simple flat classifier with few classes of taxons see description in: 
 
 https://github.com/kimbjerge/insectsDCT/tree/main/README-flat.md
 
@@ -165,7 +178,6 @@ taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do als
     Tettigoniidae
     Vegetation
     Vespidae
-
 
 taxaLevel 3: (83 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
 
