@@ -62,30 +62,30 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
   
 6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
-   - $ python pipeDetectAndClassifyInsectsTaxon.py
-     # Performs detection and classification with ResNet50 on CUDA:0
+   - $ python pipeDetectAndClassifyInsectsTaxon.py  <br />
+     Performs detection and classification with ResNet50 on CUDA:0
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu
-     # Performs detection and classification with ResNet50 on CPU
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu  <br />
+	 Performs detection and classification with ResNet50 on CPU
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase
-     # Performs detection and classification using ConvNextBase model (best performing model)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase  <br />
+     Performs detection and classification using ConvNextBase model (best performing model)
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4
-     # Performs detection and classification using dataset V4 instead of V3
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4  <br />
+     Performs detection and classification using dataset V4 instead of V3
      
-   - $ python pipeTrackInsectsTaxon.py
-     # Performs tracking based on the CSV output files (./detections/*-CL.csv)
+   - $ python pipeTrackInsectsTaxon.py  <br />
+     Performs tracking based on the CSV output files (./detections/*-CL.csv)
    
    See code for additional parameters for the above python script.
 
 7. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
-       # Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
+     Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
        
    - $ python createTrackCrops.py --validConfTH 50  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
-       # Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
+     Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
 
 To use a simple flat classifier with few classes of taxons see description in: 
 
@@ -111,27 +111,27 @@ Hierarchical taxa of classes in the model HierarchicalClassifierVx_05092025 (V3 
 
 taxaLevel 1: (21 groups of taxa primary Order)
 
-    Apoidea
-    Aranaea 
-    Birds 
-    Coleoptera
-    Dermaptera
-    Diptera
-    Feathers
-    Frogs
-    Hemiptera
-    Hymenoptera
-    Isopoda
-    Larvae
-    Lepidoptera
-    Lepidoptera_fw
-    Lizards
-    Milipedes
-    Odonata
-    Orthoptera
-    Slugs
-    Snails
-    Vegetation
+    1. Apoidea
+    2. Aranaea 
+    3. Birds 
+    4. Coleoptera
+    5. Dermaptera
+    6. Diptera
+    7. Feathers
+    8. Frogs
+    9. Hemiptera
+    10. Hymenoptera
+    11. Isopoda
+    12. Larvae
+    13. Lepidoptera
+    14. Lepidoptera_fw
+    15. Lizards
+    16. Milipedes
+    17. Odonata
+    18. Orthoptera
+    19. Slugs
+    20. Snails
+    21. Vegetation
 
 taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do also contain level 1 names)
 
