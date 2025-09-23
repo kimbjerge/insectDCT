@@ -84,7 +84,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
      Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
        
-   - $ python createTrackCrops.py --validConfTH 50  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
+   - $ python createTrackCrops.py --validConfTH 20  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
      Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
 
 To use a simple flat classifier with few classes of taxons see description in: 
@@ -135,49 +135,49 @@ taxaLevel 1: (21 groups of taxa primary Order)
 
 taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do also contain level 1 names)
 
-    Acrididae
-    Andrenidae
-    Apidae
-    Apoidea
-    Apoidea_small
-    Aranaea
-    Birds
-    Bombyliidae
-    Cantharidae
-    Coccinellidae
-    Coleoptera
-    Crabronidae
-    Dermaptera
-    Diptera
-    Feathers
-    Formidicidae
-    Frogs
-    Halictidae
-    Hemiptera
-    Hesperidae
-    Ichneumonidae
-    Isopoda
-    Larvae
-    Lepidoptera
-    Lepidoptera_fw
-    Lizards
-    Lycaenidae
-    Megachilidae
-    Milipedes
-    Moths
-    Nymphalidae
-    Nymphalidae_fw
-    Odonata
-    Pieridae
-    Pompilidae
-    Sarcophagidae
-    Slugs
-    Snails
-    Syrphidae
-    Tetrigidae
-    Tettigoniidae
-    Vegetation
-    Vespidae
+    1. Acrididae
+    2. Andrenidae
+    3. Apidae
+    4. Apoidea
+    5. Apoidea_small
+    6. Aranaea
+    7. Birds
+    8. Bombyliidae
+    9. Cantharidae
+    10. Coccinellidae
+    11. Coleoptera
+    12. Crabronidae
+    13. Dermaptera
+    14. Diptera
+    15. Feathers
+    16. Formidicidae
+    17. Frogs
+    18. Halictidae
+    19. Hemiptera
+    20. Hesperidae
+    21. Ichneumonidae
+    22. Isopoda
+    23. Larvae
+    24. Lepidoptera
+    25. Lepidoptera_fw
+    26. Lizards
+    27. Lycaenidae
+    28. Megachilidae
+    29. Milipedes
+    30. Moths
+    31. Nymphalidae
+    32. Nymphalidae_fw
+    33. Odonata
+    34. Pieridae
+    35. Pompilidae
+    36. Sarcophagidae
+    37. Slugs
+    38. Snails
+    39. Syrphidae
+    40. Tetrigidae
+    41. Tettigoniidae
+    42. Vegetation
+    43. Vespidae
 
 taxaLevel 3: (83 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
 
