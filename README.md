@@ -32,9 +32,6 @@ README-conda-env-yolo11.txt - environment requirements
 
 ### Hierarchical model weights and labels ###
 
-Download the weights, labels, and thresholds from the below link. 
-Save and unzip the file to the sub directory: insectsDCT/models_save
-
 The modes below are trained on datasets collected with Wingscape's Bird cameras, Logitech Webcams, and Pi Cameras. 
 Background images contain vegetation of Sedum, Red clover, Sea rocket, Common mallow, and different grasses.
 
@@ -43,6 +40,9 @@ https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive
 
 V4. Forth model (HierarchicalClassifierV4_05092025) trained on all images as in V3 but without GBIF data  <br />
 https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
+
+Download the weights, labels, and thresholds from the above links. 
+Save and unzip the file to the sub directory: insectsDCT/models_save
 
 ### Getting started ###
 
@@ -309,7 +309,9 @@ taxaConf is the taxa confidence score same as confidence in the detection CSV fi
 detectLine is the line number in the detection CSV file
 
 
-## Training insect detector models ##
+## Training insect detector and hierachical classification models ##
+
+Datasets for detector and classifier is not part of this Github repository. (Will be published later)
 
 ### Code for inspiration to create datasets with motion (MIE) images: ###
 
@@ -317,13 +319,19 @@ detectLine is the line number in the detection CSV file
 
 ### Subdirectories with python helper classes ###
 
-  - common - contains Python code used by pipeDetectAndClassifyInsects.py  <br />
-  - idac - contains python code used by pipeTrackInsects.py
+  - common - contains Python code used by pipeDetectAndClassifyInsectsTaxon.py  <br />
+  - idac - contains python code used by pipeTrackInsectsTaxon.py
 
 ### Training and validating models (YOLO11) on color or motion images: ###
 
  - insectsColorTrain.py, insectsColorVal.py  <br />
  - insectsMotionTrain.py
+
+### Training and validating hierarchical classification models: ###
+
+ - hierarchicalB3L/trainAdv.py  traning of the hierarchical classifier<br />
+ - hierarchicalB3L/validate.py  validation of  the hierarchical classifier<br />
+ - hierarchicalB3L/plotTrainAdvResults.py plotting results and learning the distribution (mean+STD) of logits for each class in the hierarchy
 
 ## Additional helper functions ##
 
