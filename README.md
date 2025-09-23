@@ -1,7 +1,7 @@
 # insectsDCT
-This project contains Python code for processing time-lapse (0.2-1fps) images (resized to 1920x1080 pixel) from insect camera traps. 
+This project contains Python code for processing time-lapse images (resized to 1920x1080 pixel) from insect camera traps. 
 Code to detect, classify, and track insects with a background of plants and flowers.
-(detection, classification, tracking, and floral cover estimation)
+(detection, classification, tracking. Floral cover estimation will be added later.)
 
 ## The algorithms used are described in the papers: 
 
@@ -30,97 +30,286 @@ Estimating flower cover is currently in development.
 ## Python environment files ##
 README-conda-env-yolo11.txt - environment requirements
 
+### Hierarchical model weights and labels ###
+
+Download the weights, labels, and thresholds from the below link. 
+Save and unzip the file to the sub directory: insectsDCT/models_save
+
+The modes below are trained on datasets collected with Wingscape's Bird cameras, Logitech Webcams, and Pi Cameras. 
+Background images contain vegetation of Sedum, Red clover, Sea rocket, Common mallow, and different grasses.
+
+V3. Third model (HierarchicalClassifierV3_05092025) trained on images recorded with above cameras and backgrounds supplemented with GBIF data  <br />
+https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive_link
+
+V4. Forth model (HierarchicalClassifierV4_05092025) trained on all images as in V3 but without GBIF data  <br />
+https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
+
 ### Getting started ###
 
-1. Download the repository and install it with the same directory structure
+1. Download the repository and install it with the same directory structure.
 
-2. Download weights for the classifier and unzip to: models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras
-   
-	https://drive.google.com/file/d/1_zjJS_Y5aIr2OFN6Jmg9aRAtILV0LV0J/view?usp=sharing
+2. Download weights and labels for the classifier and unzip to: models_save/
    
 4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
 
-5. Activate the python environment
+5. Activate the python environment.
 
    - Anaconda: $ conda activate yolo11
   
-6. Run the Python code to generate the CSV files for detection and tracking
+6. Run the Python code to generate the CSV files for detection and tracking.
 
-   - $ python pipeDetectAndClassifyInsects.py (Performs detection and classification on CUDA:0)
-   - $ python pipeDetectAndClassifyInsects.py --device cpu (Performs detection and classification on CPU)
-   - $ python pipeTrackInsects.py (Performs tracking based on the CSV output files) 
+   - $ python pipeDetectAndClassifyInsectsTaxon.py (Performs detection and classification on CUDA:0 - default uses ResNet50 CNN model)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu (Performs detection and classification on CPU)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase (Performs detection and classification using ConvNextBase model - best model)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4 (Performs detection and classification using dataset V4 instead of V3)
+   - $ python pipeTrackInsectsTaxon.py (Performs tracking based on the CSV output files (*-CL.csv))
+   
+   See code for additional parameters for the above python script.
 
-To use the hierarchical classifier with many classes of taxons (approx. 80) see description in: 
+7. Run the Python code to generate images of insect crops for taxa classification and tracking.
+   
+   - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
+       (Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files)
+       
+   - $ python createTrackCrops.py --validConfTH 50  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
+       (Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files)
 
-https://github.com/kimbjerge/insectsDCT/tree/main/hierarchicalB3L
+To use the flat classifier with few classes of taxons see description in: 
+
+https://github.com/kimbjerge/insectsDCT/tree/main/README-flat.md
+
 
 ### CSV files in detections directory ###
 
-Content of *.csv files which contain lines for each detection (piX_YYYY_MM_DD.csv):
+Content of *-CL.csv files which contain lines for each detection (subdir3-subdir2-subdir1-CL.csv):
 
-	trap,trapId,date,time,orderConf,orderId,x1,y1,x2,y2,fileName
+	year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId
 
-Where the orderId will be updated with the following classification codes:
+- trapDir is the directory of the source files subdir3/subdir2  <br />
+- detectConf is the confidence score of the YOLO11 arthropod detector  <br />
+- detectId is always 0 and is the class id determined by YOLO11  <br />
+- x1,y1,x2,y2 is the coordinates in the images for the upper left corner and lower right corner of the bounding box surrounding the detected arthropod  <br />
+- filename is the name of the image file with the format subdir1/name.JPG  <br />
+- taxaLabel is the order, family, genus or species name of the arthropod found by the hierarchical classifier see names below (taxaLevel 1-3)
+ 
+- taxaId and taxaLevel will be updated with the following classification codes
 
-	1 - Coccinellidae (Ladybirds) 
-	2 - Coleoptera (Beetles) 
-	3 - Background (Plants)
-	4 - Bombus (Bumblebees)
-	5 - Syrphidae (Hoverflies) 
-	6 - Lepidoptera (Butterflies)
-	7 - Araneae (Spiders)
-	8 - Formidicidae (Ants)
-	9 - Diptera (Flies)
-	10 - Hemiptera (True bugs)
-	11 - Isopoda (Isopods)
-	12 - Unspecified 
-	13 - Hymenoptera
-	14 - Orthoptera (Grasshoppers)
-	15 - Rhagnoycha fulva
-	16 - Satyrinae (Satyrines)
-	17 - Aglais urticea (Small tortoiseshell)
-	18 - Odonata (Dragonflies)
-	19 - Apis mellifera (Honeybees)
+Hierarchical taxa of classes in the model HierarchicalClassifierVx_05092025 (V3 and V4):
 
-orderConf is the confidence score from the classifier (0-100%)
+taxaLevel 1: (21 groups of taxa primary Order)
 
-Example:
+    Apoidea
+    Aranaea 
+    Birds 
+    Coleoptera
+    Dermaptera
+    Diptera
+    Feathers
+    Frogs
+    Hemiptera
+    Hymenoptera
+    Isopoda
+    Larvae
+    Lepidoptera
+    Lepidoptera_fw
+    Lizards
+    Milipedes
+    Odonata
+    Orthoptera
+    Slugs
+    Snails
+    Vegetation
 
-	pi1,1,20250221,115753,64,19,1335,820,1386,888,pi1_2025_02_21/pi2_2025_02_21_11_57_53.jpg 
-	pi1,1,20250221,115807,39,12,422,729,489,776,pi1_2025_02_21/pi2_2025_02_21_11_58_07.jpg
+taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do also contain level 1 names)
 
-### CSV and JSON files in tracks directory ###
+    Acrididae
+    Andrenidae
+    Apidae
+    Apoidea
+    Apoidea_small
+    Aranaea
+    Birds
+    Bombyliidae
+    Cantharidae
+    Coccinellidae
+    Coleoptera
+    Crabronidae
+    Dermaptera
+    Diptera
+    Feathers
+    Formidicidae
+    Frogs
+    Halictidae
+    Hemiptera
+    Hesperidae
+    Ichneumonidae
+    Isopoda
+    Larvae
+    Lepidoptera
+    Lepidoptera_fw
+    Lizards
+    Lycaenidae
+    Megachilidae
+    Milipedes
+    Moths
+    Nymphalidae
+    Nymphalidae_fw
+    Odonata
+    Pieridae
+    Pompilidae
+    Sarcophagidae
+    Slugs
+    Snails
+    Syrphidae
+    Tetrigidae
+    Tettigoniidae
+    Vegetation
+    Vespidae
 
-Content of *.csv files which contain lines for each track (piX_YYYY_MM_DDTR.csv):
+
+taxaLevel 3: (83 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
+
+    Acrididae
+    Aglais io
+    Aglais urticae
+    Aglais urticae_fw
+    Ancistrocerus nigricornis
+    Andrena red_abdomen
+    Andrena reddish
+    Aphantopus hyperantus
+    Apis mellifera     
+    Apoidea            
+    Apoidea_small      
+    Aranaea            
+    Birds              
+    Bombus             
+    Bombus hypnorum    
+    Bombus lapidarius  
+    Bombus pascuorum   
+    Bombus sylvarum    
+    Bombus terrestris  
+    Bombyliidae        
+    Chorthippus        
+    Chorthippus apricarius
+    Chrysotoxum           
+    Coccinella septempunctata
+    Coenonympha pamphilus    
+    Coleoptera               
+    Crabronidae              
+    Decticus verrucivorus    
+    Dermaptera               
+    Diptera                  
+    Episyrphus balteatus     
+    Eristalis                
+    Eumenes coronatus        
+    Eupeodes                 
+    Eurimyia                 
+    Feathers                 
+    Formidicidae             
+    Frogs                    
+    Halictidae striped       
+    Helophilus               
+    Hemiptera                
+    Hesperidae               
+    Ichneumonidae            
+    Isopoda                  
+    Larvae                   
+    Lasiommata megera        
+    Lepidoptera              
+    Lepidoptera_fw           
+    Lizards                  
+    Lycaena phlaeas          
+    Lycaenidae               
+    Maniola jurtina          
+    Maniola jurtina_fw       
+    Megachilidae             
+    Meliscaeva cinctella     
+    Melitaea cinxia          
+    Milipedes                
+    Moths                    
+    Myathropa florea         
+    Odonata                  
+    Omocestus viridulus      
+    Pholidoptera griseoaptera
+    Pieridae                 
+    Platycheirus             
+    Pompilidae               
+    Rhagonycha fulva         
+    Sarcophagidae            
+    Satyrinae                
+    Satyrinae_fw             
+    Scaeva pyrastri          
+    Scaeva selenitica        
+    Slugs                    
+    Snails                   
+    Sphaerophoria scripta-complex
+    Sphecodes                    
+    Syritta pipiens              
+    Syrphidae                    
+    Syrphus                      
+    Tetrix                       
+    Vegetation                   
+    Vespidae                     
+    Vespula vulgaris             
+    Xanthogramma                 
+
+- taxaConf is the confidence score from the classifier (0-100%)  <br />
+- taxaSure is True if the confidence score is within the distribution of the training data and the classification is valid  <br />
+- frameId is a number used to find the corresponding entry in the *-HI.csv file with more detailed information of the hierarchical classifier  <br />
+
+Example of *-CL.csv content:
+
+	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141529,48,0,2018,212,2112,270,101_WSCT/WSCT0441.JPG,Unsure,0,0,0,False,441
+	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141629,43,0,1262,1123,1355,1224,101_WSCT/WSCT0442.JPG,Syrphidae,37,2,6,True,442
+	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,142529,62,0,778,1650,893,1716,101_WSCT/WSCT0451.JPG,Sphaerophoria scripta-complex,73,3,45,True,451 
+
+Content of *-HI.csv files which contain hierarchical taxonomic information for each detection (subdir3-subdir2-subdir1-CL.csv):
+
+	Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId
+
+LabelX, LabelIdX is ConfX is the name, id, confidence score on the taxonomic levels 1, 2 and 3.  <br />
+AboveX is True if the confidence scores is within the distribution of the training data. <br />
+Checked is True if the classification is correct according to the dependences in the taxonomic hierarchy.
+
+Example of content with same frameId as in example above (*-CL.csv content):
+
+	Hymenoptera,7,0.0016508539215075745,False,Halictidae,14,0.05190288999028045,True,Sphaerophoria scripta-complex,72,0.003527139374961427,False,False,441
+	Diptera,3,0.06632232090118803,True,Syrphidae,36,0.05682376443188935,True,Sphaerophoria scripta-complex,72,0.00486999349185118,False,True,442
+	Diptera,3,0.47108301131483055,True,Syrphidae,36,0.38675071058276406,True,Sphaerophoria scripta-complex,72,0.4498128146023822,True,True,451
+
+ ### CSV and JSON files in tracks directory ###
+
+Content of *.csv files which contain lines for each track (piX_YYYY_MM_DD-TR.csv):
 
 	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
 
-Where class is the name of the orderId and id is the track number
+Where class is the name of the taxonId at level 1-3 and id is the track number
 
 Example:
 
-	0,20250221,11:57:31,11:58:23,52,Hymenoptera,18,36.8,3199,3171  
-	1,20250221,11:58:07,11:58:31,24,Hymenoptera,12,53.9,2686,1364
+	0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171  
+	1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364
 
-counts is the number of detections minus one in a track (at least two detections to make a track)  <br />
+counts is the number of detections in a track (at least two detections to make a track)  <br />
 confidence is the number of times the class was predicted relative to all detections in the track   <br />
 size is the average pixel size of the tracked insect   <br />
 distance is the distance in pixels the insect was tracked   <br />
 
-Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DDTRS.csv):
+Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DD-TRS.csv):
 
 	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName
 
 Example:
 
-	0,20250221,115731,60,Hymenoptera,1331,632,1307,600,49,64,3,pi2_2025_02_21_11_57_31.jpg  
-	0,20250221,115732,79,Hymenoptera,1310,674,1285,640,50,68,4,pi2_2025_02_21_11_57_32.jpg 
-	0,20250221,115734,63,Background,1278,700,1252,682,52,37,5,pi2_2025_02_21_11_57_34.jpg
+	0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg
+	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg
+	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg
 
-taxaConf is the taxa confidence score same as confidence in the detection CSV file  <br />
+taxaConf is the taxa confidence score same as confidence in the detection CSV file   <br />
 detectLine is the line number in the detection CSV file
 
-## Training insect detector and classifier models ##
+
+## Training insect detector models ##
 
 ### Code for inspiration to create datasets with motion (MIE) images: ###
 
@@ -135,16 +324,6 @@ detectLine is the line number in the detection CSV file
 
  - insectsColorTrain.py, insectsColorVal.py  <br />
  - insectsMotionTrain.py
-
-## Training and validation of arthropod classifier (EfficientNetB4) ##
-
-### Dataset for training the arthropod classifier (NI2-19cls) can be downloaded from Zenodo ###
-https://zenodo.org/records/13772695
-Copy the NI2-19cls.zip to datasets and unpack the file
-
-### Training arthropod classifier with 19 taxonomic groups ###
-
- - training-ClassificationExtended19Cls.py - used for training SOAT CNNs including: ResNetv50, EfficientNetB4, MobileNetv2, InceptionV3, DenseNet201, ConvNeXtTiny and ConvNeXtBase
 
 ## Additional helper functions ##
 
