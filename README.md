@@ -32,7 +32,7 @@ https://doi.org/10.1002/rse2.70007
 
 # This repository includes the essential Python code for the steps in the figure below. 
 
-![Alt text](Pipeline.png)
+![Alt text](PipelineHierarchical.png)
 
 Estimating flower cover is currently in development. 
 
@@ -186,89 +186,89 @@ taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do als
 
 taxaLevel 3: (83 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
 
-    Acrididae
-    Aglais io
-    Aglais urticae
-    Aglais urticae_fw
-    Ancistrocerus nigricornis
-    Andrena red_abdomen
-    Andrena reddish
-    Aphantopus hyperantus
-    Apis mellifera     
-    Apoidea            
-    Apoidea_small      
-    Aranaea            
-    Birds              
-    Bombus             
-    Bombus hypnorum    
-    Bombus lapidarius  
-    Bombus pascuorum   
-    Bombus sylvarum    
-    Bombus terrestris  
-    Bombyliidae        
-    Chorthippus        
-    Chorthippus apricarius
-    Chrysotoxum           
-    Coccinella septempunctata
-    Coenonympha pamphilus    
-    Coleoptera               
-    Crabronidae              
-    Decticus verrucivorus    
-    Dermaptera               
-    Diptera                  
-    Episyrphus balteatus     
-    Eristalis                
-    Eumenes coronatus        
-    Eupeodes                 
-    Eurimyia                 
-    Feathers                 
-    Formidicidae             
-    Frogs                    
-    Halictidae striped       
-    Helophilus               
-    Hemiptera                
-    Hesperidae               
-    Ichneumonidae            
-    Isopoda                  
-    Larvae                   
-    Lasiommata megera        
-    Lepidoptera              
-    Lepidoptera_fw           
-    Lizards                  
-    Lycaena phlaeas          
-    Lycaenidae               
-    Maniola jurtina          
-    Maniola jurtina_fw       
-    Megachilidae             
-    Meliscaeva cinctella     
-    Melitaea cinxia          
-    Milipedes                
-    Moths                    
-    Myathropa florea         
-    Odonata                  
-    Omocestus viridulus      
-    Pholidoptera griseoaptera
-    Pieridae                 
-    Platycheirus             
-    Pompilidae               
-    Rhagonycha fulva         
-    Sarcophagidae            
-    Satyrinae                
-    Satyrinae_fw             
-    Scaeva pyrastri          
-    Scaeva selenitica        
-    Slugs                    
-    Snails                   
-    Sphaerophoria scripta-complex
-    Sphecodes                    
-    Syritta pipiens              
-    Syrphidae                    
-    Syrphus                      
-    Tetrix                       
-    Vegetation                   
-    Vespidae                     
-    Vespula vulgaris             
-    Xanthogramma                 
+    1. Acrididae
+    2. Aglais io
+    3. Aglais urticae
+    4. Aglais urticae_fw
+    5. Ancistrocerus nigricornis
+    6. Andrena red_abdomen
+    7. Andrena reddish
+    8. Aphantopus hyperantus
+    9. Apis mellifera     
+    10. Apoidea            
+    11. Apoidea_small      
+    12. Aranaea            
+    13. Birds              
+    14. Bombus             
+    15. Bombus hypnorum    
+    16. Bombus lapidarius  
+    17. Bombus pascuorum   
+    18. Bombus sylvarum    
+    19. Bombus terrestris  
+    20. Bombyliidae        
+    21. Chorthippus        
+    22. Chorthippus apricarius
+    23. Chrysotoxum           
+    24. Coccinella septempunctata
+    25. Coenonympha pamphilus    
+    26. Coleoptera               
+    27. Crabronidae              
+    28. Decticus verrucivorus    
+    29. Dermaptera               
+    30. Diptera                  
+    31. Episyrphus balteatus     
+    31. Eristalis                
+    31. Eumenes coronatus        
+    31. Eupeodes                 
+    31. Eurimyia                 
+    31. Feathers                 
+    31. Formidicidae             
+    31. Frogs                    
+    31. Halictidae striped       
+    40. Helophilus               
+    41. Hemiptera                
+    42. Hesperidae               
+    43. Ichneumonidae            
+    44. Isopoda                  
+    45. Larvae                   
+    46. Lasiommata megera        
+    47. Lepidoptera              
+    48. Lepidoptera_fw           
+    49. Lizards                  
+    50. Lycaena phlaeas          
+    51. Lycaenidae               
+    52. Maniola jurtina          
+    53. Maniola jurtina_fw       
+    54. Megachilidae             
+    55. Meliscaeva cinctella     
+    56. Melitaea cinxia          
+    57. Milipedes                
+    58. Moths                    
+    59. Myathropa florea         
+    60. Odonata                  
+    61. Omocestus viridulus      
+    62. Pholidoptera griseoaptera
+    63. Pieridae                 
+    64. Platycheirus             
+    65. Pompilidae               
+    66. Rhagonycha fulva         
+    67. Sarcophagidae            
+    68. Satyrinae                
+    69. Satyrinae_fw             
+    70. Scaeva pyrastri          
+    71. Scaeva selenitica        
+    72. Slugs                    
+    73. Snails                   
+    74. Sphaerophoria scripta-complex
+    75. Sphecodes                    
+    76. Syritta pipiens              
+    77. Syrphidae                    
+    78. Syrphus                      
+    79. Tetrix                       
+    80. Vegetation                   
+    81. Vespidae                     
+    82. Vespula vulgaris             
+    83. Xanthogramma                 
 
 - taxaConf is the confidence score from the classifier (0-100%)  <br />
 - taxaSure is True if the confidence score is within the distribution of the training data and the classification is valid  <br />
