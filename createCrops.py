@@ -134,8 +134,10 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsV1/') # Directory that contains CSV files
-    parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/au/') # Directory that contains images
+    parser.add_argument('--CSVfiles', default='./detections/') # Directory that contains CSV files
+    parser.add_argument('--imagesPath', default='./images/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsV1/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/au/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsV1/') # Directory that contains CSV files
@@ -143,17 +145,30 @@ if __name__=='__main__':
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/') # Directory that contains images
     
-    parser.add_argument('--cropsPath', default='./crops_au/') # Directory to save images crops
+    parser.add_argument('--cropsPath', default='./crops/') # Directory to save images crops
     
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below mean-3*std
+    parser.add_argument('--dataset', default="V3") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V3_05092025.csv') # Use thresholds below = mean-3*std
+
+    #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
+    #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
+    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below mean-3*std
     
     args = parser.parse_args() 
     print(args)
     
-    print("Loading hierarchical insect classifier model", args.hierachical)
-    hierarchicalClassifier = createHierarchicalClassifier(args.hierachical, args.labels, args.thresholds, 128)
+    hierarchicalWeights = args.hierachical
+    hierarchicalLabels = args.labels
+    hierarchicalThresholds = args.thresholds
+    if args.dataset != 'V3': # Select model weights trained on dataset V3 or V4f
+        hierarchicalWeights = hierarchicalWeights.replace('V3', args.dataset)
+        hierarchicalLabels = hierarchicalLabels.replace('V3', args.dataset)
+        hierarchicalThresholds = hierarchicalThresholds.replace('V3', args.dataset)
+            
+    print("Loading hierarchical insect classifier model", hierarchicalWeights)
+    hierarchicalClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128)
     
     for filename in sorted(os.listdir(args.CSVfiles)):
         if filename.endswith('.csv') and '-CL' in filename:
