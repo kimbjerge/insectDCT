@@ -77,7 +77,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
      Performs detection and classification using ConvNextBase model (best performing model)
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4  <br />
-     Performs detection and classification using dataset V4 instead of V3
+     Performs detection and classification using models trained on classification dataset V4 instead of V3
      
    - $ python pipeTrackInsectsTaxon.py  <br />
      Performs tracking based on the CSV output files (./detections/*-CL.csv)
