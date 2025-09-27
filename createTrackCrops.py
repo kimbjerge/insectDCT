@@ -174,13 +174,13 @@ if __name__=='__main__':
             
     parser = argparse.ArgumentParser()
     
-    #parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
-    #parser.add_argument('--images', default='./images') #Directory that contains the image files
-    #parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
+    parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
+    parser.add_argument('--images', default='./images') #Directory that contains the image files
+    parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
 
-    parser.add_argument('--tracks', default='/UFZ/tracks') #Directory that contains CSV files of tracks
-    parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
-    parser.add_argument('--resultsDir', default='/UFZ/trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--tracks', default='/UFZ/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='/UFZ/trackCrops') # Optimized for embedded processing (ncnn)
 
     #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
