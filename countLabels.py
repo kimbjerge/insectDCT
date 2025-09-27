@@ -55,6 +55,11 @@ if __name__=='__main__':
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/train1201/'
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/val1201/'
     
+    image_dic = '/AccurateDetection/trainPollW/'
+    countLabels(image_dic, "Pollinator Watch train: ")
+    image_dic = '/AccurateDetection/testPollW/'
+    countLabels(image_dic, "Pollinator Watch val: ")
+    """
     image_dic = '/home/don/yolo11/datasets/accurateColor/train/labels/'
     countLabels(image_dic, "Accurate train: ")
     image_dic = '/home/don/yolo11/datasets/beesColor/trainColor/'
@@ -76,6 +81,6 @@ if __name__=='__main__':
     countLabels(image_dic, "Insects2 val: ")
     image_dic = '/home/don/yolo11/datasets/insects3Color/val/labels/'
     countLabels(image_dic, "Insects3 val: ")
-  
+    """
  
 
