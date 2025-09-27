@@ -112,7 +112,7 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
  
 - taxaId and taxaLevel will be updated with the following classification codes
 
-Hierarchical taxa of classes in the model HierarchicalClassifierVx_05092025 (V3 and V4):
+Hierarchical taxa of classes in the model HierarchicalClassifierV4_05092025:
 
 taxaLevel 1: (21 groups of taxa primary Order)
 
@@ -354,6 +354,20 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 
  - plotResultsMAMBO.py and plotResultsNI2.py - examples of reading CSV files with detections and classifications and plots histograms of taxa of arthoropods
    
+### Helper functions to create datasets for the insect detector model ###
+
+ - countLabels.py - counts the labels on the datasets for YOLO detector for images with and without annotations
+ - Create-MotionNI-dataset.py - example for how to create motion enhanced images (MIE)
+ - Create-PollNI-dataset.py - selects and create dataset for detection based on images from project Pollinator Watch (Logitech camera)
+ - Create-Orchard-dataset.py - selects and create dataset for detection based on image from project Orchard (Pi model 3 camera)
+ - createAccurateDataset.py - dataset from paper: "Accurate detections and identification .." https://doi.org/10.1371/journal.pstr.0000051 
+
+More information on the dataset for insect detection: 
+  
+https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
+
+### Helper functions to evaluate the hierarchical classifier and tracking ###
+
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
  - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
  - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 4x4 matrix plot (See example below)
