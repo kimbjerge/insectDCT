@@ -366,6 +366,10 @@ More information on the dataset for insect detection:
   
 https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
 
+### Helper functions to select crops (see createCrops.py) for dataset to improve training of the hierarchical classifier ###
+
+ - copySelectedCrops.py - example code for how to select specific taxa of insect crops and create a dataset for training (MAMBO, NI2)
+
 ### Helper functions to evaluate the hierarchical classifier and tracking ###
 
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
