@@ -13,18 +13,26 @@ import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
+smallInsects = True # UFZ is small, MAMBO is not
+showAxis = 'off' # Or 'on'
+
 validTrackLength = 3 # Overwritten by args parameter validNum
 validTrackConfidence = 50 # Overwritten by args parameter validConfTH
-showAxis = 'off' # Or 'on'
 
 def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, confidence, trackRows):
     
     # Define grid size
-    rows, cols = 4, 4
+    rows, cols = 3, 4
     
-    # Create a figure and axes
-    fig, axes = plt.subplots(rows, cols, figsize=(20, 20))
-    plt.rcParams.update({'font.size': 20})
+    if smallInsects:        
+        # Create a figure and axes
+        fig, axes = plt.subplots(rows, cols, figsize=(9, 7))
+        plt.rcParams.update({'font.size': 10})
+    else:
+        # Create a figure and axes
+        fig, axes = plt.subplots(rows, cols, figsize=(20, 15))
+        plt.rcParams.update({'font.size': 20})
+        
     axes = axes.flatten()
 
     i = 0
@@ -94,7 +102,7 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
     if os.path.exists(pathToDestCrops + taxa) == False:
         print("Create directory:", pathToDestCrops + taxa)
         os.mkdir(pathToDestCrops + taxa)
-    fileName = row['fileName'].replace('/', '_').replace(".jpg", "") + "_" + str(trackId) + ".png"
+    fileName = row['fileName'].replace('/', '_').replace(".jpg", "") + "-" + str(trackId) + ".png"
     plt.savefig(pathToDestCrops + taxa + "/" + fileName)
     #plt.show()
     plt.close('all')
@@ -166,16 +174,22 @@ if __name__=='__main__':
             
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
-    parser.add_argument('--images', default='./images') #Directory that contains the image files
-    parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--tracks', default='./tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='./images') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
+
+    parser.add_argument('--tracks', default='/UFZ/tracks') #Directory that contains CSV files of tracks
+    parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
+    parser.add_argument('--resultsDir', default='/UFZ/trackCrops') # Optimized for embedded processing (ncnn)
+
     #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/RTNI/trackCrops') # Optimized for embedded processing (ncnn)
+    parser.add_argument('--date', default="") # if date specified then only create track crops for specified date (YYYY_MM_DD or YYYMMDD)
 
     parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
-    parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
-    #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
+    #parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
+    parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
 
     args = parser.parse_args() 
     print(args)
@@ -190,9 +204,19 @@ if __name__=='__main__':
     firstTime = True
     for filename in sorted(os.listdir(pathToSrcDataset)):
         if (filename.endswith('.csv')):
-            if "-TRS" in filename:
+
+            if args.date == "":
+                validDate = True
+            else:
+                validDate = False
+                if args.date in filename:
+                    validDate = True
+
+            if validDate and "-TRS" in filename:
                 print("Reading", filename)
                 data_df = pd.read_csv(pathToSrcDataset+filename)
                 data_df = data_df.sort_values(by=['id', 'time'])  
-                pathToRecordDataSubDir = pathToRecordData + filename.split('-')[0] + '/'
+                subDir = filename.split('-')[0]
+                pathToRecordDataSubDir = pathToRecordData + subDir + '/'
+                #pathToRecordDataSubDir = pathToRecordData + subDir.split('_')[0] + '/' + subDir + '/'
                 analyseTracks(data_df, pathToRecordDataSubDir, pathToDestCrops)
