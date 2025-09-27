@@ -188,8 +188,8 @@ if __name__=='__main__':
     parser.add_argument('--date', default="") # if date specified then only create track crops for specified date (YYYY_MM_DD or YYYMMDD)
 
     parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
-    #parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
-    parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
+    parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
+    #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
 
     args = parser.parse_args() 
     print(args)
