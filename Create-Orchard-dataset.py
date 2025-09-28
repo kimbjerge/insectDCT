@@ -9,19 +9,19 @@ Use camera systems Pi8-pi28 (Each system with one Pi model 3 cameras)
 """
 
 import os
-import cv2
+#import cv2
 import shutil
 import pandas 
 import pandas as pd
-from common.motionEnhancement import MotionEnhancement
+#from common.motionEnhancement import MotionEnhancement
 
 # UFZ image size
 IMG_WIDTH = 1920
 IMG_HEIGHT = 1080
 
-def createLabelsAndImages(cameraSystem, selDataset, data_df, pathToRecordedFiles, pathToDestDataset, pathToDestDatasetMIE, split):
+def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDataset, pathToDestDatasetMIE, split):
     
-    mie = MotionEnhancement()
+    #mie = MotionEnhancement()
     
     skip = int(100/split)
     count = 0
@@ -30,7 +30,7 @@ def createLabelsAndImages(cameraSystem, selDataset, data_df, pathToRecordedFiles
         imageFilePath =  row['fileName'].split('/')[0] 
         imageFileName = row['fileName'].split('/')[1]
         labelFileName = imageFileName.replace('.jpg', '.txt')
-        cameraId = "PW_" + cameraSystem + "_" + imageFilePath + '_'
+        cameraId = "OC_"
         imageFilePath += '/'
         count += 1
         if count % skip == 0: # Save to test dataset
@@ -53,20 +53,19 @@ def createLabelsAndImages(cameraSystem, selDataset, data_df, pathToRecordedFiles
             print(line)
             labelFile.write(line + "\n")
         labelFile.close()
-        shutil.copyfile(pathToRecordedFiles+row['fileName'], pathToDest+cameraId+imageFileName)
-        mieImage = mie.motion_enhanced_image2(pathToRecordedFiles+imageFilePath, imageFileName)
-        cv2.imwrite(pathToDestMIE+cameraId+imageFileName, mieImage)
+        pathToImage = pathToRecordedFiles+row['trap']+'/'+row['fileName']
+        shutil.copyfile(pathToImage, pathToDest+cameraId+imageFileName)
+        #mieImage = mie.motion_enhanced_image2(pathToRecordedFiles+imageFilePath, imageFileName)
+        #cv2.imwrite(pathToDestMIE+cameraId+imageFileName, mieImage)
     
 if __name__=='__main__':
     
-    #cameraSystem = "Pi8" # Pi8, Pi10, Pi11, Pi12, Pi13, Pi16, Pi15, Pi16, Pi17, Pi20, Pi26, Pi28
-    cameraSystems = ["Pi8", "Pi10", "Pi11", "Pi12", "Pi13", "Pi16", "Pi15", "Pi16", "Pi17", "Pi20", "Pi26", "Pi28"]
-    numInsects = 600
-    numUnsure = 300
-    numVegetation = 300
+    numInsects = 3000
+    numUnsure = 1000
+    numVegetation = 1000
     splitPercentage = 20 # Percentage of image used for test
     
-    pathToSrcDataset = '/UFZ/detections/'
+    pathToSrcDataset = '/UFZ/detectionsTrain/'
     pathToRecordData = 'O:/Tech_TTH-KBE/UFZ/'
     pathToDestDatasetMIE = '/UFZ/trainOrchardm/'
     pathToDestDataset = '/UFZ/trainOrchard/'
@@ -74,30 +73,29 @@ if __name__=='__main__':
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
     for filename in sorted(os.listdir(pathToSrcDataset)):
-        for cameraSystem in cameraSystems:
-            if (filename.endswith('.csv')):
-                if "-CL" in filename and cameraSystem in filename:
-                    print("Reading", filename)
-                    data_df = pd.read_csv(pathToSrcDataset+filename)
-                    if firstTime:
-                        data_frames = data_df.copy()
-                        firstTime = False
-                    else:    
-                        data_frames = pd.concat([data_frames, data_df])
-                
+        if (filename.endswith('.csv')):
+            if "-CL" in filename:
+                print("Reading", filename)
+                data_df = pd.read_csv(pathToSrcDataset+filename)
+                if firstTime:
+                    data_frames = data_df.copy()
+                    firstTime = False
+                else:    
+                    data_frames = pd.concat([data_frames, data_df])
+            
     # Select only images where insects has been detected - many are false positive detections
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] != "Vegetation"]
     selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Unsure"]
     selDataset3 = selDataset2.sample(n=numInsects, random_state=37)
-    createLabelsAndImages(cameraSystem, selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+    createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Vegetation"]
     selDataset2 = selDataset1.sample(n=numUnsure, random_state=65)
-    createLabelsAndImages(cameraSystem, selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+    createLabelsAndImages(selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Unsure"]
     selDataset2 = selDataset1.sample(n=numVegetation, random_state=43)
-    createLabelsAndImages(cameraSystem, selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
-    
-    
+    createLabelsAndImages(selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+
+
     
