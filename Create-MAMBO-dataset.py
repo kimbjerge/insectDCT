@@ -28,7 +28,8 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     prevPathToImages = ""
     fileList = []
     for idx, row in selDataset.iterrows():
-        detections_df = data_df.loc[data_df['fileName'] == row['fileName']]
+        detections_df = data_df.loc[data_df['trapDir'] == row['trapDir']]
+        detections_df = detections_df.loc[detections_df['fileName'] == row['fileName']]
         
         if row['subDir'] == 'skip':
             imageFilePath = row['trapDir'].split('/')[1] + '/' + row['fileName'].split('/')[0] + '/'
@@ -83,9 +84,9 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     
 if __name__=='__main__':
     
-    numInsects = 5000
+    numInsects = 4000
     numUnsure = 1000
-    numVegetation = 2000
+    numVegetation = 1000
     splitPercentage = 20 # Percentage of image used for test
     
     #partnerIds = ['au', 'cirad', 'ecoinn', 'ufz', 'ukceh', 'uva']
