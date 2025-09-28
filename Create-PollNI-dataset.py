@@ -15,6 +15,7 @@ import pandas
 import pandas as pd
 from common.motionEnhancement import MotionEnhancement
 
+# Logitech C922 camera
 IMG_WIDTH = 1920
 IMG_HEIGHT = 1080
 

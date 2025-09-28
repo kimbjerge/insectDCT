@@ -15,9 +15,9 @@ import pandas
 import pandas as pd
 from common.motionEnhancement import MotionEnhancement
 
-# UFZ image size, Pi model 3 camera HD resolution
-IMG_WIDTH = 1920
-IMG_HEIGHT = 1080
+# MAMBO image size (Wingscapes)
+IMG_WIDTH = 4224
+IMG_HEIGHT = 2376
 
 def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDataset, pathToDestDatasetMIE, split):
     
@@ -29,11 +29,15 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     fileList = []
     for idx, row in selDataset.iterrows():
         detections_df = data_df.loc[data_df['fileName'] == row['fileName']]
-        imageFilePath =  row['fileName'].split('/')[0] 
+        
+        if row['subDir'] == 'skip':
+            imageFilePath = row['trapDir'].split('/')[1] + '/' + row['fileName'].split('/')[0] + '/'
+        else:
+            imageFilePath =  row['subDir'] + row['trapDir'] + '/' + row['fileName'].split('/')[0] + '/'
+        
         imageFileName = row['fileName'].split('/')[1]
-        labelFileName = imageFileName.replace('.jpg', '.txt')
-        cameraId = "OC_"
-        imageFilePath += '/'
+        labelFileName = imageFileName.replace('.JPG', '.txt')
+        cameraId = "MB_"+ row['partner'] + '_' + row['fileName'].split('/')[0] + '_'
         count += 1
         if count % skip == 0: # Save to test dataset
             pathToDest = pathToDestDataset.replace("train", "test")
@@ -45,6 +49,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             print("Train image", cameraId+labelFileName)
             
         labelFile = open(pathToDest+cameraId+labelFileName, "w")
+        print(pathToDest+cameraId+labelFileName)
         for i, detection in detections_df.iterrows():
             #print(detection['fileName'], detection['x1'], detection['y1'], detection['x2'], detection['y2'])
             w = detection['x2'] - detection['x1']
@@ -55,11 +60,12 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             print(line)
             labelFile.write(line + "\n")
         labelFile.close()
-        pathToImageFile = pathToRecordedFiles+row['trap']+'/'+row['fileName']
+        
+        pathToImageFile = pathToRecordedFiles+imageFilePath+imageFileName
         shutil.copyfile(pathToImageFile, pathToDest+cameraId+imageFileName)
         
         imageFile = row['fileName'].split('/')[1]
-        pathToImages = pathToRecordedFiles+row['trap']+'/'+row['fileName'].split('/')[0]+'/'
+        pathToImages = pathToRecordedFiles+imageFilePath
         if prevPathToImages != pathToImages:
             fileList = sorted(os.listdir(pathToImages))
             prevPathToImages = pathToImages
@@ -71,49 +77,62 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
         if fileIdx < len(fileList) - 1:
             fileNextIdx = fileIdx + 1
         print(fileList[filePrevIdx], imageFile, fileList[fileNextIdx])
+        print(pathToImages, pathToDestMIE+cameraId+imageFileName)
         mieImage = mie.motion_three_images(pathToImages, fileList[filePrevIdx], imageFile, fileList[fileNextIdx])
         cv2.imwrite(pathToDestMIE+cameraId+imageFileName, mieImage)
     
 if __name__=='__main__':
     
-    numInsects = 2500
-    numUnsure = 500
-    numVegetation = 1000
+    numInsects = 5000
+    numUnsure = 1000
+    numVegetation = 2000
     splitPercentage = 20 # Percentage of image used for test
     
-    pathToSrcDataset = '/UFZ/detectionsTrain/'
-    pathToRecordData = 'O:/Tech_TTH-KBE/UFZ/'
-    pathToDestDatasetMIE = '/UFZ/trainOrchardm/'
-    pathToDestDataset = '/UFZ/trainOrchard/'
+    #partnerIds = ['au', 'cirad', 'ecoinn', 'ufz', 'ukceh', 'uva']
+    partnerIds = ['au', 'cirad', 'ecoinn', 'ufz']
+    pathToSrcDataset = 'D:/MAMBO/'
+    pathToRecordData = 'O:/Tech_TTH-KBE/MAMBO/2024/'
+    pathToDestDatasetMIE = 'E:/MAMBO/trainMBOm/'
+    pathToDestDataset = 'E:/MAMBO/trainMBO/'
     
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
-    for filename in sorted(os.listdir(pathToSrcDataset)):
-        if (filename.endswith('.csv')):
-            if "-CL" in filename:
-                print("Reading", filename)
-                data_df = pd.read_csv(pathToSrcDataset+filename)
-                if firstTime:
-                    data_frames = data_df.copy()
-                    firstTime = False
-                else:    
-                    data_frames = pd.concat([data_frames, data_df])
-            
+    for partner in partnerIds:
+        pathToSrcDetections = pathToSrcDataset + partner + '/'
+        for filename in sorted(os.listdir(pathToSrcDetections)):
+            if (filename.endswith('.csv')):
+                if "-CL.csv" in filename:
+                    print("Reading", filename)
+                    data_df = pd.read_csv(pathToSrcDetections+filename)
+                    data_df['partner'] = partner
+                    if partner in ['au', 'cirad', 'ufz']:
+                        data_df['subDir'] = partner + '/'
+                    else: 
+                        if partner == 'ukceh' or partner == 'uva':
+                            data_df['subDir'] = "skip"
+                        else:
+                            data_df['subDir'] = ""
+                    if firstTime:
+                        data_frames = data_df.copy()
+                        firstTime = False
+                    else:    
+                        data_frames = pd.concat([data_frames, data_df])
+        
     # Select only images where insects has been detected - many are false positive detections
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] != "Vegetation"]
     selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Unsure"]
     selDataset2 = selDataset2.sample(n=numInsects, random_state=37)
-    selDataset3 = selDataset2.sort_values(by=['fileName'])
+    selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Vegetation"]
     selDataset2 = selDataset1.sample(n=numUnsure, random_state=65)
-    selDataset3 = selDataset2.sort_values(by=['fileName'])
+    selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Unsure"]
     selDataset2 = selDataset1.sample(n=numVegetation, random_state=43)
-    selDataset3 = selDataset2.sort_values(by=['fileName'])
+    selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
 
 
