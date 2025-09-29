@@ -107,12 +107,12 @@ Total images: 4165 background: 844
 
 ================
 Pollinator Watch:
-27/9 - 2029
+27/9 - 2025
 ================
 
 Selected images with: insectsDCT/Create-PollNI-dataset.py
 
-Using random selected images from camera systems S2, S3 and S4
+Using random selected images from camera systems S2, S3 and S4 (collected in 2020)
 Selected random images based on hierarchical classifier with detector V3 and classifier V3:
 
 3x600 images that contain insect
@@ -125,3 +125,43 @@ Pollinator Watch train:  [468, 0, 0, 0, 0, 0, 0, 0, 0]  total: 468
 Total images: 2867 background: 2488
 Pollinator Watch val:  [118, 0, 0, 0, 0, 0, 0, 0, 0]  total: 118
 Total images: 720 background: 625
+
+================
+UFZ Orchard:
+29/9 - 2025
+================
+
+Selected images with: insectsDCT/Create-Orchard-dataset.py
+
+Using random selected images from detections collected 2025 in: /UFZ/detectionsTrain/ (Pi8, Pi10, Pi11, Pi12, Pi15, Pi20, Pi26 and Pi28 - total 9 days)
+Some sites with artificial background (Pi8, Pi11, Pi20, Pi26, Pi28) 
+Selected random images based on hierarchical classifier with detector V3 and classifier V3:
+
+2500 images that contain insect
+500 images that contain unsure classifications
+1000 images that contain vegetation
+
+20% selected for validation
+
+UFZ Orchard train:  [2705, 0, 0, 0, 0, 0, 0, 0, 0]  total: 2705
+Total images: 3157 background: 730
+UFZ Orchard val:  [696, 0, 0, 0, 0, 0, 0, 0, 0]  total: 696
+Total images: 798 background: 173
+
+================
+MAMBO:
+29/9 - 2025
+================
+
+Selected images with: insectsDCT/Create-MAMBO-dataset.py
+
+Using random selected images from detections collected in 2024: /MAMBO/ (au-DK, cirad-FR, ecoinn-MT, ufz-DE)
+Selected random images based on hierarchical classifier with detector V3 and classifier V3:
+
+4000 images that contain insect
+1000 images that contain unsure classifications
+1000 images that contain vegetation
+
+20% selected for validation
+
+
