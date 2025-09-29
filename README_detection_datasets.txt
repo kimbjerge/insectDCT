@@ -165,3 +165,13 @@ Selected random images based on hierarchical classifier with detector V3 and cla
 20% selected for validation
 
 
+
+Comments to dataset V5:
+======================
+
+Ignoring animals including slugs and snails.(but not lizzards and frogs)
+
+6 different projects: NatureImpact I and NatureImpact II, Greenhouse, Pollinator Watch, UFZ Orcard, MAMBO
+3 different cameras: Wingscapes, Logitech webcamera, Pi model 3 camera.
+7 different backgrounds: Sedum, Clover, Sea rocket, Common Mallow, Mixed Wild Grasses and flowers, Malta flowers, Artificial flowers
+
