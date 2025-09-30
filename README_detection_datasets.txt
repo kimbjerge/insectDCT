@@ -164,7 +164,10 @@ Selected random images based on hierarchical classifier with detector V3 and cla
 
 20% selected for validation
 
-
+MAMBO train:  [5752, 0, 0, 0, 0, 0, 0, 0, 0]  total: 5752
+Total images: 4313 background: 806
+MAMBO val:  [1635, 0, 0, 0, 0, 0, 0, 0, 0]  total: 1635
+Total images: 1163 background: 206
 
 Comments to dataset V5:
 ======================
