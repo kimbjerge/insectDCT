@@ -181,7 +181,7 @@ class Predictions:
     # probability threshold for each class, default above 50%
     #                 0     1     2   3      4        5        6       7          8    9 10 11 12    13
     # headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n" (New format)
-    def load_predictionsTaxon(self, filename, selection = 'All', filterTime=0):
+    def load_predictionsTaxon(self, filename, selection = 'All', filterTime=0, ignoreLabels=[]):
         
         file = open(filename, 'r')
         content = file.read()
@@ -201,10 +201,11 @@ class Predictions:
                     imgname = subsplit[13]
                     imgpath = imgname.split('/')
                     taxaConf = float(subsplit[4])
+                    taxaName = subsplit[5]
                     taxaId = int(subsplit[6])
                     taxaLevel = int(subsplit[7])
                     # Check selection 
-                    if (selection == imgpath[0] or selection == 'All'):
+                    if (selection == imgpath[0] or selection == 'All') and (not taxaName in ignoreLabels):
                         x1 = int(subsplit[9])
                         y1 = int(subsplit[10])
                         x2 = int(subsplit[11])
@@ -223,7 +224,7 @@ class Predictions:
                         'time' : int(subsplit[3]),
                         'prob' : taxaConf, # Class probability 0-100%
                         'class' : self.species.index(subsplit[5])+1, # Class index to flat list of species names
-                        'taxaName' : subsplit[5], # Taxa name in hierarchy
+                        'taxaName' : taxaName, # Taxa name in hierarchy
                         'taxaId' : taxaId, # TaxaId in level of hierarchy 
                         'level' : taxaLevel, # Level in hierarchy
                         'line' : line_count, # Line number - reference to detections (CSV file)

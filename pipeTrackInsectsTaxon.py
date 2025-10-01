@@ -86,7 +86,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf):
 
     csvFilename = detectPath+trackName+'-CL.csv'
 
-    predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0) # Skip if not moved within filterTime in seconds
+    predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0, ignoreLabels=['Vegetation']) # Skip if not moved within filterTime in seconds
     totPredictions, totFilteredPredictions = predict.getPredictions()
     total = len(predicted)
     startid = 0
