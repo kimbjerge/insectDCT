@@ -288,6 +288,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains motion models
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion11s/weights/best.pt') #Use optimzed YOLO11s model on RaspberryPi
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 

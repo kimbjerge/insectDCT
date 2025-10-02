@@ -40,8 +40,11 @@ https://doi.org/10.1002/rse2.70007
 
 Estimating flower cover is currently in development. 
 
-## Python environment files ##
-README-conda-env-yolo11.txt - environment requirements
+## Python environment on Windows or Linux ##
+README-conda-env-yolo11.txt - Anaconda environment requirements
+
+## Python environment on Raspberry Pi 4/5 ##
+raspberryPiEnv.sh - script to create and install virtual environment on Raspberry Pi
 
 ### Hierarchical model weights and labels ###
 
@@ -72,19 +75,23 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py  <br />
-     Performs detection and classification with ResNet50 on CUDA:0
+     	Performs detection and classification with ResNet50 on CUDA:0
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu  <br />
-	 Performs detection and classification with ResNet50 on CPU
+	Performs detection and classification with ResNet50 on CPU
+   
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu --optimized ncnn <br />
+	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
+        On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase  <br />
-     Performs detection and classification using ConvNextBase model (best performing model)
+     	Performs detection and classification using ConvNextBase model (best performing model)
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4  <br />
-     Performs detection and classification using models trained on classification dataset V4 instead of V3
+     	Performs detection and classification using models trained on classification dataset V4 instead of V3
      
    - $ python pipeTrackInsectsTaxon.py  <br />
-     Performs tracking based on the CSV output files (./detections/*-CL.csv)
+     	Performs tracking based on the CSV output files (./detections/*-CL.csv)
    
    See code for additional parameters for the above python script.
 
