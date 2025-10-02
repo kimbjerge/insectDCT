@@ -379,7 +379,9 @@ https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
  - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
  - countCropsOrchard.py - counts crops and plots statistics on validated crops for models V3 and V4 - result files: Test-HierarchicalClassifierVx.csv (Precision Micro and Macro)
- - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 4x4 matrix plot (See example below)
+ - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 4x4 matrix plot (See examples below)
 
    ![Alt text](ExTrackCrops.png)
+
+   ![Alt text](ExTrackCrops2.png)
    
