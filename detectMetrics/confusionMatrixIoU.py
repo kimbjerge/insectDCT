@@ -314,15 +314,17 @@ if __name__=='__main__':
     
 
     test_files = [ 
-                  ['insects5Color-train-images-CL.csv', 'insects5Color', 0],
-                  ['insects5Motion-train-images-CL.csv', 'insects5Motion', 0]
+                  ['insects5Color-train-images-CL.csv', 'insects5Color', 37],
+                  ['insects5Motion-train-images-CL.csv', 'insects5Motion', 40]
+                  ['insects3Color-train-images-CL.csv', 'insects5Color', 37],
+                  ['insects3Motion-train-images-CL.csv', 'insects5Motion', 40]
                 ]
  
     result = []
     idx = 0
     for csvFile, label_dir, conf in test_files:
         print(csvFile, label_dir)
-        result_path = 'D:/insectsDCT_datasets/insects3ModelCSV/' + csvFile
+        result_path = 'D:/insectsDCT_datasets/insectsModelCSV/' + csvFile
         threshold[0] = conf
         label_path = 'D:/insectsDCT_datasets/' + label_dir + '/train/labels/'
         recallAll, precisionAll, f1scoreAll, recallMicro, precisionMicro, f1scoreMicro = predictTestData(label_path, label_dir, result_path, threshold)
