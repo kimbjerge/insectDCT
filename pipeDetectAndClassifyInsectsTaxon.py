@@ -133,7 +133,9 @@ def getFrameTime(filePath, image_filename, useTimeExif):
          
         # extracting the exif metadata
         exifdata = image.getexif()
-         
+        
+        dateTimeStr = datetime.now().strftime('%Y%m%d%H%M%S') # Current time YYYYMMDDHHMMSS
+        
         # looping through all the tags present in exifdata
         for tagid in exifdata:
             # getting the tag name instead of tag id
