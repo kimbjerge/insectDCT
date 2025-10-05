@@ -32,7 +32,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
         imageFilePath =  row['fileName'].split('/')[0] 
         imageFileName = row['fileName'].split('/')[1]
         labelFileName = imageFileName.replace('.jpg', '.txt')
-        cameraId = "OC_"
+        cameraId = "RT_"
         imageFilePath += '/'
         count += 1
         if count % skip == 0: # Save to test dataset
