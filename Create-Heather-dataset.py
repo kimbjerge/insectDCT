@@ -9,6 +9,7 @@ Use camera systems from sites situated with Heather vegetation
 """
 
 import os
+import fnmatch
 import cv2
 import shutil
 import pandas 
@@ -62,7 +63,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
         
         pathToImages = pathToRecordedFiles+imageFilePath+'/'
         if prevPathToImages != pathToImages:
-            fileList = sorted(os.listdir(pathToImages))
+            fileList = fnmatch.filter(sorted(os.listdir(pathToImages)), '*.JPG')
             prevPathToImages = pathToImages
         fileIdx = fileList.index(imageFileName)
         filePrevIdx = fileIdx
@@ -78,9 +79,9 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     
 if __name__=='__main__':
     
-    numInsects = 250
-    numUnsure = 100
-    numVegetation = 100
+    numInsects = 500
+    numUnsure = 250
+    numVegetation = 250
     splitPercentage = 100 # Only for test dataset
     pathToSrcDataset = 'J:/KUHeather/HA_SD_c1/'
     pathToRecordData = 'O:/Tech_Insects/KUBier/HA_SD_c1/'
