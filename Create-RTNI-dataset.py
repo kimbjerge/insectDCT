@@ -2,9 +2,10 @@
 """
 Created on Mon Sep 27 14:38:53 2025
 
-Used to create dataset for detection using YOLO11 based on RGB and MIE images selected from UFZ images 
-Use camera systems Pi8-pi28 (Each system with one Pi model 3 cameras)
-
+Used to create dataset for detection using YOLO11 based on RGB and MIE images selected from Real-time Nature Impact images 
+Use camera systems wiht Jetson Nano and Logitech cameras (Each system with one Logitech Camreas)
+Paper:https://doi.org/10.1002/rse2.245
+    
 @author: Kim Bjerge
 """
 
