@@ -98,9 +98,9 @@ if __name__=='__main__':
         pathToDestDatasetMIE = 'E:/MAMBO/trainMBOm/'
         pathToDestDataset = 'E:/MAMBO/trainMBO/'
     else:
-        numInsects = 3000
-        numUnsure = 500
-        numVegetation = 500
+        numInsects = 2000
+        numUnsure = 250
+        numVegetation = 250
         splitPercentage = 100
         partnerIds = ['ukceh', 'uva']
         pathToSrcDataset = './MAMBO/'
