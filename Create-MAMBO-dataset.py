@@ -137,17 +137,17 @@ if __name__=='__main__':
     selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Unsure"]
     selDataset2 = selDataset2.sample(n=numInsects, random_state=37)
     selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
-    createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+    #createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Vegetation"]
     selDataset2 = selDataset1.sample(n=numUnsure, random_state=65)
     selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
-    createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+    #createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Unsure"]
     selDataset2 = selDataset1.sample(n=numVegetation, random_state=43)
     selDataset3 = selDataset2.sort_values(by=['trapDir', 'fileName'])
-    createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
+    #createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
 
 
     
