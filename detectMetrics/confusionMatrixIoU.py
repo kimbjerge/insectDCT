@@ -18,6 +18,8 @@ from loadLabelsPredictions import load_predictions, load_labels, exist_label
 #missed/false   0    
 #honningbi      1
 labelNames = ["Missed", "Insect"]
+iou_used = True
+iou_thr = 0.2
 
 # Calculate precision, recall and F1-score as micro average on all testsets
 def calculateMicroScores(truepositive, falsepositive, falsenegative):
@@ -143,7 +145,7 @@ def update_predictions(predictObjects, labelObjects):
     y_pred = []
  
     for predObject in predictObjects:
-        found, labelObject = exist_label(predObject, labelObjects)
+        found, labelObject = exist_label(predObject, labelObjects, iou_used=iou_used, iou_thr=iou_thr)
         if found:
             y_true.append(labelObject['class'])
         else:
@@ -184,7 +186,7 @@ def true_score_predictions(predictObjects, labelObjects, classId):
  
     for predObject in predictObjects:
         if predObject['class'] == classId:
-            found, labelObject = exist_label(predObject, labelObjects)
+            found, labelObject = exist_label(predObject, labelObjects, iou_used=iou_used, iou_thr=iou_thr)
             if found:
                 y_true.append(1) # True positive
             else:
@@ -314,10 +316,10 @@ if __name__=='__main__':
     
 
     test_files = [ 
-                  ['insects5Color-train-images-CL.csv', 'insects5Color', 37],
-                  ['insects5Motion-train-images-CL.csv', 'insects5Motion', 40]
-                  ['insects3Color-train-images-CL.csv', 'insects5Color', 37],
-                  ['insects3Motion-train-images-CL.csv', 'insects5Motion', 40]
+                  #['insects5Color-train-images-CL.csv', 'insects5Color', 37],
+                  ['insects5Motion-train-images-CL.csv', 'insects5Motion', 35]
+                  #['insects3Color-train-images-CL.csv', 'insects5Color', 37],
+                  #['insects3Motion-train-images-CL.csv', 'insects5Motion', 40]
                 ]
  
     result = []
@@ -326,7 +328,11 @@ if __name__=='__main__':
         print(csvFile, label_dir)
         result_path = 'D:/insectsDCT_datasets/insectsModelCSV/' + csvFile
         threshold[0] = conf
-        label_path = 'D:/insectsDCT_datasets/' + label_dir + '/train/labels/'
+        if 'train' in csvFile:
+            label_path = 'D:/insectsDCT_datasets/' + label_dir + '/train/labels/'
+        else:
+            label_path = 'D:/insectsDCT_datasets/' + label_dir + '/val/labels/'
+            
         recallAll, precisionAll, f1scoreAll, recallMicro, precisionMicro, f1scoreMicro = predictTestData(label_path, label_dir, result_path, threshold)
         result.append([csvFile, recallAll, precisionAll, f1scoreAll, recallMicro, precisionMicro, f1scoreMicro])
         idx += 1
