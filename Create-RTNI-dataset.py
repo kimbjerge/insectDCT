@@ -55,11 +55,11 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             print(line)
             labelFile.write(line + "\n")
         labelFile.close()
-        pathToImageFile = pathToRecordedFiles+row['trap']+'/'+row['fileName']
+        pathToImageFile = pathToRecordedFiles+'/'+row['fileName']
         shutil.copyfile(pathToImageFile, pathToDest+cameraId+imageFileName)
         
         imageFile = row['fileName'].split('/')[1]
-        pathToImages = pathToRecordedFiles+row['trap']+'/'+row['fileName'].split('/')[0]+'/'
+        pathToImages = pathToRecordedFiles+'/'+row['fileName'].split('/')[0]+'/'
         if prevPathToImages != pathToImages:
             fileList = sorted(os.listdir(pathToImages))
             prevPathToImages = pathToImages
@@ -77,23 +77,16 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
 if __name__=='__main__':
     
     TrainDataset = False
-    
-    if TrainDataset:
-        numInsects = 2500
-        numUnsure = 1000
-        numVegetation = 500
-        splitPercentage = 20 # Percentage of image used for test    
-        pathToSrcDataset = '/UFZ/detectionsTrain/'
-    else:
-        numInsects = 1500
+    if TrainDataset == False: # Not used for training
+        numInsects = 3000
         numUnsure = 250
         numVegetation = 250
         splitPercentage = 100 # Percentage of image used for test
-        pathToSrcDataset = '/UFZ/detectionsTest/'
+        pathToSrcDataset = 'J:/RTNI/detections/'
 
-    pathToRecordData = 'O:/Tech_TTH-KBE/UFZ/'
-    pathToDestDatasetMIE = '/UFZ/trainOrchardm/'
-    pathToDestDataset = '/UFZ/trainOrchard/'
+    pathToRecordData = 'O:/Tech_TTH-KBE/NI/RT/'
+    pathToDestDatasetMIE = 'J:/RTNI/trainRTNIm/'
+    pathToDestDataset = 'J:/RTNI/trainRTNI/'
                 
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
