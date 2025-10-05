@@ -103,7 +103,7 @@ class MotionEnhancement:
     # Filename format: YYYYMMDDHHSS.jpg
     def motion_enhanced_image2(self, path, filename, time_lapse_seconds=30):
         
-        print(path)
+        #print(path)
         filenameSplit = filename.split('.')
         dateTime = filenameSplit[0]
         curr_time = datetime.datetime.strptime(dateTime[0:14], "%Y%m%d%H%M%S")
@@ -112,9 +112,9 @@ class MotionEnhancement:
         next_time = curr_time + datetime.timedelta(seconds=time_lapse_seconds)
         nextFilename = next_time.strftime("%Y%m%d%H%M%S") + '.jpg'
         currFilename = filename
-        print(prevFilename)
-        print(currFilename)
-        print(nextFilename)
+        #print(prevFilename)
+        #print(currFilename)
+        #print(nextFilename)
         
         if os.path.exists(path + currFilename) and os.path.exists(path + prevFilename) and os.path.exists(path + nextFilename):
             img_motion = self.motion_three_images(path, prevFilename,  currFilename, nextFilename)
