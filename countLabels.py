@@ -59,8 +59,12 @@ if __name__=='__main__':
     countLabels(image_dic, "MAMBO Wingscapes test: ")
     image_dic = image_path + 'testPollW/'
     countLabels(image_dic, "Pollinator Watch Logitech test: ")
+    image_dic = image_path + 'testRTNI/'
+    countLabels(image_dic, "Real-time Nature Impact Logitech test: ")
     image_dic = image_path + 'testOrchard/'
     countLabels(image_dic, "Orchard Pi3Cam test: ")
+    image_dic = image_path + 'testGreenH/'
+    countLabels(image_dic, "Green house Logitech test: ")
 
     """
     image_dic = 'D:/MAMBO/trainMBO/'

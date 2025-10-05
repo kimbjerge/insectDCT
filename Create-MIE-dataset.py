@@ -47,8 +47,9 @@ if __name__=='__main__':
     for camera in testCameras:
         filePath = pathToRecordData + camera + '/'
         count = 0
+        print("Processing images for", camera)
         for filename in sorted(os.listdir(filePath)):
-            if (filename.endswith('.txt')):
+            if (filename != 'classes.txt') and filename.endswith('.txt'):
                 count += 1
                 countTotal += 1
                 # Select only images where insects has been detected - many are false positive detections
