@@ -79,7 +79,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     
 if __name__=='__main__':
     
-    numInsects = 500
+    numInsects = 697
     numUnsure = 250
     numVegetation = 250
     splitPercentage = 100 # Only for test dataset
