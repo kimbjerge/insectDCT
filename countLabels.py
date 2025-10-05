@@ -54,13 +54,20 @@ if __name__=='__main__':
 
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/train1201/'
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/val1201/'
-    
+    image_path = 'D:/insectsDCT_datasets/detectTestDataset/'
+    image_dic = image_path + 'testMBO/'
+    countLabels(image_dic, "MAMBO Wingscapes test: ")
+    image_dic = image_path + 'testPollW/'
+    countLabels(image_dic, "Pollinator Watch Logitech test: ")
+    image_dic = image_path + 'testOrchard/'
+    countLabels(image_dic, "Orchard Pi3Cam test: ")
+
+    """
     image_dic = 'D:/MAMBO/trainMBO/'
     countLabels(image_dic, "MAMBO train: ")
     image_dic = 'D:/MAMBO/testMBO/'
     countLabels(image_dic, "MAMBO val: ")
     
-    """
     image_dic = '/AccurateDetection/trainOrchard/'
     countLabels(image_dic, "UFZ Orchard train: ")
     image_dic = '/AccurateDetection/testOrchard/'
