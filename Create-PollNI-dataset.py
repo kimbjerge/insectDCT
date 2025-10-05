@@ -70,9 +70,15 @@ if __name__=='__main__':
         splitPercentage = 20 # Percentage of image used for test
     else:
         cameraSystem = "S1" # S1, S5 # Testing
-        numInsects = 300
-        numUnsure = 50
-        numVegetation = 50
+        
+        if cameraSystem == 'S1':
+            numInsects = 300 # S1
+            numUnsure = 200 # S1
+        else:
+            numInsects = 100 # S5
+            numUnsure = 100 # S5
+
+        numVegetation = 1
         splitPercentage = 100 # Percentage of image used for test
     
     pathToDestDatasetMIE = 'J:/PollNI/trainPollWm/'
@@ -94,17 +100,20 @@ if __name__=='__main__':
                     data_frames = pd.concat([data_frames, data_df])
                 
     # Select only images where insects has been detected - many are false positive detections
+    print("Insects")
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] != "Vegetation"]
     selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != "Unsure"]
     selDataset3 = selDataset2.sample(n=numInsects, random_state=37)
     createLabelsAndImages(cameraSystem, selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
+    print("Vegetation")
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Vegetation"]
-    selDataset2 = selDataset1.sample(n=numUnsure, random_state=65)
+    selDataset2 = selDataset1.sample(n=numVegetation, random_state=65)
     createLabelsAndImages(cameraSystem, selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
+    print("Unsure")
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Unsure"]
-    selDataset2 = selDataset1.sample(n=numVegetation, random_state=43)
+    selDataset2 = selDataset1.sample(n=numUnsure, random_state=43)
     createLabelsAndImages(cameraSystem, selDataset2, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     

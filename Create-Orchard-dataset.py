@@ -77,8 +77,8 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
 if __name__=='__main__':
     
     numInsects = 2500
-    numUnsure = 500
-    numVegetation = 1000
+    numUnsure = 1000
+    numVegetation = 500
     splitPercentage = 20 # Percentage of image used for test
     
     pathToSrcDataset = '/UFZ/detectionsTrain/'
@@ -107,12 +107,12 @@ if __name__=='__main__':
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Vegetation"]
-    selDataset2 = selDataset1.sample(n=numUnsure, random_state=65)
+    selDataset2 = selDataset1.sample(n=numVegetation, random_state=65)
     selDataset3 = selDataset2.sort_values(by=['fileName'])
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
     
     selDataset1 = data_frames.loc[data_frames['taxaLabel'] == "Unsure"]
-    selDataset2 = selDataset1.sample(n=numVegetation, random_state=43)
+    selDataset2 = selDataset1.sample(n=numUnsure, random_state=43)
     selDataset3 = selDataset2.sort_values(by=['fileName'])
     createLabelsAndImages(selDataset3, data_frames, pathToRecordData, pathToDestDataset, pathToDestDatasetMIE, splitPercentage)
 
