@@ -42,33 +42,43 @@ def createLabelsAndImages(cameraSystem, selDataset, data_df, pathToRecordedFiles
             pathToDestMIE = pathToDestDatasetMIE
             print("Train image", cameraId+labelFileName)
             
-        labelFile = open(pathToDest+cameraId+labelFileName, "w")
-        for i, detection in detections_df.iterrows():
-            #print(detection['fileName'], detection['x1'], detection['y1'], detection['x2'], detection['y2'])
-            w = detection['x2'] - detection['x1']
-            h = detection['y2'] - detection['y1']
-            xc = detection['x1'] + 0.5*w
-            yc = detection['y1'] + 0.5*h
-            line = "0 " + str(xc/IMG_WIDTH) + " " + str(yc/IMG_HEIGHT) + " " + str(w/IMG_WIDTH) + " " + str(h/IMG_HEIGHT)
-            print(line)
-            labelFile.write(line + "\n")
-        labelFile.close()
-        shutil.copyfile(pathToRecordedFiles+row['fileName'], pathToDest+cameraId+imageFileName)
         mieImage = mie.motion_enhanced_image2(pathToRecordedFiles+imageFilePath, imageFileName)
-        cv2.imwrite(pathToDestMIE+cameraId+imageFileName, mieImage)
+        if len(mieImage) > 0:
+            cv2.imwrite(pathToDestMIE+cameraId+imageFileName, mieImage)
+            labelFile = open(pathToDest+cameraId+labelFileName, "w")
+            for i, detection in detections_df.iterrows():
+                #print(detection['fileName'], detection['x1'], detection['y1'], detection['x2'], detection['y2'])
+                w = detection['x2'] - detection['x1']
+                h = detection['y2'] - detection['y1']
+                xc = detection['x1'] + 0.5*w
+                yc = detection['y1'] + 0.5*h
+                line = "0 " + str(xc/IMG_WIDTH) + " " + str(yc/IMG_HEIGHT) + " " + str(w/IMG_WIDTH) + " " + str(h/IMG_HEIGHT)
+                print(line)
+                labelFile.write(line + "\n")
+            labelFile.close()
+            shutil.copyfile(pathToRecordedFiles+row['fileName'], pathToDest+cameraId+imageFileName)
     
 if __name__=='__main__':
     
-    cameraSystem = "S4" # S2, S3, S4
-    numInsects = 600
-    numUnsure = 300
-    numVegetation = 300
-    splitPercentage = 20 # Percentage of image used for test
+    TrainDataset = False
     
-    pathToSrcDataset = 'J:/PollNI/' + cameraSystem + '/'
-    pathToRecordData = 'O:/Tech_TTH-KBE/PollinatorWatch/FIN/' + cameraSystem + '/'
+    if TrainDataset:
+        cameraSystem = "S4" # S2, S3, S4 # Training
+        numInsects = 600
+        numUnsure = 300
+        numVegetation = 300
+        splitPercentage = 20 # Percentage of image used for test
+    else:
+        cameraSystem = "S1" # S1, S5 # Testing
+        numInsects = 300
+        numUnsure = 50
+        numVegetation = 50
+        splitPercentage = 100 # Percentage of image used for test
+    
     pathToDestDatasetMIE = 'J:/PollNI/trainPollWm/'
     pathToDestDataset = 'J:/PollNI/trainPollW/'
+    pathToSrcDataset = 'J:/PollNI/' + cameraSystem + '/'
+    pathToRecordData = 'O:/Tech_TTH-KBE/PollinatorWatch/FIN/' + cameraSystem + '/'
     
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg

@@ -84,17 +84,30 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     
 if __name__=='__main__':
     
-    numInsects = 4000
-    numUnsure = 1000
-    numVegetation = 1000
-    splitPercentage = 20 # Percentage of image used for test
-    
+    TrainDataset = False
     #partnerIds = ['au', 'cirad', 'ecoinn', 'ufz', 'ukceh', 'uva']
-    partnerIds = ['au', 'cirad', 'ecoinn', 'ufz']
-    pathToSrcDataset = 'D:/MAMBO/'
-    pathToRecordData = 'O:/Tech_TTH-KBE/MAMBO/2024/'
-    pathToDestDatasetMIE = 'E:/MAMBO/trainMBOm/'
-    pathToDestDataset = 'E:/MAMBO/trainMBO/'
+    
+    if TrainDataset:
+        numInsects = 4000
+        numUnsure = 1000
+        numVegetation = 1000
+        splitPercentage = 20 # Percentage of image used for test
+        partnerIds = ['au', 'cirad', 'ecoinn', 'ufz']
+        pathToSrcDataset = 'D:/MAMBO/'
+        pathToRecordData = 'O:/Tech_TTH-KBE/MAMBO/2024/'
+        pathToDestDatasetMIE = 'E:/MAMBO/trainMBOm/'
+        pathToDestDataset = 'E:/MAMBO/trainMBO/'
+    else:
+        numInsects = 3000
+        numUnsure = 500
+        numVegetation = 500
+        splitPercentage = 100
+        partnerIds = ['ukceh', 'uva']
+        pathToSrcDataset = './MAMBO/'
+        pathToRecordData = '/mnt/data0/don/mambo/2024/'
+        pathToDestDatasetMIE = './MAMBO/trainMBOm/'
+        pathToDestDataset = './MAMBO/trainMBO/'
+    
     
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
