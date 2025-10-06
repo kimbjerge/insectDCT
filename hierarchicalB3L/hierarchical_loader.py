@@ -188,11 +188,13 @@ if __name__=='__main__':
                        '/home/don/data/Arthropods/NIvalV2'
                        '/home/don/data/Arthropods/sorted_orchard_crops'
                        ]
+    # Classification dataset V5
     image_path_list = ['/home/don/data/Arthropods/NI2classesV2',
                        '/home/don/data/Arthropods/NI2sortedV2',
                        '/home/don/data/Arthropods/NItrainV2',
                        '/home/don/data/Arthropods/NIvalV2',
                        '/home/don/data/Arthropods/sorted_orchard_crops',
+                       '/home/don/data/Arthropods/Orchard_cropsV2',
                        '/home/don/data/Arthropods/NI2_MAMBOV2',
                        '/home/don/data/Arthropods/GBIF_cropsV2'
                       ]
