@@ -9,6 +9,7 @@
 	   "modeltype" : "config/default128",
 	   "labelFile" : "./models_save/HierarchicalLabels3L_13052025.pkl",
 	   "labelFileV3" : "./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl",
+	   "labelFileV5" : "./models_save/HierarchicalLabels3L_RES_V5_05092025.pkl",
        "species": ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syrphidae", "Lepidoptera", "Araneae", "Formidicidae", "Diptera", "Hemiptera", 
                   "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"],
        "imagedimension": 224,
