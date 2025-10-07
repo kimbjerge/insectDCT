@@ -289,9 +289,9 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion/weights/best.pt') #Directory that contains motion models
-    #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Motion11s/weights/best.pt') #Use optimzed YOLO11s model on RaspberryPi
-    #parser.add_argument('--yoloWeights', default='./runs/detect/insects3Color/weights/best.pt') #Directory that contains color models
+    parser.add_argument('--yoloWeights', default='./runs/detect/insects5Motion/weights/best.pt') #Directory that contains motion models
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects5Motion11s/weights/best.pt') #Use optimzed YOLO11s model on RaspberryPi
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects5Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
     #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
@@ -304,7 +304,7 @@ if __name__=='__main__':
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
     
     parser.add_argument('--modelType', default="ResNet50") # Support for ResNet50 and ConvNextBase (CNB)
-    parser.add_argument('--dataset', default="V3") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data
+    parser.add_argument('--dataset', default="V5") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data or "V5" with more Orchard data and GBIF
 
     # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
     

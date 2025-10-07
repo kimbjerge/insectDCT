@@ -16,7 +16,10 @@ from plot import plot_loss_acc
 #from level_NI_dict import labelsL1, labelsL2, labelsL3
 from hierarchical_loss import HierarchicalLossNetwork
 
-saved_folder = "./saved_128_finalV2/"
+#saved_folder = "./saved_128_ConvNextV4/"
+#saved_folder = "./saved_128_finalV4/"
+saved_folder = "./saved_128_ResNetV5/"
+#saved_folder = "./saved_128_ConvNextV5/"
 graph_folder = "./graph_folder/"
 
 label_file = saved_folder+"labelsAdv3L.pkl"
