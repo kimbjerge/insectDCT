@@ -334,7 +334,8 @@ if __name__=='__main__':
     #parser.add_argument('--video', default='./datasets/beemoni12025_04_03_12_59_47.mp4') # 45 fps -> 5 fps (stride 5) Jordanargs.device
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
-    parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion best F1-score 0.93
+    #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
+    parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
     parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
