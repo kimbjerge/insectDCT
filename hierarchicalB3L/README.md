@@ -31,6 +31,9 @@ https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive
 Forth model (HierarchicalClassifierV4_05092025) trained on all images as in V3 but without GBIF data  <br />
 https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
 
+Fifth model (HierarchicalClassifierV5_05092025) was trained on the same images as V3, supplemented with Pi Camera images of challenging species. <br />
+https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
+
 ### Running the pipeline with hierarchical taxon classifier and tracker ###
 
 Run the below Python code found in the root directory of this repository to generate the CSV files for detection, classification and tracking 
