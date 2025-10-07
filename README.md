@@ -57,7 +57,7 @@ https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive
 V4. Forth model (HierarchicalClassifierV4_05092025) trained on same images as in V3 but without GBIF data  <br />
 https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
 
-V5. Fift model (HierarchicalClassifierV5_05092025) trained on same images as in V3 but with additional Orchard Pi Camera data suplemented with images of difficult species <br />
+V5. Fifth model (HierarchicalClassifierV5_05092025) was trained on the same images as V3, supplemented with Pi Camera images of challenging species. <br />
 https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
 
 Download the weights, labels, and thresholds from the above links. 
