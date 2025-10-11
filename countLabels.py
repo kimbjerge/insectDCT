@@ -55,16 +55,18 @@ if __name__=='__main__':
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/train1201/'
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/val1201/'
     image_path = 'D:/insectsDCT_datasets/detectTestDataset/'
+    image_dic = image_path + 'testGreenH/'
+    countLabels(image_dic, "Green house Logitech test: ")
+    image_dic = image_path + 'testHeather/'
+    countLabels(image_dic, "KU Heather Wingscapes test: ")
     image_dic = image_path + 'testMBO/'
     countLabels(image_dic, "MAMBO Wingscapes test: ")
+    image_dic = image_path + 'testOrchard/'
+    countLabels(image_dic, "Orchard Pi3Cam test: ")
     image_dic = image_path + 'testPollW/'
     countLabels(image_dic, "Pollinator Watch Logitech test: ")
     image_dic = image_path + 'testRTNI/'
     countLabels(image_dic, "Real-time Nature Impact Logitech test: ")
-    image_dic = image_path + 'testOrchard/'
-    countLabels(image_dic, "Orchard Pi3Cam test: ")
-    image_dic = image_path + 'testGreenH/'
-    countLabels(image_dic, "Green house Logitech test: ")
 
     """
     image_dic = 'D:/MAMBO/trainMBO/'
