@@ -7,6 +7,7 @@ Python script to count number of labels
 """
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 IMG_WIDTH = 1920
 IMG_HEIGHT = 1080
@@ -22,6 +23,7 @@ def countLabels(image_dic, name):
     boxesWidth = []
     boxesHeight = []
     boxesArea = []
+    boxesMaxSize = []
     for filename in os.listdir(image_dic):
         if (filename.endswith('.txt')) and filename != "classes.txt":
             file = open(image_dic+filename, 'r')
@@ -47,12 +49,37 @@ def countLabels(image_dic, name):
                     boxesWidth.append(w)
                     boxesHeight.append(h)
                     boxesArea.append(w*h)
+                    s = h
+                    if w > h:
+                        s = w
+                    boxesMaxSize.append(s)
             
     print(name, indexCounts, ' total:', sum(indexCounts))
     print("Total images:", totalImages, "background:", backgrounds)
     print("Average labels width:", np.mean(boxesWidth), "STD:", np.std(boxesWidth))
     print("Average labels height:", np.mean(boxesHeight), "STD:", np.std(boxesHeight))
     print("Average labels area:", np.mean(boxesArea), "STD:", np.std(boxesArea))
+    
+    plt.hist(boxesMaxSize, bins=50, density=True, alpha=0.6, color='b')
+    modelSize = 128 # Image size for classifiation
+    steps = 20
+    step = 0.03/steps
+    listTh = [modelSize for i in range(steps)]
+    listPb = [step*i for i in range(steps)]
+    plt.plot(listTh, listPb, 'r')
+    
+    name = image_dic.split('/')[-2]
+    if 'train' in image_dic:
+        name = "train"     
+    if 'val' in image_dic:
+        name = "validate"     
+ 
+    plt.title("Insect pixel size (" + name + ")")
+    plt.xlabel('Pixel size (max.[w|h])')
+    plt.ylabel('Probability')
+    plt.xlim(0, 300)
+    plt.savefig("./plots/"+name+'.png')
+    plt.show()
     
     return boxesWidth, boxesHeight
     
@@ -72,6 +99,15 @@ if __name__=='__main__':
 
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/train1201/'
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/val1201/'
+
+    image_path = 'D:/insectsDCT_datasets/insects5Color/train/'
+    image_dic = image_path + 'labels/'
+    boxW, boxH = countLabels(image_dic, "Train dataset: ")
+    
+    image_path = 'D:/insectsDCT_datasets/insects5Color/val/'
+    image_dic = image_path + 'labels/'
+    boxW, boxH = countLabels(image_dic, "Validate dataset: ")
+    
     boxesWidth = []
     boxesHeight = []
     
