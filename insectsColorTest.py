@@ -19,7 +19,8 @@ file.write(header)
 testNames =  ['testGreenH', 'testHeather', 'testMBO', 'testOrchard', 'testPollW', 'testRTNI']
 for testName in testNames:
     yamlFile = './data/' + testName + '.yaml'
-    results = model.val(data=yamlFile, batch=16, imgsz=1920, conf=0.25, device=0, show=False, name=testName)
+    #results = model.val(data=yamlFile, batch=16, imgsz=1920, conf=0.25, device=0, show=False, name=testName)
+    results = model.val(data=yamlFile, batch=16, imgsz=1920, device=0, show=False, name=testName)
     #num_images = results.dataset.n
     #num_instances = sum(len(labels) for labels in results.dataset.labels)
     f1 = (2*results.box.mp*results.box.mr)/(results.box.mp+results.box.mr)

@@ -17,7 +17,8 @@ file.write(header)
 testNames = ['testGreenHm', 'testHeatherm', 'testMBOm', 'testOrchardm', 'testPollWm', 'testRTNIm']
 for testName in testNames:
     yamlFile = './data/' + testName + '.yaml'
-    results = model.val(data=yamlFile, batch=16, imgsz=1920, conf=0.25, device=0, show=False, name=testName)
+    #results = model.val(data=yamlFile, batch=16, imgsz=1920, conf=0.25, device=0, show=False, name=testName)
+    results = model.val(data=yamlFile, batch=16, imgsz=1920, device=0, show=False, name=testName)
     f1 = (2*results.box.mp*results.box.mr)/(results.box.mp+results.box.mr)
     csvStr = f"{testName},{results.box.mp:.4f},{results.box.mr:.4f},{f1:.4f},{results.box.map50:.4f},{results.box.map:.4f}\n"
     print(csvStr)
