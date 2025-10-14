@@ -35,11 +35,15 @@ class TaxaHierarchy():
     def __del__(self):
         self.logFile.close()
     
+    def log(self, text):
+        print(text)
+        self.logFile.write(text)
+        self.logFile.flush()
+        
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
         
         #logStr = "Check insects  :" + nameX + str(levelX) + nameY + str(levelY)
-        #print(logStr)
-        #self.logFile.write(logStr)
+        #self.log(logStr)
         
         if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
             return True
@@ -68,8 +72,7 @@ class TaxaHierarchy():
                 return True
             else:
                 logStr = "Different insects A:" + nameX + str(levelX) + nameY + str(levelY)
-                print(logStr)
-                self.logFile.write(logStr)
+                self.log(logStr)
                 
                 return False # True if same at higher rank?
         
@@ -99,8 +102,7 @@ class TaxaHierarchy():
                         return True
         
         logStr = "Different insects B:" + nameX + str(levelX) + nameY + str(levelY)
-        print(logStr)
-        self.logFile.write(logStr)
+        self.log(logStr)
         
         return False # Not same insect
     
