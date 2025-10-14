@@ -37,7 +37,7 @@ class TaxaHierarchy():
     
     def log(self, text):
         print(text)
-        self.logFile.write(text)
+        self.logFile.write(text + '\n')
         self.logFile.flush()
         
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
@@ -71,7 +71,7 @@ class TaxaHierarchy():
             if nameX == nameY:
                 return True
             else:
-                logStr = "Different insects A:" + nameX + str(levelX) + nameY + str(levelY)
+                logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
                 self.log(logStr)
                 
                 return False # True if same at higher rank?
@@ -101,7 +101,7 @@ class TaxaHierarchy():
                     if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
                         return True
         
-        logStr = "Different insects B:" + nameX + str(levelX) + nameY + str(levelY)
+        logStr = f"Different insects B: {nameX} L{levelX} - {nameY} L{levelY}"
         self.log(logStr)
         
         return False # Not same insect
