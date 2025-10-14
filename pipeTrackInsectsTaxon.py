@@ -32,7 +32,9 @@ class TaxaHierarchy():
         self.labelsL3 = labelsL3
     
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
-           
+        
+        print("Check", nameX, levelX, nameY, levelY)
+        
         if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
             return True
 
