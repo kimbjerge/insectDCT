@@ -52,19 +52,23 @@ class TaxaHierarchy():
         # Set level to highest rank in hierarchy
         if levelX > 2:
             if nameX in self.labelsL2:
-                #print("X:", nameX, levelX, "->", 2)
+                logStr = f"X: {nameX} L{levelX} -> L2"
+                self.log(logStr)
                 levelX = 2
         if levelY > 2:
             if nameY in self.labelsL2:
-                #print("Y:", nameY, levelY, "->", 2)
+                logStr = f"Y: {nameY} L{levelY} -> L2"
+                self.log(logStr)
                 levelY = 2
         if levelX > 1:
             if nameX in self.labelsL1:
-                #print("X:", nameX, levelX, "->", 1)
+                logStr = f"X: {nameX} L{levelX} -> L1"
+                self.log(logStr)
                 levelX = 1
         if levelY > 1:
             if nameY in self.labelsL1:
-                #print("Y:", nameY, levelY, "->", 1)
+                logStr = f"Y: {nameY} L{levelY} -> L1"
+                self.log(logStr)
                 levelY = 1
 
         if levelX == levelY: # Classification at the same taxonomic rank (level)
@@ -102,6 +106,12 @@ class TaxaHierarchy():
                         return True
                     
         if nameX == nameY: # Same name independent of level
+            return True
+        
+        # Check same genus (For level 3)
+        if nameX in nameY:
+            return True
+        if nameY in nameX:
             return True
         
         logStr = f"Different insects B: {nameX} L{levelX} - {nameY} L{levelY}"
