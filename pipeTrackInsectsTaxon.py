@@ -39,13 +39,82 @@ class TaxaHierarchy():
         print(text)
         self.logFile.write(text + '\n')
         self.logFile.flush()
-        
+
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
         
         #logStr = "Check insects  :" + nameX + str(levelX) + nameY + str(levelY)
         #self.log(logStr)
         
-        if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
+        if (nameX == "Unsure") or (nameY == "Unsure"): # One of the insects are "Unsure"
+            return True
+
+        # Find the correct highest level
+        if nameX in self.labelsL3:
+            levelX = 3
+        if nameX in self.labelsL2:
+            levelX = 2
+        if nameX in self.labelsL1:
+            levelX = 1
+            
+        if nameY in self.labelsL3:
+            levelY = 3
+        if nameY in self.labelsL2:
+            levelY = 2
+        if nameY in self.labelsL1:
+            levelY = 1
+  
+        if levelX == levelY: # Classification at the same taxonomic rank (level)
+            if nameX == nameY:
+                return True
+            else:
+                # Check same genus (For level 3)
+                if nameX.find(nameY):
+                    return True
+                if nameY.find(nameX):
+                    return True
+                
+                logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
+                self.log(logStr)
+                
+                return False # True if same at higher rank?
+        
+        if levelX < levelY: # Insect X at higher rank than insect Y
+            levelA = levelX
+            nameA = nameX
+            levelB = levelY
+            nameB = nameY
+        else: # Insect Y at higher rank than insect X
+            levelA = levelY
+            nameA = nameY
+            levelB = levelX
+            nameB = nameX
+            
+        if levelA == 1 and levelB == 2:
+            if nameA in self.hierachyL1.keys():
+                if nameB in self.hierachyL1[nameA]: # Check hierarchy L1 -> L2
+                    return True
+        if levelA == 2 and levelB == 3:
+            if nameA in self.hierachyL2.keys():
+                if nameB in self.hierachyL2[nameA]: # Check hierarchy L2 -> L3
+                    return True
+        if levelA == 1 and levelB == 3:
+            if nameA in self.hierachyL1.keys():
+                for nameL2 in self.hierachyL1[nameA]:
+                    if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
+                        return True
+                            
+        logStr = f"Different insects B: {nameX} L{levelX} - {nameY} L{levelY}"
+        self.log(logStr)
+        
+        return False # Not same insect
+    
+    """
+    def checkSameInsectOld(self, nameX, levelX, nameY, levelY):
+        
+        #logStr = "Check insects  :" + nameX + str(levelX) + nameY + str(levelY)
+        #self.log(logStr)
+        
+        if (nameX == "Unsure") or (nameY == "Unsure"): # One of the insects are "Unsure"
             return True
 
         # Some labels exist at several levels of the Hierarchy
@@ -118,7 +187,7 @@ class TaxaHierarchy():
         self.log(logStr)
         
         return False # Not same insect
-    
+    """
     
     def validate(self):
         
