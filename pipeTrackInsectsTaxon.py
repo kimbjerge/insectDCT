@@ -76,15 +76,18 @@ class TaxaHierarchy():
             nameB = nameX
             
         if levelA == 1 and levelB == 2:
-            if nameB in self.hierachyL1[nameA]: # Check hierarchy L1 -> L2
-                return True
-        if levelA == 2 and levelB == 3:
-            if nameB in self.hierachyL2[nameA]: # Check hierarchy L2 -> L3
-                return True
-        if levelA == 1 and levelB == 3:
-            for nameL2 in self.hierachyL1[nameA]:
-                if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
+            if nameA in self.hierarchyL1.keys():
+                if nameB in self.hierachyL1[nameA]: # Check hierarchy L1 -> L2
                     return True
+        if levelA == 2 and levelB == 3:
+            if nameA in self.hierarchyL2.keys():
+                if nameB in self.hierachyL2[nameA]: # Check hierarchy L2 -> L3
+                    return True
+        if levelA == 1 and levelB == 3:
+            if nameA in self.hierarchyL1.keys():
+                for nameL2 in self.hierachyL1[nameA]:
+                    if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
+                        return True
         
         print("Different insects", nameX, levelX, nameY, levelY)
         return False # Not same insec
