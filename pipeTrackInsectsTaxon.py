@@ -33,7 +33,7 @@ class TaxaHierarchy():
     
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
         
-        print("Check", nameX, levelX, nameY, levelY)
+        #print("Check", nameX, levelX, nameY, levelY)
         
         if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
             return True
@@ -42,19 +42,19 @@ class TaxaHierarchy():
         # Set level to highest rank in hierarchy
         if levelX > 2:
             if nameX in self.labelsL2:
-                print("X:", nameX, levelX, "->", 2)
+                #print("X:", nameX, levelX, "->", 2)
                 levelX = 2
         if levelY > 2:
             if nameY in self.labelsL2:
-                print("Y:", nameY, levelY, "->", 2)
+                #print("Y:", nameY, levelY, "->", 2)
                 levelY = 2
         if levelX > 1:
             if nameX in self.labelsL1:
-                print("X:", nameX, levelX, "->", 1)
+                #print("X:", nameX, levelX, "->", 1)
                 levelX = 1
         if levelY > 1:
             if nameY in self.labelsL1:
-                print("Y:", nameY, levelY, "->", 1)
+                #print("Y:", nameY, levelY, "->", 1)
                 levelY = 1
 
         if levelX == levelY: # Classification at the same taxonomic rank (level)
