@@ -59,6 +59,7 @@ class TaxaHierarchy():
             if nameX == nameY:
                 return True
             else:
+                print("Different insects", nameX, nameY, levelY)
                 return False # True if same at higher rank?
         
         if levelX < levelY: # Insect X at higher rank than insect Y
@@ -83,6 +84,7 @@ class TaxaHierarchy():
                 if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
                     return True
         
+        print("Different insects", nameX, levelX, nameY, levelY)
         return False # Not same insec
     
     
