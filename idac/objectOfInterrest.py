@@ -6,7 +6,7 @@ Created on Fri Aug 30 09:22:55 2019
 @author: jakob
 """
 
-
+import copy
 # TODO  centerhist
 
 class ObjectOfInterrest:
@@ -37,3 +37,6 @@ class ObjectOfInterrest:
         self.centerx = int(self.x + self.w / 2)
         self.centery = int(self.y + self.h / 2)
         self.centerhist.append((self.centerx, self.centery))
+
+    def deep_copy(self):
+        return copy.deepcopy(self)
