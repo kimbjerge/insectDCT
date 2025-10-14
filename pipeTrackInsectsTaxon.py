@@ -30,7 +30,7 @@ class TaxaHierarchy():
         self.labelsL1 = labelsL1
         self.labelsL2 = labelsL2
         self.labelsL3 = labelsL3
-        self.logFile = open("trackLog.txt", "w")
+        self.logFile = open("trackLog.txt", "a")
         
     def __del__(self):
         self.logFile.close()
