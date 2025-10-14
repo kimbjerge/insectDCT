@@ -100,6 +100,9 @@ class TaxaHierarchy():
                 for nameL2 in self.hierachyL1[nameA]:
                     if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
                         return True
+                    
+        if nameX == nameY: # Same name independent of level
+            return True
         
         logStr = f"Different insects B: {nameX} L{levelX} - {nameY} L{levelY}"
         self.log(logStr)
