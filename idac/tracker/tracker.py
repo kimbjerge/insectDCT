@@ -169,8 +169,8 @@ class Tracker:
                 ooi1[row_ind[i]].timesec = ooi2[col_ind[i]].timesec
                 ooi1[row_ind[i]].line = ooi2[col_ind[i]].line
                 ooi1[row_ind[i]].updatecenterhist()
-                obj = ooi1[row_ind[i]].copy() # To be tested
-                goods.append(obj) 
+                obj = ooi1[row_ind[i]]
+                goods.append(obj.copy()) 
                 toremovenew.append(col_ind[i])
                 toremoveold.append(row_ind[i])
                 
