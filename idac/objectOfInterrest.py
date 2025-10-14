@@ -20,6 +20,7 @@ class ObjectOfInterrest:
         self.id = id
         self.centerhist = []
         self.label = ''
+        self.level = 0
         self.percent = 0
         self.updatecenterhist()
         self.labelhist = []

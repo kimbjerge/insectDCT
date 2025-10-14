@@ -153,6 +153,7 @@ class Predictions:
                         'time' : int(subsplit[3]),
                         'prob' : prob, # Class probability 0-100%
                         'class' : objClass, # Classes 1-19
+                        'level' : 0, # FLat hierarchy
                         'line' : line_count, # Line number - reference to detections (CSV)
                         # Box position and size
                         'x1' : x1,
@@ -262,7 +263,8 @@ class Predictions:
                 obj.percent = predict['prob'] 
                 obj.timesec = self.getTimesec(predict['time']) 
                 obj.line = predict['line']
-                print("Taxa:", obj.label, "confidence:", obj.percent, "time:", predict['time'], "line:", obj.line)
+                obj.level = predict['level']
+                print("Taxa:", obj.label, "level:", obj.level, "confidence:", obj.percent, "time:", predict['time'], "line:", obj.line)
                 #if 'taxaName' in predict.keys():
                 #    print(predict['taxaName'], predict['taxaId'], predict['level'])
                 ooi.append(obj)

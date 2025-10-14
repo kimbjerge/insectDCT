@@ -20,6 +20,94 @@ from idac.tracksSave.tracksSave import TracksSave
 #from PyQt5.QtGui import QImage
 import pickle
 
+# if --checkTaxa is True, then the below class is used to 
+# test if hierarchical classifications is the same insect
+class TaxaHierarchy():
+    
+    def __init__(self, hierachyL1, hierachyL2, labelsL1, labelsL2, labelsL3):
+        self.hierachyL1 = hierachyL1
+        self.hierachyL2 = hierachyL2
+        self.labelsL1 = labelsL1
+        self.labelsL2 = labelsL2
+        self.labelsL3 = labelsL3
+    
+    def checkSameInsect(self, nameX, levelX, nameY, levelY):
+           
+        if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
+            return True
+
+        # Some labels exist at several levels of the Hierarchy
+        # Set level to highest rank in hierarchy
+        if levelX > 2:
+            if nameX in self.labelsL2:
+                #print("X:", nameX, levelX, "->", 2)
+                levelX = 2
+        if levelY > 2:
+            if nameY in self.labelsL2:
+                #print("Y:", nameY, levelY, "->", 2)
+                levelY = 2
+        if levelX > 1:
+            if nameX in self.labelsL1:
+                #print("X:", nameX, levelX, "->", 1)
+                levelX = 1
+        if levelY > 1:
+            if nameY in self.labelsL1:
+                #print("Y:", nameY, levelY, "->", 1)
+                levelY = 1
+
+        if levelX == levelY: # Classification at the same taxonomic rank (level)
+            if nameX == nameY:
+                return True
+            else:
+                return False # True if same at higher rank?
+        
+        if levelX < levelY: # Insect X at higher rank than insect Y
+            levelA = levelX
+            nameA = nameX
+            levelB = levelY
+            nameB = nameY
+        else: # Insect Y at higher rank than insect X
+            levelA = levelY
+            nameA = nameY
+            levelB = levelX
+            nameB = nameX
+            
+        if levelA == 1 and levelB == 2:
+            if nameB in self.hierachyL1[nameA]: # Check hierarchy L1 -> L2
+                return True
+        if levelA == 2 and levelB == 3:
+            if nameB in self.hierachyL2[nameA]: # Check hierarchy L2 -> L3
+                return True
+        if levelA == 1 and levelB == 3:
+            for nameL2 in self.hierachyL1[nameA]:
+                if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
+                    return True
+        
+        return False # Not same insec
+    
+    
+    def validate(self):
+        
+        assert(self.checkSameInsect("Apis mellifera", 3, "Bombus lapidarius", 3) == False)
+        assert(self.checkSameInsect("Bombus lapidarius", 3, "Bombus lapidarius", 3) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Unsure", 0) == True)
+        assert(self.checkSameInsect("Unsure", 0, "Apidea", 2) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Apidae", 2) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Apidae", 3) == True)
+        assert(self.checkSameInsect("Apidae", 2, "Apis mellifera", 3) == True)
+        assert(self.checkSameInsect("Apidae", 3, "Apis mellifera", 3) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Apoidea", 1) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Apoidea", 2) == True)
+        assert(self.checkSameInsect("Apis mellifera", 3, "Apoidea", 3) == True)
+        assert(self.checkSameInsect("Apoidea", 1, "Apis mellifera", 3) == True)
+        assert(self.checkSameInsect("Apoidea", 2, "Apis mellifera", 3) == True)
+        assert(self.checkSameInsect("Apoidea", 3, "Apis mellifera", 3) == True)
+        assert(self.checkSameInsect("Syrphidae", 2, "Eupeodes", 3) == True)
+        assert(self.checkSameInsect("Syrphidae", 3, "Eupeodes", 3) == True)
+        assert(self.checkSameInsect("Episyrphus balteatus", 3, "Syrphidae", 2) == True)
+        assert(self.checkSameInsect("Episyrphus balteatus", 3, "Syrphidae", 3) == True)
+    
+    
 #%% Convert class hierarchy to a flat structure with labels : L1, L2 and L3 and removed dublicates
 def createFlatSpeciesList(label_file):
     
@@ -50,8 +138,11 @@ def createFlatSpeciesList(label_file):
             speciesList.append(label)
             
     speciesList.append("Unsure") # Unsure label if below threshold or wrong hierarchy
-            
-    return speciesList
+    
+    # Create class to check taxaHierarchy
+    taxaHierarchy = TaxaHierarchy(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3)
+    
+    return speciesList, taxaHierarchy
 
         
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
@@ -67,14 +158,14 @@ def getDateTime(image_filename):
 
 
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
-def run(trackName, imagePath, detectPath, trackPath, conf):
+def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy):
     
     writemovie = conf['moviemaker']['writemovie']
     reader = DataReader(conf)
     gen = reader.getimage()
     print(type(gen))
 
-    tr = Tracker(conf)
+    tr = Tracker(conf, taxaHierarchy)
     imod = Imagemod()
     mm = MovieMaker(conf, name=trackName+'-TR.avi')
 
@@ -173,7 +264,8 @@ if __name__ == '__main__':
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
     parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
-    parser.add_argument('--dataset', default="V5") #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4 
+    parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
+    parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, default empty = False 
     args = parser.parse_args() 
     print(args)
     
@@ -183,12 +275,16 @@ if __name__ == '__main__':
     
     # Convert hierarchical labels to flat list of labels
     if args.dataset == 'V2':
-        conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFile"])
+        conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFile"])
     if args.dataset == 'V3' or args.dataset == 'V4':
-        conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
+        conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
     if args.dataset == 'V5':
-        conf["classifier"]['species'] = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
-        
+        conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
+    # For testing only taxaHierarchy.validate()
+    if args.checkTaxa == False:
+        taxaHierarchy = None # Disable using hierarchy to check if same insect in track - see TaxaHierarchy class
+    else:
+        print("Use hierarchy to check if same insect in track")
     
     imageCounts = 0
     totalPredictions = 0
@@ -197,7 +293,7 @@ if __name__ == '__main__':
         if '-CL.csv' in fileName:
             trackName = fileName.split('-')[0] 
             print(fileName, trackName)
-            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf)
+            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy)
             totalPredictions += totPred
             totalFilteredPredictions += totFiltered
             imageCounts += counts

@@ -7,7 +7,7 @@ import time
 
 
 class Tracker:
-    def __init__(self, conf):
+    def __init__(self, conf, taxaHierarchy=None):
         self.savedois = []
         self.detector = BlobDetectorFactory.get_blob_detector(conf['blobdetector']['type'], conf)
         self.conf = conf["tracker"]
@@ -17,7 +17,9 @@ class Tracker:
         self.maxage = self.conf["maxage"]
         self.maxtimesec = self.conf["maxtimesec"]
         self.appear = {}
+        self.taxaHierarchy=taxaHierarchy
 
+    """
     #Might be deprecated
     def init_frame(self, image):
         startid = 0
@@ -26,7 +28,8 @@ class Tracker:
             oi.id = startid
             startid = startid + 1
         return image_new, count, ooi1, id
-
+    """
+    
     def calc_e_distance(self, x2, x1, y2, y1):
         return float(math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2)))
 
@@ -37,10 +40,11 @@ class Tracker:
         min_area = min(area1, area2)
         return min_area / max_area
 
+    """
     def calc_cost_matrix(self, oii1, oii2):
+        # TODO Not used
         cost_m = np.full((50, 50), 8.1)
         row_index = 0
-        # TODO Fix this plzzzz
         for g in oii1:
             col_index = 0
             for o in oii2:
@@ -51,17 +55,22 @@ class Tracker:
                 col_index = col_index + 1
             row_index = row_index + 1
         return cost_m
+    """
     
     def calc_time_cost_matrix(self, oii1, oii2):
         cost_m = np.full((50, 50), 8.1)
         row_index = 0
-        # TODO Fix this plzzzz
         for g in oii1:
             col_index = 0
             for o in oii2:
+
+                sameInsects = True
+                if self.taxaHierarchy != None:
+                    sameInsects = self.taxaHierarchy.checkSameInsect(g.label, g.level, o.label, o.level)
+                    
                 timediffsec =  o.timesec - g.timesec
-                if timediffsec > self.maxtimesec:
-                    cost = 2 # High cost since time more than maximum duration since last recording
+                if (timediffsec > self.maxtimesec) or (sameInsects == False):
+                    cost = 2 # High cost since time more than maximum duration since last recording or not sameInsects
                 else:
                     cost = (self.calc_e_distance(g.x, o.x, g.y, o.y) / 2203) * self.distance_cost_weight + ( #C920
                             1 - self.calc_area_ratio(g.w, g.h, o.w, o.h)) * self.area_cost_weight
@@ -86,7 +95,9 @@ class Tracker:
 
         self.savedois[:] = [obj for obj in oois if self.determine(obj)]
 
-    def track_frames(self, ooi1, image, id):
+    """
+    def track_frames(self, ooi1, image, id): 
+        # TODO Not used
         ooi1.extend(self.savedois)
         goods = []
         toremoveold = []
@@ -128,7 +139,8 @@ class Tracker:
         self.check_age(ooi1)
 
         return goods, id, binary
-
+    """
+    
     def track_boxes(self, ooi1, ooi2, count2, id):
         ooi1.extend(self.savedois)
         goods = []
@@ -152,6 +164,7 @@ class Tracker:
                 ooi1[row_ind[i]].w = ooi2[col_ind[i]].w
                 ooi1[row_ind[i]].h = ooi2[col_ind[i]].h
                 ooi1[row_ind[i]].label = ooi2[col_ind[i]].label
+                ooi1[row_ind[i]].level = ooi2[col_ind[i]].level
                 ooi1[row_ind[i]].percent = ooi2[col_ind[i]].percent
                 ooi1[row_ind[i]].timesec = ooi2[col_ind[i]].timesec
                 ooi1[row_ind[i]].line = ooi2[col_ind[i]].line
@@ -169,6 +182,7 @@ class Tracker:
         for oi in ooi2:
             obj = ObjectOfInterrest(oi.x, oi.y, oi.w, oi.h, id)
             obj.label = oi.label
+            obj.level = oi.level
             obj.percent = oi.percent
             obj.timesec = oi.timesec
             obj.line = oi.line
