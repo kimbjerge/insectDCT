@@ -58,7 +58,7 @@ class Tracker:
     """
     
     def calc_time_cost_matrix(self, oii1, oii2):
-        cost_m = np.full((50, 50), 8.1)
+        cost_m = np.full((100, 100), 8.1) # Maximum number of objects is 100 in one image
         row_index = 0
         for g in oii1:
             col_index = 0
@@ -169,8 +169,8 @@ class Tracker:
                 ooi1[row_ind[i]].timesec = ooi2[col_ind[i]].timesec
                 ooi1[row_ind[i]].line = ooi2[col_ind[i]].line
                 ooi1[row_ind[i]].updatecenterhist()
-                obj = ooi1[row_ind[i]]
-                goods.append(obj)
+                obj = ooi1[row_ind[i]].copy() # To be tested
+                goods.append(obj) 
                 toremovenew.append(col_ind[i])
                 toremoveold.append(row_ind[i])
                 

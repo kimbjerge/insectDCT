@@ -10,7 +10,7 @@ Created on Fri Aug 30 09:22:55 2019
 # TODO  centerhist
 
 class ObjectOfInterrest:
-    def __init__(self, x, y, w, h, id=0, centerhist=[]):
+    def __init__(self, x, y, w, h, id=0):
         self.x = x
         self.y = y
         self.w = w

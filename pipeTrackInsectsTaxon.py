@@ -68,9 +68,9 @@ class TaxaHierarchy():
                 return True
             else:
                 # Check same genus (For level 3)
-                if nameX.find(nameY):
+                if nameX in nameY:
                     return True
-                if nameY.find(nameX):
+                if nameY in nameX:
                     return True
                 
                 logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
@@ -192,6 +192,7 @@ class TaxaHierarchy():
     def validate(self):
         
         assert(self.checkSameInsect("Apis mellifera", 3, "Bombus lapidarius", 3) == False)
+        assert(self.checkSameInsect("Vespula vulgaris", 3, "Bombus lapidarius", 3) == False)
         assert(self.checkSameInsect("Bombus lapidarius", 3, "Bombus lapidarius", 3) == True)
         assert(self.checkSameInsect("Apis mellifera", 3, "Unsure", 0) == True)
         assert(self.checkSameInsect("Unsure", 0, "Apidea", 2) == True)
@@ -383,7 +384,8 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
     if args.dataset == 'V5':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
-    # For testing only taxaHierarchy.validate()
+    # For testing only 
+    #taxaHierarchy.validate()
     if args.checkTaxa == False:
         taxaHierarchy = None # Disable using hierarchy to check if same insect in track - see TaxaHierarchy class
     else:
