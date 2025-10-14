@@ -169,7 +169,7 @@ class Tracker:
                 ooi1[row_ind[i]].timesec = ooi2[col_ind[i]].timesec
                 ooi1[row_ind[i]].line = ooi2[col_ind[i]].line
                 ooi1[row_ind[i]].updatecenterhist()
-                obj = ooi1[row_ind[i]].deep_copy()
+                obj = ooi1[row_ind[i]].deep_copy() # Check if needed
                 goods.append(obj) 
                 toremovenew.append(col_ind[i])
                 toremoveold.append(row_ind[i])

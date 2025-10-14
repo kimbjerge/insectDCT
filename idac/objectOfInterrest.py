@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 30 09:22:55 2019
+Created on Fri Aug 30 09:22:55 2019/2025
 
-@author: jakob
+@author: jakob/Kim
 """
 
 import copy
-# TODO  centerhist
 
 class ObjectOfInterrest:
     def __init__(self, x, y, w, h, id=0):

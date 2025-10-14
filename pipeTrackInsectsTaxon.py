@@ -73,6 +73,8 @@ class TaxaHierarchy():
                 if nameY in nameX:
                     return True
                 
+                # If level3 different but same level2 then OK???
+                
                 logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
                 self.log(logStr)
                 
