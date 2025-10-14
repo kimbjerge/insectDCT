@@ -78,7 +78,7 @@ class TaxaHierarchy():
                 # Check same genus (For level 3)
                 if nameX.find(nameY):
                     return True
-                if nameY.fine(nameX):
+                if nameY.find(nameX):
                     return True
                 
                 logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
