@@ -224,7 +224,7 @@ class Predictions:
                         'date' : int(subsplit[2]),
                         'time' : int(subsplit[3]),
                         'prob' : taxaConf, # Class probability 0-100%
-                        'class' : self.species.index(subsplit[5])+1, # Class index to flat list of species names
+                        'class' : self.species.index(taxaName)+1, # Class index to flat list of species names
                         'taxaName' : taxaName, # Taxa name in hierarchy
                         'taxaId' : taxaId, # TaxaId in level of hierarchy 
                         'level' : taxaLevel, # Level in hierarchy

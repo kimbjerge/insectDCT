@@ -157,8 +157,8 @@ class Tracker:
         for i in range(len(row_ind)):
             if cost[row_ind[i]][col_ind[i]] < self.cost_thres:
                 #print('Row id: ' + str(ooi1[row_ind[i]].id) + ' With: ' + str(col_ind[i]))
-                obj = ObjectOfInterrest(ooi2[col_ind[i]].x, ooi2[col_ind[i]].y, ooi2[col_ind[i]].w,
-                                        ooi2[col_ind[i]].h, ooi1[row_ind[i]].id)
+                #obj = ObjectOfInterrest(ooi2[col_ind[i]].x, ooi2[col_ind[i]].y, ooi2[col_ind[i]].w,
+                #                        ooi2[col_ind[i]].h, ooi1[row_ind[i]].id)
                 ooi1[row_ind[i]].x = ooi2[col_ind[i]].x
                 ooi1[row_ind[i]].y = ooi2[col_ind[i]].y
                 ooi1[row_ind[i]].w = ooi2[col_ind[i]].w
@@ -173,6 +173,7 @@ class Tracker:
                 goods.append(obj)
                 toremovenew.append(col_ind[i])
                 toremoveold.append(row_ind[i])
+                
         for i in sorted(toremoveold, reverse=True):
             del ooi1[i]
 
@@ -188,6 +189,7 @@ class Tracker:
             obj.line = oi.line
             goods.append(obj)
             id = id + 1
+            
         time2 = time.time()
         #print('Tracker took {:.3f} ms'.format((time2 - time1) * 1000.0))
         # self.savedois = ooi1
