@@ -30,10 +30,16 @@ class TaxaHierarchy():
         self.labelsL1 = labelsL1
         self.labelsL2 = labelsL2
         self.labelsL3 = labelsL3
+        self.logFile = open("trackLog.txt", "w")
+        
+    def __del__(self):
+        self.logFile.close()
     
     def checkSameInsect(self, nameX, levelX, nameY, levelY):
         
-        #print("Check", nameX, levelX, nameY, levelY)
+        #logStr = "Check insects  :" + nameX + str(levelX) + nameY + str(levelY)
+        #print(logStr)
+        #self.logFile.write(logStr)
         
         if (levelX == 0) or (levelY == 0): # One of the insects are "Unsure"
             return True
@@ -61,7 +67,10 @@ class TaxaHierarchy():
             if nameX == nameY:
                 return True
             else:
-                print("Different insects", nameX, nameY, levelY)
+                logStr = "Different insects A:" + nameX + str(levelX) + nameY + str(levelY)
+                print(logStr)
+                self.logFile.write(logStr)
+                
                 return False # True if same at higher rank?
         
         if levelX < levelY: # Insect X at higher rank than insect Y
@@ -89,8 +98,11 @@ class TaxaHierarchy():
                     if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
                         return True
         
-        print("Different insects", nameX, levelX, nameY, levelY)
-        return False # Not same insec
+        logStr = "Different insects B:" + nameX + str(levelX) + nameY + str(levelY)
+        print(logStr)
+        self.logFile.write(logStr)
+        
+        return False # Not same insect
     
     
     def validate(self):
