@@ -410,6 +410,7 @@ if __name__ == '__main__':
             totalFilteredPredictions += totFiltered
             imageCounts += counts
 
+            """ Not used
             if args.dateFormat == 'YYYY_MM_DD':
                 trackNameSplit = trackName.split('_')
                 date = int(trackNameSplit[1] + trackNameSplit[2] + trackNameSplit[3])  # format YYYYMMDD
@@ -417,5 +418,6 @@ if __name__ == '__main__':
                 date = int(trackName)  # format YYYYMMDD
              
             print_totals(date, stat, args.tracks)
-        
+            """
+            
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)
