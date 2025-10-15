@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 smallInsects = True # UFZ is small, MAMBO is not
-showAxis = 'off' # Or 'on'
+showAxis = 'on' # Or 'on'
 
 validTrackLength = 3 # Overwritten by args parameter validNum
 validTrackConfidence = 50 # Overwritten by args parameter validConfTH
@@ -37,10 +37,13 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
 
     i = 0
     length = 0
+    plotfileName = "plotTrackCrops.jpg"
     for row in trackRows:
 
         if i < rows*cols:                
             imageFilePath = pathToRecordData + row['fileName']
+            if i == 0:
+                plotfileName = row['fileName'] # Use fileName of first image to save plot
             #print(imageFilePath)
             image = cv2.imread(imageFilePath)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -102,7 +105,8 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
     if os.path.exists(pathToDestCrops + taxa) == False:
         print("Create directory:", pathToDestCrops + taxa)
         os.mkdir(pathToDestCrops + taxa)
-    fileName = row['fileName'].replace('/', '_').replace(".jpg", "") + "-" + str(trackId) + ".png"
+        
+    fileName = plotfileName.replace('/', '_').replace(".jpg", "") + "-" + str(trackId) + ".png"
     plt.savefig(pathToDestCrops + taxa + "/" + fileName)
     #plt.show()
     plt.close('all')
@@ -178,16 +182,22 @@ if __name__=='__main__':
     parser.add_argument('--images', default='./images') #Directory that contains the image files
     parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
 
-    #parser.add_argument('--tracks', default='/UFZ/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--tracks', default='/UFZ/tracksTest') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
-    #parser.add_argument('--resultsDir', default='/UFZ/trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--resultsDir', default='/UFZ/trackCropsTest') # Optimized for embedded processing (ncnn)
+
+    #parser.add_argument('--tracks', default='/Orchard/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='/Orchard/trackCrops') # Optimized for embedded processing (ncnn)
 
     #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/RTNI/trackCrops') # Optimized for embedded processing (ncnn)
+    
     parser.add_argument('--date', default="") # if date specified then only create track crops for specified date (YYYY_MM_DD or YYYMMDD)
 
     parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
+    
     parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
     #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
 
@@ -217,6 +227,8 @@ if __name__=='__main__':
                 data_df = pd.read_csv(pathToSrcDataset+filename)
                 data_df = data_df.sort_values(by=['id', 'time'])  
                 subDir = filename.split('-')[0]
-                pathToRecordDataSubDir = pathToRecordData + subDir + '/'
-                #pathToRecordDataSubDir = pathToRecordData + subDir.split('_')[0] + '/' + subDir + '/'
+                if "UFZ" in args.images:
+                    pathToRecordDataSubDir = pathToRecordData + subDir.split('_')[0] + '/' + subDir + '/' # UFZ
+                else:
+                    pathToRecordDataSubDir = pathToRecordData + subDir + '/'
                 analyseTracks(data_df, pathToRecordDataSubDir, pathToDestCrops)
