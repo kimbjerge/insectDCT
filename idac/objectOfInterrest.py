@@ -39,3 +39,7 @@ class ObjectOfInterrest:
 
     def deep_copy(self):
         return copy.deepcopy(self)
+    
+    def __str__(self):
+        string = f"Id: {self.id} Label: {self.label} L{self.level} Time: {self.timesec} Xc,Yc: {self.centerx},{self.centery} Counts: {self.counts}"
+        return string
