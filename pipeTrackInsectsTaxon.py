@@ -295,7 +295,11 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy):
     for insect in predicted:
         file = insect['image']
         filedatetime = getDateTime(file)
-        filepath = insect['pathimage']
+        if args.trapFilePath == True: # Trap (system) part of file path - used in project Orchard
+            filepath = insect['system'] + '/' + insect['pathimage']
+        else:
+            filepath = insect['pathimage']
+            
         if oldFile == file:
             oldFile = file
             continue
@@ -372,6 +376,7 @@ if __name__ == '__main__':
     parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
     parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, default empty = False 
+    parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
     args = parser.parse_args() 
     print(args)
     
