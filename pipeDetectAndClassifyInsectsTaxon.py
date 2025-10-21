@@ -32,10 +32,10 @@ useMambo = False
 
 # MAMBO
 if useMambo:   
-    imgWidth = 5120 # Grade Pro 16MP
-    imgHeight = 2880
-    #imgWidth = 3840 # Grade Pro 8MP
-    #imgHeight = 2160
+    #imgWidth = 5120 # Grade Pro 16MP
+    #imgHeight = 2880
+    imgWidth = 3840 # Grade Pro 8MP
+    imgHeight = 2160
     #imgWidth = 4224 # Wingscapes
     #imgHeight = 2376
 else:
@@ -415,7 +415,14 @@ if __name__=='__main__':
             args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file  
     else: # Process time-lapse images in directory
         imagesSubDir = args.images.split('/')[-2]
-        if args.project == "MAMBO":
+       
+        if args.project == "MAMBO":    
+            # Overwrite parameters used for MAMBO images
+            useMambo = True
+            imgWidth = 4224 # Wingscapes MAMBO
+            imgHeight = 2376
+            args.scale = 0.45
+            
             # Format CSV result file names for project MAMBO
             imagesSubDir4 = args.images.split('/')[-4]
             imagesSubDir3 = args.images.split('/')[-3] 
