@@ -133,6 +133,21 @@ def calcConfidence(trackRows):
     confidence = int(1000*maximum/counts)
     confidence = confidence/10
     
+    # If "Unsure" track then search for maximum taxa different from "Unsure"
+    if (args.unsureTaxa > 0) and (taxa == "Unsure"):
+        maximum = 0
+        taxaMax = ""
+        for key, value in labels.items():
+            # Search for taxa classified different from "Unsure" and find maximum number of taxa classification
+            if (key != "Unsure") and (value > maximum):
+                maximum = value
+                taxaMax = key
+        if (maximum >= args.unsureTaxa): # At least "unsureTaxa" crops classified as taxa different from "Unsure"
+            taxa = taxaMax
+            print("Unsure track use", taxa, maximum)
+    else:
+        confidence = 0
+    
     return confidence, taxa, counts 
     
 def saveTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, trackRows):
@@ -182,9 +197,9 @@ if __name__=='__main__':
     parser.add_argument('--images', default='./images') #Directory that contains the image files
     parser.add_argument('--resultsDir', default='./trackCrops') # Optimized for embedded processing (ncnn)
 
-    #parser.add_argument('--tracks', default='/UFZ/tracksTest') #Directory that contains CSV files of tracks
+    #parser.add_argument('--tracks', default='/UFZ/tracksAllV5') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
-    #parser.add_argument('--resultsDir', default='/UFZ/trackCropsTest') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--resultsDir', default='/UFZ/trackCropsUnsureV5') # Optimized for embedded processing (ncnn)
 
     #parser.add_argument('--tracks', default='/Orchard/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
@@ -200,6 +215,7 @@ if __name__=='__main__':
     
     parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
     #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
+    parser.add_argument('--unsureTaxa', default='0', type=int) # Use relaxed approached, threshold for number of same taxa in unsure track  
 
     args = parser.parse_args() 
     print(args)
