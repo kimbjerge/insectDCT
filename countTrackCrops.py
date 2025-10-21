@@ -83,7 +83,7 @@ def printStat(classes, path, below=True):
     plt.xscale('log') # Only log scale above
     #plt.legend((p1[0], p2[0], p3[0]), ('True Positive', 'FP-Arthropods', 'FP-Background'), loc="lower right")
     plt.tight_layout()
-    plt.savefig('/Orchard/plots/'+cropsName+'_'+fName+'.png')
+    plt.savefig('/UFZ/plots/'+cropsName+'_'+fName+'.png')
     plt.show()
 
 
@@ -97,29 +97,37 @@ if __name__ == '__main__':
     cropPaths = ["/RTNI/trackCrops_CheckTaxa/",
                  "/RTNI/trackCrops_NoCheckTaxa/"
                  ]
+
+    cropPaths = ["/UFZ/trackCrops_AllV5/",
+                 "/UFZ/trackCrops_UnsureV5/"
+                 ]
     
+    #classes = {}
     for cropPath in cropPaths:    
         classes = {}
         for dirName in sorted(os.listdir(cropPath)):
             if dirName != '.gitignore':
+                #if dirName == "Unsure" and ("AllV5" in cropPath):
+                #    continue
+
                 if not dirName in classes.keys():   
                     classes[dirName] = [0, 0, 0]
-                
+                                    
                 pathTrue = cropPath + dirName
                 files = os.listdir(pathTrue)
                 files = [f for f in files if os.path.isfile(pathTrue + '/' + f)]
-                classes[dirName][trueIdx] = len(files)
+                classes[dirName][trueIdx] += len(files)
                 
                 pathFalseA = cropPath + dirName + '/False'
                 if os.path.exists(pathFalseA):
                     files = os.listdir(pathFalseA)
                     #classes[dirName][falseAIdx] = len(files)
-                    classes[dirName][trueIdx] = len(files)
+                    classes[dirName][trueIdx] += len(files)
                 
                 pathFalseB = cropPath + dirName + '/FalseB'
                 if os.path.exists(pathFalseB):
                     files = os.listdir(pathFalseB)
-                    classes[dirName][falseBIdx] = len(files)
+                    classes[dirName][falseBIdx] += len(files)
         
         print("===================================================")        
         print(cropPath)
