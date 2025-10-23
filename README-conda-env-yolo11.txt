@@ -9,4 +9,6 @@ pip install -U scikit-learn
 pip install ultralytics
 pip install pyqt5
 pip install torchsummary
+pip install pandas
+
 
