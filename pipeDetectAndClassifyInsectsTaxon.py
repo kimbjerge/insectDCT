@@ -328,6 +328,7 @@ if __name__=='__main__':
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
+    #parser.add_argument('--video', default='D:/UFZ_BOS_STR/C2_2022_07_21_09_46_22.h264')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
     #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
     #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
@@ -337,6 +338,7 @@ if __name__=='__main__':
     #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
     parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
     parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
+    #parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
     #parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
@@ -403,12 +405,14 @@ if __name__=='__main__':
     video_path = args.video
     if video_path != '': # Process video file
         cap = cv2.VideoCapture(video_path)
-        videoSplit = args.video.split('_')
-        dateTimeStr = "2025" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
-        start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
-        #csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
+        #videoSplit = args.video.split('_')
+        #dateTimeStr = "2025" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
         imagesSubDir = args.video.split('/')[-1]
         imagesSubDir = imagesSubDir.split('.')[0]
+        videoSplit = imagesSubDir.split('_') # Extract date time stamp from video name: eg: /UFZ_BOS_STR/C2_2022_07_21_09_46_22.h264
+        dateTimeStr = videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + videoSplit[5] + videoSplit[6] # Format: YYYYMMDDHHMMSS
+        start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
+        #csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
         csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
         csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
         if args.moviePredict != "": # Save results in a movie file 
