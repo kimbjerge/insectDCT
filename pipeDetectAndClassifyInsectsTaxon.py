@@ -410,6 +410,7 @@ if __name__=='__main__':
         imagesSubDir = args.video.split('/')[-1]
         imagesSubDir = imagesSubDir.split('.')[0]
         videoSplit = imagesSubDir.split('_') # Extract date time stamp from video name: eg: /UFZ_BOS_STR/C2_2022_07_21_09_46_22.h264
+        args.camera = videoSplit[0]
         dateTimeStr = videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + videoSplit[5] + videoSplit[6] # Format: YYYYMMDDHHMMSS
         start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
         #csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
