@@ -111,87 +111,7 @@ class TaxaHierarchy():
         
         return False # Not same insect
     
-    """
-    def checkSameInsectOld(self, nameX, levelX, nameY, levelY):
         
-        #logStr = "Check insects  :" + nameX + str(levelX) + nameY + str(levelY)
-        #self.log(logStr)
-        
-        if (nameX == "Unsure") or (nameY == "Unsure"): # One of the insects are "Unsure"
-            return True
-
-        # Some labels exist at several levels of the Hierarchy
-        # Set level to highest rank in hierarchy
-        if levelX > 2:
-            if nameX in self.labelsL2:
-                logStr = f"X: {nameX} L{levelX} -> L2"
-                self.log(logStr)
-                levelX = 2
-        if levelY > 2:
-            if nameY in self.labelsL2:
-                logStr = f"Y: {nameY} L{levelY} -> L2"
-                self.log(logStr)
-                levelY = 2
-        if levelX > 1:
-            if nameX in self.labelsL1:
-                logStr = f"X: {nameX} L{levelX} -> L1"
-                self.log(logStr)
-                levelX = 1
-        if levelY > 1:
-            if nameY in self.labelsL1:
-                logStr = f"Y: {nameY} L{levelY} -> L1"
-                self.log(logStr)
-                levelY = 1
-
-        if levelX == levelY: # Classification at the same taxonomic rank (level)
-            if nameX == nameY:
-                return True
-            else:
-                # Check same genus (For level 3)
-                if nameX.find(nameY):
-                    return True
-                if nameY.find(nameX):
-                    return True
-                
-                logStr = f"Different insects A: {nameX} L{levelX} - {nameY} L{levelY}"
-                self.log(logStr)
-                
-                return False # True if same at higher rank?
-        
-        if levelX < levelY: # Insect X at higher rank than insect Y
-            levelA = levelX
-            nameA = nameX
-            levelB = levelY
-            nameB = nameY
-        else: # Insect Y at higher rank than insect X
-            levelA = levelY
-            nameA = nameY
-            levelB = levelX
-            nameB = nameX
-            
-        if levelA == 1 and levelB == 2:
-            if nameA in self.hierachyL1.keys():
-                if nameB in self.hierachyL1[nameA]: # Check hierarchy L1 -> L2
-                    return True
-        if levelA == 2 and levelB == 3:
-            if nameA in self.hierachyL2.keys():
-                if nameB in self.hierachyL2[nameA]: # Check hierarchy L2 -> L3
-                    return True
-        if levelA == 1 and levelB == 3:
-            if nameA in self.hierachyL1.keys():
-                for nameL2 in self.hierachyL1[nameA]:
-                    if nameB in self.hierachyL2[nameL2]: # Chech hierarchy L1 -> L2 -> L3
-                        return True
-                    
-        if nameX == nameY: # Same name independent of level
-            return True
-        
-        logStr = f"Different insects B: {nameX} L{levelX} - {nameY} L{levelY}"
-        self.log(logStr)
-        
-        return False # Not same insect
-    """
-    
     def validate(self):
         
         assert(self.checkSameInsect("Apis mellifera", 3, "Bombus lapidarius", 3) == False)
@@ -388,7 +308,7 @@ if __name__ == '__main__':
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
     parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
     parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
-    parser.add_argument('--checkTaxa', default='True', type=bool) # Use hierarchy to check if same insect in track, empty = False 
+    parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
     parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
     args = parser.parse_args() 
@@ -414,9 +334,9 @@ if __name__ == '__main__':
     
     # Open the input video file if specified
     video_path = args.video
-    videoCap = None
+    videoFiles = []
     if video_path != '': # Process video file
-        videoCap = cv2.VideoCapture(video_path)
+        videoFiles = os.listdir(args.detections)
         
     imageCounts = 0
     totalPredictions = 0
@@ -424,11 +344,22 @@ if __name__ == '__main__':
     for fileName in sorted(os.listdir(args.detections)): # fileName must be in format <trapId>_YYYY_MM_DD-CL.csv
         if '-CL.csv' in fileName:
             trackName = fileName.split('-')[0] 
+            
+            videoCap = None
+            videoFile = ""
+            if video_path != "":
+                videoFile = [file for file in videoFiles if trackName in file]
+            if videoFile != "": 
+                videoCap = cv2.VideoCapture(video_path + videoFile)
+                
             print(fileName, trackName)
             stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy, args.ignoreVegetation, videoCap)
             totalPredictions += totPred
             totalFilteredPredictions += totFiltered
             imageCounts += counts
+
+            if videoCap != None:
+                videoCap.release()
 
             """ Not used
             if args.dateFormat == 'YYYY_MM_DD':
@@ -439,7 +370,5 @@ if __name__ == '__main__':
              
             print_totals(date, stat, args.tracks)
             """
-    if videoCap != None:
-        videoCap.release()
          
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)
