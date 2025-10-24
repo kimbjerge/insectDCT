@@ -194,6 +194,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
 
     tr = Tracker(conf, taxaHierarchy)
     imod = Imagemod()
+    conf['moviemaker']['resultdir'] = trackPath # Overwrite resultDir in configuration with trackPath
     mm = MovieMaker(conf, name=trackName+'-TR.avi')
 
     stat = Stats(conf)
