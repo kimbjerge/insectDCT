@@ -336,7 +336,7 @@ if __name__ == '__main__':
     video_path = args.video
     videoFiles = []
     if video_path != '': # Process video file
-        videoFiles = os.listdir(args.detections)
+        videoFiles = os.listdir(video_path)
         
     imageCounts = 0
     totalPredictions = 0
@@ -350,6 +350,7 @@ if __name__ == '__main__':
             if video_path != "":
                 videoFile = [file for file in videoFiles if trackName in file]
             if videoFile != "": 
+                print("Uses video recording", video_path + videoFile)
                 videoCap = cv2.VideoCapture(video_path + videoFile)
                 
             print(fileName, trackName)
