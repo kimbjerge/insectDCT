@@ -7,6 +7,7 @@ Created on Mon June 5 08:35:16 2025
 """
 import time
 import os
+import cv2
 import argparse
 from skimage import io
 from idac.configreader.configreader import readconfig
@@ -264,7 +265,7 @@ def getDateTime(image_filename):
 
 
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
-def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation):
+def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation, videoCap=None):
     
     writemovie = conf['moviemaker']['writemovie']
     reader = DataReader(conf)
@@ -295,7 +296,8 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
     iterCount = 0
     firstTime = 1
     oldFile = ""
-
+    frame_count = 0
+    
     for insect in predicted:
         file = insect['image']
         filedatetime = getDateTime(file)
@@ -331,7 +333,13 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
 
             if writemovie:
                 file_name = imagePath+filepath
-                im = io.imread(file_name)
+                if videoCap != None:
+                    sucess = True
+                    while sucess and (frame_count < insect['frameId']):
+                        success, im = videoCap.read()
+                        frame_count += 1         
+                else:
+                    im = io.imread(file_name)
                 image = imod.drawoois(im, goods)
                 height, width, channel = image.shape
                 #bytesPerLine = 3 * width
@@ -375,13 +383,14 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
+    parser.add_argument('--video', default='') # Path to video recording (If video used instead of single images)
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
     parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD'
     parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
-    parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, default empty = False 
+    parser.add_argument('--checkTaxa', default='True', type=bool) # Use hierarchy to check if same insect in track, empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
-    parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, default empty = False
+    parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
     args = parser.parse_args() 
     print(args)
     
@@ -403,6 +412,12 @@ if __name__ == '__main__':
     else:
         print("Use hierarchy to check if same insect in track")
     
+    # Open the input video file if specified
+    video_path = args.video
+    videoCap = None
+    if video_path != '': # Process video file
+        videoCap = cv2.VideoCapture(video_path)
+        
     imageCounts = 0
     totalPredictions = 0
     totalFilteredPredictions = 0
@@ -410,7 +425,7 @@ if __name__ == '__main__':
         if '-CL.csv' in fileName:
             trackName = fileName.split('-')[0] 
             print(fileName, trackName)
-            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy, args.ignoreVegetation)
+            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy, args.ignoreVegetation, videoCap)
             totalPredictions += totPred
             totalFilteredPredictions += totFiltered
             imageCounts += counts
@@ -424,5 +439,7 @@ if __name__ == '__main__':
              
             print_totals(date, stat, args.tracks)
             """
-            
+    if videoCap != None:
+        videoCap.release()
+         
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)

@@ -83,7 +83,7 @@ class Stats:
     def writedetails(self, dirname):
         file = open(dirname + '.json', 'w+')
         filecsv = open(dirname + '.csv', 'w+')
-        line = 'id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance\n'
+        line = 'id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance,alternative\n'
         filecsv.write(line)
  
         for key in self.details.keys():
@@ -94,6 +94,14 @@ class Stats:
                 conf = (self.idhistory[obj.id][1][ind]*2) / obj.counts
             elif obj.counts is not 0:
                 conf = self.idhistory[obj.id][1][ind] / obj.counts
+            
+            classAlternative = obj.label
+            #if (classAlternative == 'Unsure') or (classAlternative == 'Vegetation'):
+            idhistory = self.idhistory[obj.id][1].copy()
+            idhistory[ind] = 0 # Clear number of counts for class label
+            idx = np.argmax(idhistory) # Find maximum of alternative classes
+            if (idhistory[idx] > 1): # At least two crops of the same class
+                classAlternative = self.species[idx] # Set alternative class (taxa/species)
 
             #Distance
             distance = obj.distance
@@ -111,16 +119,16 @@ class Stats:
             avg_blob = np.mean(obj.boxsizehist)
 
             #Format string
-            if obj.counts >= self.mincounts: #JBN??? 4 should be same threshold as for statistic
+            if obj.counts >= self.mincounts: # Should be same threshold as for statistic
                 towrite = '{\'id\': ' + str(obj.id) + ', ' + '\'startdate\': ' + obj.startdate + ', ' + '\'starttime\': ' + obj.starttime + ', ' + '\'endtime\': ' + obj.endtime + ', ' \
                           + '\'duration\': ' + "%0.0f" % tdelta_seconds + ', ' + '\'class\': ' + '\'' + obj.label + '\', ' \
                           + '\'counts\': ' + str(int(obj.counts)) + ', ' + '\'confidence\': ' + "%0.1f" % (conf*100) + ', ' + '\'size\': ' \
-                          + "%0.0f" % avg_blob + ', ' + '\'distance\': ' + str(distance) + '},' + '\n'
+                          + "%0.0f" % avg_blob + ', ' + '\'distance\': ' + str(distance) + ', ' + '\'alternative\': ' + str(classAlternative) +'},' + '\n'
     
                 file.write(towrite)
                 
                 line = str(obj.id) + ',' + obj.startdate + ',' + obj.starttime + ',' + obj.endtime + ',' + "%0.0f" % tdelta_seconds + ',' \
-                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.1f" % (conf*100) + ','  + "%0.0f" % avg_blob + ',' + str(distance) + '\n'
+                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.1f" % (conf*100) + ','  + "%0.0f" % avg_blob + ',' + str(distance) + ',' + str(classAlternative) + '\n'
                 filecsv.write(line)
 
         file.close()
