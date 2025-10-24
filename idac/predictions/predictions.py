@@ -209,7 +209,7 @@ class Predictions:
                     taxaLevel = int(subsplit[7])
                     frameId = int(subsplit[8])
                     # Check selection 
-                    if (selection == imgpath[0] or selection == 'All') and (not taxaName in ignoreLabels):
+                    if (selection == imgname or selection == 'All') and (not taxaName in ignoreLabels):
                         x1 = int(subsplit[9])
                         y1 = int(subsplit[10])
                         x2 = int(subsplit[11])
