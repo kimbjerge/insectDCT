@@ -200,7 +200,9 @@ class Predictions:
                 subsplit = splitted[line].split(',')
                 if len(subsplit) == 14: # required 14 data values
                     imgname = subsplit[13]
-                    imgpath = imgname.split('/')
+                    if '/' in imgname:
+                        imgpath = imgname.split('/')
+                        imgname = imgpath[1]
                     taxaConf = float(subsplit[4])
                     taxaName = subsplit[5]
                     taxaId = int(subsplit[6])
@@ -240,7 +242,7 @@ class Predictions:
                         'yc' : yc,
                         'w' : width,
                         'h' : height,
-                        'image' : imgpath[1],
+                        'image' : imgname,
                         'pathimage' : subsplit[13],
                         'label' : 0} # Class label (Unknown = 0)
 
