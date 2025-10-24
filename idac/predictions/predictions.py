@@ -205,6 +205,7 @@ class Predictions:
                     taxaName = subsplit[5]
                     taxaId = int(subsplit[6])
                     taxaLevel = int(subsplit[7])
+                    frameId = int(subsplit[8])
                     # Check selection 
                     if (selection == imgpath[0] or selection == 'All') and (not taxaName in ignoreLabels):
                         x1 = int(subsplit[9])
@@ -228,6 +229,7 @@ class Predictions:
                         'taxaName' : taxaName, # Taxa name in hierarchy
                         'taxaId' : taxaId, # TaxaId in level of hierarchy 
                         'level' : taxaLevel, # Level in hierarchy
+                        'frameId' : frameId, # Video frame number
                         'line' : line_count, # Line number - reference to detections (CSV file)
                         # Box position and size
                         'x1' : x1,
