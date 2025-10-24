@@ -199,15 +199,15 @@ class Predictions:
             else:
                 subsplit = splitted[line].split(',')
                 if len(subsplit) == 14: # required 14 data values
-                    imgname = subsplit[13]
-                    if '/' in imgname:
-                        imgpath = imgname.split('/')
-                        imgname = imgpath[1]
                     taxaConf = float(subsplit[4])
                     taxaName = subsplit[5]
                     taxaId = int(subsplit[6])
                     taxaLevel = int(subsplit[7])
                     frameId = int(subsplit[8])
+                    imgname = subsplit[13]
+                    if '/' in imgname:
+                        imgpath = imgname.split('/')
+                        imgname = imgpath[1]
                     # Check selection 
                     if (selection == imgname or selection == 'All') and (not taxaName in ignoreLabels):
                         x1 = int(subsplit[9])
@@ -242,7 +242,7 @@ class Predictions:
                         'yc' : yc,
                         'w' : width,
                         'h' : height,
-                        'image' : imgname,
+                        'image' : imgname + '.' + str(frameId),
                         'pathimage' : subsplit[13],
                         'label' : 0} # Class label (Unknown = 0)
 
