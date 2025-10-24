@@ -264,7 +264,7 @@ def getDateTime(image_filename):
 
 
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
-def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy):
+def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation):
     
     writemovie = conf['moviemaker']['writemovie']
     reader = DataReader(conf)
@@ -283,7 +283,11 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy):
 
     csvFilename = detectPath+trackName+'-CL.csv'
 
-    predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0, ignoreLabels=['Vegetation']) # Skip if not moved within filterTime in seconds
+    if ignoreVegetation:
+        predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0, ignoreLabels=['Vegetation']) # Skip if not moved within filterTime in seconds
+    else:
+        predicted = predict.load_predictionsTaxon(csvFilename, filterTime=0, ignoreLabels=[]) 
+        
     totPredictions, totFilteredPredictions = predict.getPredictions()
     total = len(predicted)
     startid = 0
@@ -377,6 +381,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, default empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
+    parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, default empty = False
     args = parser.parse_args() 
     print(args)
     
@@ -405,7 +410,7 @@ if __name__ == '__main__':
         if '-CL.csv' in fileName:
             trackName = fileName.split('-')[0] 
             print(fileName, trackName)
-            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy)
+            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy, args.ignoreVegetation)
             totalPredictions += totPred
             totalFilteredPredictions += totFiltered
             imageCounts += counts
