@@ -349,6 +349,10 @@ if __name__ == '__main__':
             videoFile = ""
             if video_path != "":
                 videoFile = [file for file in videoFiles if trackName in file]
+                if len(videoFile) == 1:
+                    videoFile = videoFile[0]
+                else:
+                    videoFile = ""
             if videoFile != "": 
                 print("Uses video recording", video_path + videoFile)
                 videoCap = cv2.VideoCapture(video_path + videoFile)
