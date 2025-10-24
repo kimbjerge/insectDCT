@@ -221,7 +221,12 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
     
     for insect in predicted:
         file = insect['image']
-        filedatetime = getDateTime(file)
+        
+        #if file.lower().endswith(('.jpg', '.png')):
+        #    filedatetime = getDateTime(file)
+        #else:
+        filedatetime = insect['datetimeStr']
+            
         if args.trapFilePath == True: # Trap (system) part of file path - used in project Orchard
             filepath = insect['system'] + '/' + insect['pathimage']
         else:
@@ -256,7 +261,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 file_name = imagePath+filepath
                 if videoCap != None:
                     sucess = True
-                    while sucess and (frame_count < insect['frameId'] - 1):
+                    while sucess and (frame_count <= insect['frameId']):
                         success, im = videoCap.read()
                         frame_count += 1         
                 else:

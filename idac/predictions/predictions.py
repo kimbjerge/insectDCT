@@ -226,6 +226,7 @@ class Predictions:
                         'camera': int(subsplit[1]), # 0 or 1
                         'date' : int(subsplit[2]),
                         'time' : int(subsplit[3]),
+                        'datetimeStr' : subsplit[2] + subsplit[3],
                         'prob' : taxaConf, # Class probability 0-100%
                         'class' : self.species.index(taxaName)+1, # Class index to flat list of species names
                         'taxaName' : taxaName, # Taxa name in hierarchy
