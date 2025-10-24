@@ -415,6 +415,8 @@ if __name__=='__main__':
     if video_path != '': # Process video file
         cap = cv2.VideoCapture(video_path)
         cap_fps = cap.get(cv2.CAP_PROP_FPS)
+        if cap_fps == 0: 
+            cap_fps = 24 # Assume default 24 frames/second
         time_interval = int(round((1/cap_fps * 1000) * frame_stride))
         print("Video fps", cap_fps, " stride", frame_stride, " interval ms.", time_interval)
         #videoSplit = args.video.split('_')
