@@ -223,8 +223,16 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
                 if args.CSVformat == "tracking": # Format used for tracing insects
                     #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
-                    #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n" 
-                    input_variable = [args.camera, int(args.camera[2]), timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
+                    #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"
+                    trapIdL = [int(args.camera[i]) for i in range(len(args.camera)) if args.camera[i].isdigit()]
+                    trapId = 0
+                    if len(trapIdL) > 0: # Search for number in string with max. "999"
+                        trapId = trapIdL[0]
+                        if len(trapIdL) > 1:
+                            trapId = trapId*10 + trapIdL[1]
+                            if len(trapIdL) > 2:
+                                trapId = trapId*10 + trapIdL[2]
+                    input_variable = [args.camera, trapId, timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
                 else: # Format used for tracking moths
                     #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
                     input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
@@ -356,7 +364,8 @@ if __name__=='__main__':
         print("Store results files (csv, avi) in", results_dir)
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
-    fps=1/frame_stride
+    #fps=1/frame_stride
+    fps=0.5
     store_frames_after = 1 # Video 2
 
     prevFilename = ''
@@ -405,6 +414,9 @@ if __name__=='__main__':
     video_path = args.video
     if video_path != '': # Process video file
         cap = cv2.VideoCapture(video_path)
+        cap_fps = cap.get(cv2.CAP_PROP_FPS)
+        time_interval = int(round((1/cap_fps * 1000) * frame_stride))
+        print("Video fps", cap_fps, " stride", frame_stride, " interval ms.", time_interval)
         #videoSplit = args.video.split('_')
         #dateTimeStr = "2025" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
         imagesSubDir = args.video.split('/')[-1]
@@ -481,7 +493,7 @@ if __name__=='__main__':
             if success: 
                 if (frame_count % frame_stride == 0):     
                             # Increment time based on fps = 1.0
-                    frame_time = frame_time + datetime.timedelta(seconds=frame_stride)
+                    frame_time = frame_time + datetime.timedelta(milliseconds=time_interval)
                     prevFilname, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, args.video.split('/')[-1], prevFilename)              
                 frame_count += 1
             else:
