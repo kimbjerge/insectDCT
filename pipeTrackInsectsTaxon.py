@@ -261,7 +261,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 file_name = imagePath+filepath
                 if videoCap != None:
                     sucess = True
-                    while sucess and (frame_count < insect['frameId']-1):
+                    while sucess and (frame_count < insect['frameId']-2): # Why offset?
                         success, im = videoCap.read()
                         frame_count += 1
                     print("Video frame", insect['frameId'], frame_count)
