@@ -493,7 +493,7 @@ if __name__=='__main__':
         f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
-    time.sleep(3)
+    time.sleep(5)
     
     frame_count = 0
     frames_after = 0
