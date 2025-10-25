@@ -261,8 +261,8 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 success = True
                 if videoCap != None: # Use video recording
                     if insect['frameId'] < 5: # Ignore first 5 frames KBE???
-                        sucess = False
-                    while sucess and (frame_count < insect['frameId'] - 4): # Why offset needed KBE???
+                        success = False
+                    while success and (frame_count < insect['frameId'] - 4): # Why offset needed KBE???
                         success, im = videoCap.read()
                         frame_count += 1
                     
