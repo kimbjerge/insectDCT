@@ -412,13 +412,6 @@ if __name__=='__main__':
             
         modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
-    
-    print(version, args)
-    with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "w") as f:
-        f.write(version)
-        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
-        f.write("Arguments: " + str(args))
-        f.close()
         
     # Open the input video file if specified
     video_path = args.video
@@ -493,6 +486,13 @@ if __name__=='__main__':
         dim = (int(imgWidth*scale), int(imgHeight*scale))
         movie_writer = cv2.VideoWriter(results_dir + args.moviePredict, cv2.VideoWriter_fourcc(*'DIVX'), fps, dim)
 
+    print(version, args)
+    with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "w") as f:
+        f.write(version)
+        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Arguments: " + str(args))
+        f.close()
+        
     frame_count = 0
     frames_after = 0
     if video_path != '': 
