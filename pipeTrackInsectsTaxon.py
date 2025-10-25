@@ -258,7 +258,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
             #print(stat.count)
 
             if writemovie:
-                sucess = True
+                success = True
                 if videoCap != None: # Use video recording
                     #if insect['frameId'] < 5: # Ignore first 5 frames KBE???
                     #    sucess = False
@@ -266,7 +266,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     #    success, im = videoCap.read()
                     #    frame_count += 1
                     
-                    sucess = False
+                    success = False
                     if insect['frameId'] > 3:
                         videoCap.set(cv2.CAP_PROP_FRAME_COUNT, insect['frameId']-4) # Why offset needed KBE???
                         frame_count = insect['frameId']-4
@@ -277,7 +277,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     file_name = imagePath+filepath
                     im = io.imread(file_name)
 
-                if sucess:
+                if success:
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
                     print("Image shape", height, width, channel)
