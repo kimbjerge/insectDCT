@@ -268,11 +268,11 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     
                     sucess = False
                     if insect['frameId'] > 3:
-                        videoCap.set(1, insect['frameId']-4) # Why offset needed KBE???
+                        videoCap.set(cv2.CAP_PROP_FRAME_COUNT, insect['frameId']-4) # Why offset needed KBE???
                         frame_count = insect['frameId']-4
                         success, im = videoCap.read()
                         
-                    print("Video frame", frame_count, "detected frame", insect['frameId'])
+                    print("Video frame", frame_count, "detected frame", insect['frameId'], success)
                 else:
                     file_name = imagePath+filepath
                     im = io.imread(file_name)
