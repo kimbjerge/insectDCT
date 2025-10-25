@@ -490,7 +490,10 @@ if __name__=='__main__':
     print(version, args)
     with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "a") as f:
         f.write(version)
-        f.write("Images path: " + args.images + "Video: " + args.video + '\n')
+        if video_path != '':
+            f.write("Video: " + video_path + '\n')
+        else:
+            f.write("Images path: " + args.images + '\n')
         f.write("Arguments: " + str(args) + '\n')
         f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("================================================================================================================\n")
