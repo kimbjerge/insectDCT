@@ -172,6 +172,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
     if useMotion:
         frame, imgPrev = MIE.motion_image(frame)
+        if frame_count > 0: 
+            frame_count = frame_count - 1 # Previous frame is the main image to be analyzed for motion
 
     # Run YOLO inference on the frame
     results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device) # Automatic scales to HD image size
