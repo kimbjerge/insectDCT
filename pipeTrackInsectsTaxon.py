@@ -5,10 +5,10 @@ Created on Mon June 5 08:35:16 2025
 @author: Kim Bjerge
          Aarhus University
 """
-import time
 import os
 import cv2
 import argparse
+from datetime import datetime
 from skimage import io
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
@@ -21,8 +21,8 @@ from idac.tracksSave.tracksSave import TracksSave
 #from PyQt5.QtGui import QImage
 import pickle
 
-# if --checkTaxa is True, then the below class is used to 
-# test if hierarchical classifications is the same insect
+#%% if --checkTaxa is True, then the below class is used to 
+# test if hierarchical classifications is the same insect in track
 class TaxaHierarchy():
     
     def __init__(self, hierachyL1, hierachyL2, labelsL1, labelsL2, labelsL3):
@@ -173,6 +173,7 @@ def createFlatSpeciesList(label_file):
 
         
 #%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
+"""
 def getDateTime(image_filename): 
 
     if args.dateFormat == 'YYYY_MM_DD':
@@ -182,7 +183,7 @@ def getDateTime(image_filename):
         dateTimeStr = image_filename.split('.')[0]
     
     return dateTimeStr
-
+"""
 
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
 def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation, videoCap=None):
@@ -318,18 +319,19 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
+    version = "pipeTrackInsectsTaxon.py version 1.0.0\n"
+
     print('Tracking insects based on detection files *-DL.csv')
-    version = "Tracker version 1.0.0\n"
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
     parser.add_argument('--video', default='') # Path to video recording (If video used instead of single images)
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
-    parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD', not used anymore
+    #parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD', not used anymore
     parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, empty = False 
-    parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
+    parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images used by project Orchard
     parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
     args = parser.parse_args() 
     
@@ -346,13 +348,15 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
 
     print(version, args)
-    with open(args.tracks+"/configTrack.txt", "w") as f:
+    with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "w") as f:
         f.write(version)
-        f.write(str(args))
+        f.write(datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Arguments:", str(args))
         f.close()
         
     # For testing only 
     #taxaHierarchy.validate()
+    
     if args.checkTaxa == False:
         taxaHierarchy = None # Disable using hierarchy to check if same insect in track - see TaxaHierarchy class
     else:
@@ -392,7 +396,7 @@ if __name__ == '__main__':
             if videoCap != None:
                 videoCap.release()
 
-            """ Not used
+            """ Not used 
             if args.dateFormat == 'YYYY_MM_DD':
                 trackNameSplit = trackName.split('_')
                 date = int(trackNameSplit[1] + trackNameSplit[2] + trackNameSplit[3])  # format YYYYMMDD
