@@ -122,13 +122,13 @@ class Stats:
             if obj.counts >= self.mincounts: # Should be same threshold as for statistic
                 towrite = '{\'id\': ' + str(obj.id) + ', ' + '\'startdate\': ' + obj.startdate + ', ' + '\'starttime\': ' + obj.starttime + ', ' + '\'endtime\': ' + obj.endtime + ', ' \
                           + '\'duration\': ' + "%0.0f" % tdelta_seconds + ', ' + '\'class\': ' + '\'' + obj.label + '\', ' \
-                          + '\'counts\': ' + str(int(obj.counts)) + ', ' + '\'confidence\': ' + "%0.1f" % (conf*100) + ', ' + '\'size\': ' \
+                          + '\'counts\': ' + str(int(obj.counts)) + ', ' + '\'confidence\': ' + "%0.5f" % (conf*100) + ', ' + '\'size\': ' \
                           + "%0.0f" % avg_blob + ', ' + '\'distance\': ' + str(distance) + ', ' + '\'alternative\': ' + str(classAlternative) +'},' + '\n'
     
                 file.write(towrite)
                 
                 line = str(obj.id) + ',' + obj.startdate + ',' + obj.starttime + ',' + obj.endtime + ',' + "%0.0f" % tdelta_seconds + ',' \
-                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.1f" % (conf*100) + ','  + "%0.0f" % avg_blob + ',' + str(distance) + ',' + str(classAlternative) + '\n'
+                       + obj.label + ',' + str(int(obj.counts)) + ',' + "%0.5f" % (conf*100) + ','  + "%0.0f" % avg_blob + ',' + str(distance) + ',' + str(classAlternative) + '\n'
                 filecsv.write(line)
 
         file.close()
