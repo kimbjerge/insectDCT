@@ -361,7 +361,6 @@ if __name__=='__main__':
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
     
     args = parser.parse_args() 
-    print(version, args)
     
     if args.resultsDir != "":
         results_dir = args.resultsDir + '/'
@@ -414,6 +413,7 @@ if __name__=='__main__':
         modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
     
+    print(version, args)
     with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "w") as f:
         f.write(version)
         f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
