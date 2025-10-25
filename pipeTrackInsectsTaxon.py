@@ -319,7 +319,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version 1.0.0\n"
+    version = "pipeTrackInsectsTaxon.py version: 1.0.0\n"
 
     print('Tracking insects based on detection files *-DL.csv')
     
@@ -350,7 +350,7 @@ if __name__ == '__main__':
     print(version, args)
     with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "w") as f:
         f.write(version)
-        f.write(datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Processing time start: " + datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
         
