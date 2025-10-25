@@ -8,7 +8,7 @@ class TracksSave:
     def __init__(self, fileName):
         self.tracksFileName = fileName
         self.tracksFile = open(fileName, 'w')
-        headerline = "id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName\n"
+        headerline = "id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName,frameId\n"
         self.tracksFile.write(headerline) 
  
     def save(self, predict, ois):
@@ -25,7 +25,8 @@ class TracksSave:
                    str(oi.w) + ',' + \
                    str(oi.h) + ',' + \
                    str(oi.line) + ',' + \
-                   predict['image'] + '\n'
+                   predict['imageName'] + ',' + \
+                   str(predict['frameId']) + '\n'
             self.tracksFile.write(line) 
     
     def close(self):

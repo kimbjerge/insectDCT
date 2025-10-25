@@ -244,6 +244,7 @@ class Predictions:
                         'w' : width,
                         'h' : height,
                         'image' : imgname + '.' + str(frameId),
+                        'imageName' : imgname,
                         'pathimage' : subsplit[13],
                         'label' : 0} # Class label (Unknown = 0)
 
