@@ -280,6 +280,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 if sucess:
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
+                    print("Image shape", height, width, channel)
                     #bytesPerLine = 3 * width
                     #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
             
