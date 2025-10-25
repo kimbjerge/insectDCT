@@ -298,7 +298,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.0\n"
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.1\n"
     
     parser = argparse.ArgumentParser()
     
