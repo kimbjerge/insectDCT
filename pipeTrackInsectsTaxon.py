@@ -349,10 +349,11 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
 
     print(version, args)
-    with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "w") as f:
+    with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "a") as f:
         f.write(version)
-        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
+        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("================================================================================================================\n")
         f.close()
     time.sleep(5)
         
