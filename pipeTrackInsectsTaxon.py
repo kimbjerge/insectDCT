@@ -268,8 +268,8 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     
                     success = False
                     if insect['frameId'] > 3:
-                        videoCap.set(cv2.CAP_PROP_POS_FRAMES, insect['frameId']-4) # Not working wrong frame?
-                        frame_count = insect['frameId']-4
+                        videoCap.set(cv2.CAP_PROP_POS_FRAMES, insect['frameId']) # Not working wrong frame???
+                        frame_count = insect['frameId']
                         success, im = videoCap.read()
                         
                     print("Video frame", frame_count, "detected frame", insect['frameId'], success)
