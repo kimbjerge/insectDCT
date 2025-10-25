@@ -319,6 +319,7 @@ def print_totals(date, stat, resultdir):
 if __name__ == '__main__':
 
     print('Tracking insects based on detection files *-DL.csv')
+    version = "Tracker version 1.0.0\n"
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
@@ -344,8 +345,12 @@ if __name__ == '__main__':
     if args.dataset == 'V5':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
 
-    print(args)
-
+    print(version, args)
+    with open(args.tracks+"/configTrack.txt", "w") as f:
+        f.write(version)
+        f.write(args)
+        f.close()
+        
     # For testing only 
     #taxaHierarchy.validate()
     if args.checkTaxa == False:
