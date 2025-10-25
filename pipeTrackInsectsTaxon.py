@@ -260,11 +260,18 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
             if writemovie:
                 sucess = True
                 if videoCap != None: # Use video recording
-                    if insect['frameId'] < 5: # Ignore first 5 frames KBE???
-                        sucess = False
-                    while sucess and (frame_count < insect['frameId'] - 4): # Why offset needed KBE???
+                    #if insect['frameId'] < 5: # Ignore first 5 frames KBE???
+                    #    sucess = False
+                    #while sucess and (frame_count < insect['frameId'] - 4): # Why offset needed KBE???
+                    #    success, im = videoCap.read()
+                    #    frame_count += 1
+                    
+                    sucess = False
+                    if insect['frameId'] > 3:
+                        videoCap.set(1, insect['frameId']-4) # Why offset needed KBE???
+                        frame_count = insect['frameId']-4
                         success, im = videoCap.read()
-                        frame_count += 1
+                        
                     print("Video frame", frame_count, "detected frame", insect['frameId'])
                 else:
                     file_name = imagePath+filepath
