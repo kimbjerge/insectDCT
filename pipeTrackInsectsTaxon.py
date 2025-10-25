@@ -9,6 +9,7 @@ import os
 import cv2
 import argparse
 import datetime
+import time
 from skimage import io
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
@@ -353,6 +354,7 @@ if __name__ == '__main__':
         f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
+    time.sleep(5)
         
     # For testing only 
     #taxaHierarchy.validate()
