@@ -259,21 +259,25 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
 
             if writemovie:
                 file_name = imagePath+filepath
+                sucess = True
                 if videoCap != None:
-                    sucess = True
-                    while sucess and (frame_count < insect['frameId']-4): # Why offset needed KBE???
+                    if insect['frameId'] < 5: # Ignore first 5 frames KBE???
+                        sucess = False
+                    while sucess and (frame_count < insect['frameId'] - 4): # Why offset needed KBE???
                         success, im = videoCap.read()
                         frame_count += 1
                     print("Video frame", insect['frameId'], frame_count)
                 else:
                     im = io.imread(file_name)
-                image = imod.drawoois(im, goods)
-                height, width, channel = image.shape
-                #bytesPerLine = 3 * width
-                #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
-        
-                # Write frame
-                mm.writeframe(image, filedatetime)
+
+                if sucess:
+                    image = imod.drawoois(im, goods)
+                    height, width, channel = image.shape
+                    #bytesPerLine = 3 * width
+                    #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
+            
+                    # Write frame
+                    mm.writeframe(image, filedatetime)
 
             #time2 = time.time()
             #print('Processing image took {:.3f} ms'.format((time2 - time1) * 1000.0))
