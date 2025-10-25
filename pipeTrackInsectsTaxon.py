@@ -348,7 +348,7 @@ if __name__ == '__main__':
     print(version, args)
     with open(args.tracks+"/configTrack.txt", "w") as f:
         f.write(version)
-        f.write(args)
+        f.write(str(args))
         f.close()
         
     # For testing only 
