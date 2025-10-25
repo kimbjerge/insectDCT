@@ -13,6 +13,7 @@ import torch
 import argparse
 import datetime 
 import pickle
+import time
 
 #from common.cnn_classifier import CnnClassifier # Uncomment if flat classifier should be used
 from common.hierarchical_classifier import HierarchicalClassifier
@@ -492,7 +493,8 @@ if __name__=='__main__':
         f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
-        
+    time.sleep(3)
+    
     frame_count = 0
     frames_after = 0
     if video_path != '': 
