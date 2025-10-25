@@ -209,7 +209,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                                                                                         int(round(xywh[0][2])), 
                                                                                         int(round(xywh[0][3])),
                                                                                         str(frame_count))
-                    prob = round(probability*10000)/100 # percentage with two decimals
+                    #prob = round(probability*10000)/100 # percentage with two decimals
+                    prob = probability*100 # percentage with all decimals
                 else:
                     line = ''
                     level = 0
@@ -266,7 +267,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     else: # Species classifier used
                         if taxaSure:
                             if prob < 10.0:
-                                probDisp = round(prob*10)/10 # display probability (%) with one decimal
+                                probDisp = round(prob*100)/100 # display probability (%) with two decimals
                             else:
                                 probDisp = int(round(prob)) # round to integer if more than 10%
                             insectName = speciesName + ' (' + str(level) + '-' + str(probDisp) + ')'
@@ -298,7 +299,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.1\n"
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.2\n"
     
     parser = argparse.ArgumentParser()
     
