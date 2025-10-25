@@ -323,7 +323,6 @@ if __name__ == '__main__':
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images
     parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
     args = parser.parse_args() 
-    print(args)
     
     # Read configuration file
     config_filename = './config/Taxon_config.json'
@@ -336,6 +335,9 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
     if args.dataset == 'V5':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
+
+    print(args)
+
     # For testing only 
     #taxaHierarchy.validate()
     if args.checkTaxa == False:
