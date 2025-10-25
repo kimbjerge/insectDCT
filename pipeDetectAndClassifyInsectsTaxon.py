@@ -416,7 +416,7 @@ if __name__=='__main__':
     
     with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "w") as f:
         f.write(version)
-        f.write("Processing time start: " + datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
         

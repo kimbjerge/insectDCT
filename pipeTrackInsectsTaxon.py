@@ -350,7 +350,7 @@ if __name__ == '__main__':
     print(version, args)
     with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "w") as f:
         f.write(version)
-        f.write("Processing time start: " + datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         f.write("Arguments: " + str(args))
         f.close()
         
