@@ -8,7 +8,7 @@ Created on Mon June 5 08:35:16 2025
 import os
 import cv2
 import argparse
-from datetime import datetime
+import datetime
 from skimage import io
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader

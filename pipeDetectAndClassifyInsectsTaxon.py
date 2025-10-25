@@ -297,6 +297,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.0\n"
+    
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--yoloWeights', default='./runs/detect/insects5Motion/weights/best.pt') #Directory that contains motion models
@@ -359,7 +361,7 @@ if __name__=='__main__':
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
     
     args = parser.parse_args() 
-    print(args)
+    print(version, args)
     
     if args.resultsDir != "":
         results_dir = args.resultsDir + '/'
@@ -411,7 +413,13 @@ if __name__=='__main__':
             
         modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
-
+    
+    with open(args.resultsDir+"/pipeDetectAndClassifyInsectsTaxon.txt", "w") as f:
+        f.write(version)
+        f.write("Processing time start: " + datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("Arguments: " + str(args))
+        f.close()
+        
     # Open the input video file if specified
     video_path = args.video
     if video_path != '': # Process video file
