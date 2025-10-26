@@ -11,17 +11,19 @@ parser.add_argument('--detect_path', type=str, help='Specify the path to the tes
 
 parser.add_argument('--data_path', type=str, help='Specify the path for training and validation dataset.', default='/home/don/data/Arthropods/')
 parser.add_argument('--path_list', type=str, help='Specify a list of subdirectories with dataset.', 
-                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,NI2_MAMBOV2,GBIF_cropsV2')
+                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,Orchard_cropsV2,NI2_MAMBOV2,GBIF_cropsV2') # V5
+#                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,NI2_MAMBOV2') # V4
+#                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,NI2_MAMBOV2,GBIF_cropsV2') # V3
 parser.add_argument('--split', type=int, help='Specify percentage of dataset used for validation.', default=10) # 20
 parser.add_argument('--validate', type=str, help='Specify train or validate dataset used for validation.', default="validate") # train or validate
 
 parser.add_argument('--model', type=str, help='Specify the model type (RestNet50, ConvNextBase).', default='ResNet50')
 parser.add_argument('--weights', type=str, help='Specify the path to save the model.', default='dhc_best.pth')
 
-parser.add_argument('--model_save_path', type=str, help='Specify the path to save the model.', default='./saved/')
+parser.add_argument('--model_save_path', type=str, help='Specify the path to save the model.', default='./saved_ResNet/')
 parser.add_argument('--graphs_folder', type=str, help='Specify the path to save the graphs.', default='./graph_folder/')
-parser.add_argument('--epoch', type=int, help='Specify the number of epochs for the training.', default=30) # 30
-parser.add_argument('--batch_size', type=int, help='Specify the batch size to be used during training/testing.', default=512)
+parser.add_argument('--epoch', type=int, help='Specify the number of epochs for the training.', default=80) # 30
+parser.add_argument('--batch_size', type=int, help='Specify the batch size to be used during training/testing.', default=256)
 parser.add_argument('--loss_function', type=str, help='Specify the loss function to be used during training. (Cross or Balanced)', default='Balanced')
 parser.add_argument('--optimizer', type=str, help='Specify the optimizer to be used during training. (Adam or SGD)', default='Adam')
 parser.add_argument('--learning_rate', type=float, help='Specify the learning rate (SGD or Adam) to be used during training.', default=1e-4)
