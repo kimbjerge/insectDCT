@@ -1,0 +1,48 @@
+insects5Color-train-images-CL.csv insects5Color
+--------------------------------------------------------------------------------------------------------
+Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Color/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects3Color-train-images-CL.csv
+Uses saved labels from insects5Color_labels.npy
+-------------------------------------------------------------------------------------------------------
+Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects3Color-train-images-CL.csv
+[[    0  3847]
+ [ 8769 16866]]
+TP       : [16866]
+FP       : [3847]
+FN       : [8769]
+Recall    TP/(TP+FN): [0.658]
+Precision TP/(TP+FP): [0.814]
+F1-score 2*P*R/(P+R): [0.728]
+Confusion matrix, without normalization
+========================================================================================================
+insects5Motion-train-images-CL.csv insects5Motion
+--------------------------------------------------------------------------------------------------------
+Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Motion/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects3Motion-train-images-CL.csv
+Uses saved labels from insects5Motion_labels.npy
+-------------------------------------------------------------------------------------------------------
+Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects3Motion-train-images-CL.csv
+[[    0  9947]
+ [ 7697 17938]]
+TP       : [17938]
+FP       : [9947]
+FN       : [7697]
+Recall    TP/(TP+FN): [0.7]
+Precision TP/(TP+FP): [0.643]
+F1-score 2*P*R/(P+R): [0.67]
+Confusion matrix, without normalization
+========================================================================================================
+insects5Motion-train-images-CL.csv insects5Motion
+--------------------------------------------------------------------------------------------------------
+Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Motion/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects5Motion-train-images-CL.csv
+Uses saved labels from insects5Motion_labels.npy
+-------------------------------------------------------------------------------------------------------
+Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects5Motion-train-images-CL.csv
+[[    0  8021]
+ [ 6696 18939]]
+TP       : [18939]
+FP       : [8021]
+FN       : [6696]
+Recall    TP/(TP+FN): [0.739]
+Precision TP/(TP+FP): [0.702]
+F1-score 2*P*R/(P+R): [0.72]
+Confusion matrix, without normalization
+========================================================================================================
