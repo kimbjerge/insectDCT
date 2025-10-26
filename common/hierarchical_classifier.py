@@ -305,10 +305,10 @@ class HierarchicalClassifier:
            confidence = 0.0
            level = 0
 
-        # Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked
-        line1 = f"{self.labelsL1[predicted_label1]},{predicted_label1},{conf1},{sure1},"
-        line2 = f"{self.labelsL2[predicted_label2]},{predicted_label2},{conf2},{sure2},"
-        line3 = f"{self.labelsL3[predicted_label3]},{predicted_label3},{conf3},{sure3},"
+        # Label1,LabelId1,Logit1,Conf1,Above1,Label2,LabelId2,Logit2,Conf2,Above2,Label3,LabelId3,Logit3,Conf3,Above3,Checked
+        line1 = f"{self.labelsL1[predicted_label1]},{predicted_label1},{predicted_score1},{conf1},{sure1},"
+        line2 = f"{self.labelsL2[predicted_label2]},{predicted_label2},{predicted_score2},{conf2},{sure2},"
+        line3 = f"{self.labelsL3[predicted_label3]},{predicted_label3},{predicted_score3},{conf3},{sure3},"
         line = line1 + line2 + line3 + str(checkList[0])
         
         return line, level, predicted_label, label_name, confidence 

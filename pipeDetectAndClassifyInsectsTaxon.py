@@ -299,7 +299,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.2\n"
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.3\n"
     
     parser = argparse.ArgumentParser()
     
@@ -478,7 +478,7 @@ if __name__=='__main__':
     csvfileInfo = 0
     if type(modelClassifier) is HierarchicalClassifier:
         csvfileInfo = open(csvFilenameInfo, 'w', newline = '\n')
-        headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
+        headerLine = "Label1,LabelId1,Logit1,Conf1,Above1,Label2,LabelId2,Logit2,Conf2,Above2,Label3,LabelId3,Logit3,Conf3,Above3,Checked,frameId\n"
         csvfileInfo.write(headerLine)
 
     saveMovie = False
