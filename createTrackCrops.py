@@ -145,8 +145,8 @@ def calcConfidence(trackRows):
         if (maximum >= args.unsureTaxa): # At least "unsureTaxa" crops classified as taxa different from "Unsure"
             taxa = taxaMax
             print("Unsure track use", taxa, maximum)
-    else:
-        confidence = 0
+    #else:
+    #    confidence = 0
     
     return confidence, taxa, counts 
     
@@ -200,7 +200,10 @@ if __name__=='__main__':
     #parser.add_argument('--tracks', default='/UFZ/tracksAllV5') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/UFZ/trackCropsUnsureV5') # Optimized for embedded processing (ncnn)
-
+    #parser.add_argument('--tracks', default='/UFZ/tracksAllV5') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='/UFZ/trackCropsUnsureV5') # Optimized for embedded processing (ncnn)
+    
     #parser.add_argument('--tracks', default='/Orchard/tracks') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/Orchard/trackCrops') # Optimized for embedded processing (ncnn)
