@@ -6,6 +6,7 @@ Created on Mon Jun  2 20:34:57 2025
 """
 
 import os
+import sys
 import cv2
 import pandas as pd
 import argparse
@@ -36,12 +37,31 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
     return classifier
 
 
-def saveCrop(x1, y1, x2, y2, frameId, imagePath, cropDirName, dstPath, csvName, border=1):
+def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCap, cropDirName, dstPath, csvName, border=1):
     
-    print(imagePath, dstPath+cropDirName)
-    image = cv2.imread(imagePath)
-    height, width, channels = image.shape
+    success = True
+    image = []
+    if videoCap == None:
+        image = cv2.imread(imagePath)
+    else:
+        #videoCap.set(cv2.CAP_PROP_POS_FRAMES, frameId-1) # Not working wrong frame???
+        #success, image = videoCap.read()
+        if (frame_count == frameId - 1): # Crop in same frame as last called
+            image = prevImage
+            print("More crops in same frame", frame_count)
+        while success and (frame_count < frameId - 1): # Why offset needed KBE???
+            success, image = videoCap.read()
+            frame_count += 1
+            sys.stdout.write("FrameId %d \r" % (frame_count))
+            sys.stdout.flush()
 
+    if success == False or len(image) == 0:
+        print("Error reading image or video")
+        return frame_count
+    
+    height, width, channels = image.shape
+    #print(dstPath+cropDirName, height, width)
+        
     x1_str = str(x1)
     y1_str = str(y1)
     
@@ -81,7 +101,9 @@ def saveCrop(x1, y1, x2, y2, frameId, imagePath, cropDirName, dstPath, csvName, 
         os.mkdir(dstPath + cropDirName)
     imgNameCrop = csvName +'-' + str(frameId) + '-' + x1_str + '-' + y1_str + '.jpg'
     print(dstPath + cropDirName + '/' + imgNameCrop)
-    cv2.imwrite(dstPath + cropDirName + '/' + imgNameCrop, imgCrop)   
+    cv2.imwrite(dstPath + cropDirName + '/' + imgNameCrop, imgCrop) 
+    
+    return frame_count, image
 
 def createCropDirName(level, labelL1, labelL2, labelL3):
     
@@ -107,8 +129,11 @@ def createCropDirName(level, labelL1, labelL2, labelL3):
     
     return cropDirName
         
-def createCrops(csvName, imgPath, dstPath, dataset, hierarchicalClassifier):
+def createCrops(csvName, imgPath, videoPath, dstPath, dataset, hierarchicalClassifier):
     
+    videoCap = None
+    frame_count = 0
+    image = []
     for i, obj in dataset.iterrows():
         if obj['taxaLabel'] != "Unsure":
             labelL1, labelL2, labelL3 = hierarchicalClassifier.getLabels(obj['taxaLevel'], obj['taxaLabel'])
@@ -124,11 +149,21 @@ def createCrops(csvName, imgPath, dstPath, dataset, hierarchicalClassifier):
         
         if 'trapDir' in obj.keys():
             trapDir = obj['trapDir']
+        #elif 'trap' in obj.keys():
+        #    trapDir = obj['trap']   
         else:
             trapDir = ''
         
         imagePath = imgPath + trapDir + '/' + obj['fileName']
-        saveCrop(x1, y1, x2, y2, obj['frameId'], imagePath, cropDirName, dstPath, csvName)       
+        
+        if videoPath != '' and videoCap == None:
+            videoFile = videoPath + obj['fileName']
+            print("Uses video recording", videoFile, "FrameId", obj['frameId'])
+            videoCap = cv2.VideoCapture(videoFile)
+        else:
+            print("Used image file", imagePath, "FrameId", obj['frameId'])
+
+        frame_count, image = saveCrop(x1, y1, x2, y2, image, frame_count, obj['frameId'], imagePath, videoCap, cropDirName, dstPath, csvName)       
             
 if __name__=='__main__':
 
@@ -144,8 +179,18 @@ if __name__=='__main__':
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/cirad/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='/UFZ/detectionsAllV5/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/UFZ/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='/RTNI/detections/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/NI/RT/') # Directory that contains images
+    
+    #parser.add_argument('--CSVfiles', default='D:/UFZ_BOS_STR/detections/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='D:/UFZ_BOS_STR/') # Directory that contains images
+    #parser.add_argument('--videoPath', default="D:/UFZ_BOS_STR/") # Directory that contains video, if empty then imagesPath is used
+    parser.add_argument('--videoPath', default="") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--cropsPath', default='./crops/') # Directory to save images crops
+    #parser.add_argument('--cropsPath', default='D:/UFZ_BOS_STR/crops/') # Directory to save images crops
     
     parser.add_argument('--dataset', default="V5") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data or "V5" with GBIF and additional data
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
@@ -157,7 +202,6 @@ if __name__=='__main__':
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below mean-3*std
     
     args = parser.parse_args() 
-    print(args)
     
     hierarchicalWeights = args.hierachical
     hierarchicalLabels = args.labels
@@ -170,9 +214,11 @@ if __name__=='__main__':
     print("Loading hierarchical insect classifier model", hierarchicalWeights)
     hierarchicalClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128)
     
+    print(args)
+    
     for filename in sorted(os.listdir(args.CSVfiles)):
         if filename.endswith('.csv') and '-CL' in filename:
             #Header: year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId
             data_df = pd.read_csv(args.CSVfiles + filename)
             #print(args.CSVfiles + filename)
-            createCrops(filename.replace('.csv', ''), args.imagesPath, args.cropsPath, data_df, hierarchicalClassifier)
+            createCrops(filename.replace('.csv', ''), args.imagesPath, args.videoPath, args.cropsPath, data_df, hierarchicalClassifier)
