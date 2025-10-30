@@ -114,12 +114,12 @@ if __name__=='__main__':
 
             level1class_pred, level2class_pred, level3class_pred = model(batch_x)
             prediction = [level1class_pred, level2class_pred, level3class_pred]
-            dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
-            lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
+            #dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
+            #lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
 
-            total_loss = lloss + dloss
+            #total_loss = lloss + dloss
 
-            epoch_loss.append(total_loss.item())
+            #epoch_loss.append(total_loss.item())
             epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0], labels=batch_y1))
             epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1], labels=batch_y2))
             epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2], labels=batch_y3))
@@ -132,7 +132,7 @@ if __name__=='__main__':
             level3_label = level3_label + batch_y3.tolist()
 
 
-    test_epoch_loss.append(sum(epoch_loss)/(j+1))
+    #test_epoch_loss.append(sum(epoch_loss)/(j+1))
     test_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(j+1))
     test_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(j+1))
     test_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(j+1))
