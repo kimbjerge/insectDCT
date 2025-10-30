@@ -49,6 +49,17 @@ if __name__=='__main__':
     # Overwrites hierarchy with training labels
     hierarchicalDataset.hierarchyL1 = hierarchyL1
     hierarchicalDataset.hierarchyL2 = hierarchyL2
+        
+    for label in hierarchicalDataset.labelsL1:
+        if not label in labelsL1.keys():
+            print("Unknown test label", label, "Level 1")
+    for label in hierarchicalDataset.labelsL2:
+        if not label in labelsL2.keys():
+            print("Unknown test label", label, "Level 2")
+    for label in hierarchicalDataset.labelsL3:
+        if not label in labelsL3.keys():
+            print("Unknown test label", label, "Level 3")
+            
     hierarchicalDataset.labelsL1 = labelsL1
     hierarchicalDataset.labelsL2 = labelsL2
     hierarchicalDataset.labelsL3 = labelsL3
