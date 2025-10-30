@@ -39,7 +39,7 @@ if __name__=='__main__':
     for subdir in args.path_list_test.split(','): # Scan subdirectories with datasets
         image_path_list.append(args.data_path_test+subdir)
     
-    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=args.split) # default 10% used for validation
+    hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=100) # default 100% used for validation
     #hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     
     with open(args.label_file, 'rb') as f:
@@ -47,7 +47,7 @@ if __name__=='__main__':
         print("Labels and hierarchy dependency loaded from ", args.label_file)
     
     test_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
-                               transform=transforms.ToTensor(), validate=(args.validate=="validate"))
+                               transform=transforms.ToTensor(), validate=True)
 
     test_generator = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
     
