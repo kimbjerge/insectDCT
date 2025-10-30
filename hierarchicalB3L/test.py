@@ -70,26 +70,10 @@ if __name__=='__main__':
     
     model = model.to(device)
     
-    if args.loss_function == "Balanced":
-        cls_num_L1 = test_dataset.get_cls_num_list(0)
-        lossFnL1 = BalancedSoftmaxLoss(cls_num_list=cls_num_L1, reduction='mean') # Best loss function for LT datasets
-        cls_num_L2 = test_dataset.get_cls_num_list(1)
-        lossFnL2 = BalancedSoftmaxLoss(cls_num_list=cls_num_L2, reduction='mean') # Best loss function for LT datasets
-        cls_num_L3 = test_dataset.get_cls_num_list(2)
-        lossFnL3 = BalancedSoftmaxLoss(cls_num_list=cls_num_L3, reduction='mean') # Best loss function for LT datasets
-        print("Using Balanced Softmax Loss Function")
-        print("=====================================================================================")
-        print("Class list L1:", labelsL1, cls_num_L1, sum(cls_num_L1))    
-        print("=====================================================================================")
-        print("Class list L2:", labelsL2, cls_num_L2, sum(cls_num_L2))    
-        print("=====================================================================================")
-        print("Class list L3:", labelsL3, cls_num_L3, sum(cls_num_L3))    
-        print("=====================================================================================")
-    else:
-        lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-        lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-        lossFnL3 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-        print("Using Softmax Cross-entropy Loss Function")
+    lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+    lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+    lossFnL3 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
+    print("Using Softmax Cross-entropy Loss Function")
         
     HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3,
                                   [lossFnL1, lossFnL2, lossFnL3],
