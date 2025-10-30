@@ -51,13 +51,13 @@ if __name__=='__main__':
     hierarchicalDataset.hierarchyL2 = hierarchyL2
     
     for label in hierarchicalDataset.labelsL1:
-        if not label in labelsL1.keys():
+        if not label in labelsL1:
             print("Unknown test label", label, "Level 1")
     for label in hierarchicalDataset.labelsL2:
-        if not label in labelsL2.keys():
+        if not label in labelsL2:
             print("Unknown test label", label, "Level 2")
     for label in hierarchicalDataset.labelsL3:
-        if not label in labelsL3.keys():
+        if not label in labelsL3:
             print("Unknown test label", label, "Level 3")
             
     hierarchicalDataset.labelsL1 = labelsL1
