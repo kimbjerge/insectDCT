@@ -42,9 +42,17 @@ if __name__=='__main__':
     hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=100) # default 100% used for validation
     #hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     
+    # Load training labels
     with open(args.model_test_path+args.label_file, 'rb') as f:
         _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
         print("Labels and hierarchy dependency loaded from ", args.model_test_path+args.label_file)
+    
+    # Overwrites hierarchy with training labels
+    hierarchicalDataset.hierarchyL1 = hierarchyL1
+    hierarchicalDataset.hierarchyL2 = hierarchyL2
+    hierarchicalDataset.labelsL1 = labelsL1
+    hierarchicalDataset.labelsL2 = labelsL2
+    hierarchicalDataset.labelsL3 = labelsL3
     
     test_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
                                transform=transforms.ToTensor(), validate=True)
@@ -114,12 +122,12 @@ if __name__=='__main__':
 
             level1class_pred, level2class_pred, level3class_pred = model(batch_x)
             prediction = [level1class_pred, level2class_pred, level3class_pred]
-            #dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
-            #lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
+            dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
+            lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
 
-            #total_loss = lloss + dloss
+            total_loss = lloss + dloss
 
-            #epoch_loss.append(total_loss.item())
+            epoch_loss.append(total_loss.item())
             epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0], labels=batch_y1))
             epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1], labels=batch_y2))
             epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2], labels=batch_y3))
@@ -132,7 +140,7 @@ if __name__=='__main__':
             level3_label = level3_label + batch_y3.tolist()
 
 
-    #test_epoch_loss.append(sum(epoch_loss)/(j+1))
+    test_epoch_loss.append(sum(epoch_loss)/(j+1))
     test_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(j+1))
     test_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(j+1))
     test_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(j+1))
