@@ -29,11 +29,11 @@ if __name__=='__main__':
    
     device = torch.device("cuda:0" if torch.cuda.is_available() and args.device == 'gpu' else 'cpu')
     
-    if not os.path.exists(args.model_save_path) : 
-        os.makedirs(args.model_save_path)
-        print("Directory created", args.model_save_path)
-
     print(args)
+
+    if not os.path.exists(args.model_test_path) : 
+        print("Model to test do not exist", args.model_test_path)
+        exit(1)
 
     image_path_list = []
     for subdir in args.path_list_test.split(','): # Scan subdirectories with datasets
@@ -42,9 +42,9 @@ if __name__=='__main__':
     hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=100) # default 100% used for validation
     #hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     
-    with open(args.label_file, 'rb') as f:
+    with open(args.model_test_path+args.label_file, 'rb') as f:
         _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
-        print("Labels and hierarchy dependency loaded from ", args.label_file)
+        print("Labels and hierarchy dependency loaded from ", args.model_test_path+args.label_file)
     
     test_dataset = LoadDataset(hierarchicalDataset, image_size=args.img_size, image_depth=args.img_depth, 
                                transform=transforms.ToTensor(), validate=True)
@@ -150,7 +150,7 @@ if __name__=='__main__':
     print(f'Testing level3class accuracy : {sum(epoch_level3class_accuracy)/(j+1)}')
     print('-------------------------------------------------------------------------------------------')
     
-    predictedLablesFile = args.model_save_path + 'predictLabels3Ltest.pkl'
+    predictedLablesFile = args.model_test_path + 'predictLabels3Ltest.pkl'
         
     with open(predictedLablesFile, 'wb') as f:
         objs = [level1_pred, 
