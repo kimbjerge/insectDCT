@@ -15,6 +15,12 @@ parser.add_argument('--path_list', type=str, help='Specify a list of subdirector
 #                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,NI2_MAMBOV2') # V4
 #                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops,NI2_MAMBOV2,GBIF_cropsV2') # V3
 #                    default='NI2classesV2,NI2sortedV2,NItrainV2,NIvalV2,sorted_orchard_crops_old,NI2_MAMBO,GBIF_crops') # V2
+
+parser.add_argument('--data_path_test', type=str, help='Specify the path for training and validation dataset.', default='/home/don/data/insectsDCTtest/')
+parser.add_argument('--path_list_test', type=str, help='Specify a list of subdirectories with dataset.', default='MAMBO_NI2') # Test data
+parser.add_argument('--model_test_path', type=str, help='Specify the path where for the model to test.', default='./saved_128_ConvNextV5/')
+parser.add_argument('--label_file', type=str, help='Specify the label file with path.', default='labelsAdv3L.pkl') 
+
 parser.add_argument('--split', type=int, help='Specify percentage of dataset used for validation.', default=10) # 20
 parser.add_argument('--validate', type=str, help='Specify train or validate dataset used for validation.', default="validate") # train or validate
 
