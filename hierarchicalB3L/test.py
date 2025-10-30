@@ -58,7 +58,7 @@ if __name__=='__main__':
         model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
         print("Training ResNet50 model")
         
-    model.load_state_dict(torch.load(args.model_save_path+args.weights, map_location=device))
+    model.load_state_dict(torch.load(args.model_test_path + args.weights, map_location=device))
     
     model = model.to(device)
     
