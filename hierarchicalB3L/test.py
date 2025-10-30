@@ -40,7 +40,6 @@ if __name__=='__main__':
         image_path_list.append(args.data_path_test+subdir)
     
     hierarchicalDataset = HierarchicalDatasetLoader(image_path_list, split_validate=100) # default 100% used for validation
-    #hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = hierarchicalDataset.get_hierarchy_labels()
     
     # Load training labels
     with open(args.model_test_path+args.label_file, 'rb') as f:
@@ -69,24 +68,11 @@ if __name__=='__main__':
     model.load_state_dict(torch.load(args.model_test_path + args.weights, map_location=device))
     
     model = model.to(device)
-    
-    lossFnL1 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-    lossFnL2 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-    lossFnL3 = nn.CrossEntropyLoss() # Standard cross-entropy loss function
-    print("Using Softmax Cross-entropy Loss Function")
-        
-    HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3,
-                                  [lossFnL1, lossFnL2, lossFnL3],
-                                  total_level=3, device=device, simple=True)
-     
-    test_epoch_loss = []
+      
     test_epoch_level1class_accuracy = []
     test_epoch_level2class_accuracy = []
     test_epoch_level3class_accuracy = []
      
-    j = 0
-
-    epoch_loss = []
     epoch_level1class_accuracy = []
     epoch_level2class_accuracy = []
     epoch_level3class_accuracy = []
@@ -94,6 +80,7 @@ if __name__=='__main__':
     level1_pred = []
     level2_pred = []
     level3_pred = []
+    
     level1_label = []
     level2_label = []
     level3_label = []
@@ -106,12 +93,7 @@ if __name__=='__main__':
 
             level1class_pred, level2class_pred, level3class_pred = model(batch_x)
             prediction = [level1class_pred, level2class_pred, level3class_pred]
-            #dloss = HLN.calculate_dloss(prediction, [batch_y1, batch_y2, batch_y3])
-            #lloss = HLN.calculate_lloss(prediction, [batch_y1, batch_y2, batch_y3])
-
-            #total_loss = lloss + dloss
-
-            #epoch_loss.append(total_loss.item())
+    
             epoch_level1class_accuracy.append(calculate_accuracy(predictions=prediction[0], labels=batch_y1))
             epoch_level2class_accuracy.append(calculate_accuracy(predictions=prediction[1], labels=batch_y2))
             epoch_level3class_accuracy.append(calculate_accuracy(predictions=prediction[2], labels=batch_y3))
@@ -124,19 +106,10 @@ if __name__=='__main__':
             level3_label = level3_label + batch_y3.tolist()
 
 
-    #test_epoch_loss.append(sum(epoch_loss)/(j+1))
     test_epoch_level1class_accuracy.append(sum(epoch_level1class_accuracy)/(j+1))
     test_epoch_level2class_accuracy.append(sum(epoch_level2class_accuracy)/(j+1))
     test_epoch_level3class_accuracy.append(sum(epoch_level3class_accuracy)/(j+1))
 
-    #plot accuracy and loss graph
-    #plot_loss_acc('./graph_folder/', num_epoch=[0], 
-    #                train_accuracies_level1=test_epoch_level1class_accuracy, train_accuracies_level2=test_epoch_level2class_accuracy, 
-    #                train_accuracies_level3=test_epoch_level3class_accuracy, train_losses=test_epoch_loss,
-    #                test_accuracies_level1=test_epoch_level1class_accuracy, test_accuracies_level2=test_epoch_level2class_accuracy,
-    #                test_accuracies_level3=test_epoch_level3class_accuracy, test_losses=test_epoch_loss)
-
-    #print(f'Testing Loss : {sum(epoch_loss)/(j+1)}')
     print(f'Testing level1class accuracy : {sum(epoch_level1class_accuracy)/(j+1)}')
     print(f'Testing level2class accuracy : {sum(epoch_level2class_accuracy)/(j+1)}')
     print(f'Testing level3class accuracy : {sum(epoch_level3class_accuracy)/(j+1)}')
