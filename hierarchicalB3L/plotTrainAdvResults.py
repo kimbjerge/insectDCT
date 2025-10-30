@@ -18,7 +18,8 @@ from hierarchical_loss import HierarchicalLossNetwork
 
 #saved_folder = "./saved_128_ConvNextV4/"
 #saved_folder = "./saved_128_finalV4/"
-saved_folder = "./saved_128_ResNetV5/"
+#saved_folder = "./models_saved/saved_128_ResNetV5/"
+saved_folder = "./models_saved/saved_128_ConvNextV5/"
 #saved_folder = "./saved_128_ConvNextV5/"
 graph_folder = "./graph_folder/"
 
@@ -68,12 +69,21 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
 
     matrix = np.zeros((len(labels), len(labels))).astype('int')
 
+    count = 0
     for i in range(len(level_predict)):
-        matrix[level_label[i], level_predict[i]] += 1
+        if level_label[i] > -1: # ????
+            matrix[level_label[i], level_predict[i]] += 1
+        else:
+            count += 1
+            print("Invalid label", levelName, level_label[i], i, count)
               
     matrixSum = matrix.sum(axis=1)[:, np.newaxis]
     matrixAvg = matrix.astype('float') / (matrixSum+0.001)
     
+    ylabels = []
+    for idx in range(len((labels))):
+        ylabels.append(labels[idx] + " (" + str(matrixSum[idx][0]) + ")")
+        
     if normalize:
         matrix = matrixAvg
         print("Normalized confusion matrix")
@@ -93,7 +103,7 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     ax.set(xticks=np.arange(len(labels)),
            yticks=np.arange(len(labels)),
            # ... and label them with the respective list entries
-           xticklabels=labels, yticklabels=labels,
+           xticklabels=labels, yticklabels=ylabels,
            title=levelName,
            ylabel='True label',
            xlabel='Predicted label')    
@@ -142,7 +152,7 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     print(text)
     f.write(text+"\n")
 
-    f1score = metrics.f1_score(level_label, level_p, average='macro')
+    f1score = 2*recall*precision/(recall+precision) #metrics.f1_score(level_label, level_p, average='macro')
     text = f"Level {level} (macro) f1-score {f1score:.4f}"
     print(text)
     f.write(text+"\n")
@@ -350,9 +360,9 @@ if __name__=='__main__':
     print(alpha_values, best_epoch, acc_avg_levels)
 
     resultFile = saved_folder+'predictLabels3Ltrainval.pkl'    
-    plotHistogram(resultFile)
+    #plotHistogram(resultFile)
     
-    resultFile = saved_folder+'predictLabels3Lval.pkl'
+    resultFile = saved_folder+'predictLabels3Ltest.pkl' # val
     level3False = plotConfusionMatrix(resultFile)
     checkList = checkHierarcy(resultFile)
     
