@@ -65,6 +65,76 @@ def plotAccuracy(resultFile):
     return test_epoch_level1_accuracy[best_epoch_idx-1], test_epoch_level2_accuracy[best_epoch_idx-1], test_epoch_level3_accuracy[best_epoch_idx-1], test_epoch_countWrongHierarchy[best_epoch_idx-1], best_epoch_idx
     
 
+def saveClassScores(levelName, labels, confMatrix):
+    
+    matrixSumTrue = confMatrix.sum(axis=1)[:] # Number of labeled samples for each class
+    matrixSumPredicted = confMatrix.T.sum(axis=1)[:] # Number of predicted samples for each class
+    
+    recalls = np.zeros(len(labels))
+    precisions = np.zeros(len(labels))
+    f1scores = np.zeros(len(labels))
+    matrixSumTP = np.zeros(len(labels)).astype('int')
+    
+    if "L1" in levelName:
+        file = open(graph_folder + "classScores.csv", "w")
+        file.write("level,label,TP,TP_FP,TP_FN,precision,recall,f1score\n")
+    else:
+        file = open(graph_folder + "classScores.csv", "a")
+        
+    for idx in range(len((labels))):
+        matrixSumTP[idx] = confMatrix[idx][idx]
+        
+        if matrixSumTrue[idx] == 0: # No labeled samples for class
+            recalls[idx] = 1.0 # KBE??? not done in standard computations
+        else:
+            recalls[idx] = matrixSumTP[idx] /matrixSumTrue[idx]
+            
+        if matrixSumPredicted[idx] == 0: # No predicitons for class
+            if matrixSumTrue[idx] == 0: #  No labeled samples for class
+                precisions[idx] = 1.0 # Found all non existing labels
+            else:
+                precisions[idx] = 0.0 # Predicted samples for class without labeled samples
+        else:
+            precisions[idx] = matrixSumTP[idx] /matrixSumPredicted[idx]
+        
+        if (recalls[idx] + precisions[idx]) == 0:
+            if  matrixSumTrue[idx] == 0: # KBE??? not done in standard computations
+                f1scores[idx] = 1.0 # No predictions or labels for class
+            else:
+                f1scores[idx] = 0.0
+        else:
+            f1scores[idx] = 2*recalls[idx]*precisions[idx]/(recalls[idx] + precisions[idx])
+        line = f"{levelName},{labels[idx]},{matrixSumTP[idx]},{matrixSumPredicted[idx]},{matrixSumTrue[idx]},{precisions[idx]},{recalls[idx]},{f1scores[idx]}\n"
+        
+        if f1scores[idx] < 0.3:
+            print(line)
+        file.write(line)
+            
+    macroRecall = np.mean(recalls)
+    macroPrecision = np.mean(precisions)
+    macroF1score = np.mean(f1scores)
+    line = f"{levelName},Macro,{np.mean(matrixSumTP)},{np.mean(matrixSumPredicted)},{np.mean(matrixSumTrue)},{macroPrecision},{macroRecall},{macroF1score}\n"
+    file.write(line)
+
+    microRecall = sum(matrixSumTP)/sum(matrixSumTrue)
+    microPrecision = sum(matrixSumTP)/sum(matrixSumPredicted)
+    microF1score =  2*microRecall*microPrecision/(microRecall + microPrecision)
+    line = f"{levelName},Micro,{sum(matrixSumTP)},{sum(matrixSumPredicted)},{sum(matrixSumTrue)},{microPrecision},{microRecall},{microF1score}\n"
+    file.write(line)
+    
+    file.close()
+    
+    plt.rcParams.update({'font.size': 12})
+    plt.scatter(matrixSumTrue, f1scores)
+    title = f"{levelName} Macro: P {macroPrecision:.3f} R {macroRecall:.3f} F1 {macroF1score:.3f}"
+    plt.title(title)
+    plt.xlabel('Samples in class')
+    plt.ylabel('F1-score')
+    plt.xscale('log', base=10)
+    plt.savefig(graph_folder+levelName +'F1scores.png')
+    plt.show()
+    
+
 def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, normalize=False, font_size=14):
 
     matrix = np.zeros((len(labels), len(labels))).astype('int')
@@ -76,7 +146,9 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
         else:
             count += 1
             print("Invalid label", levelName, level_label[i], i, count)
-              
+    
+    saveClassScores(levelName, labels, matrix)
+    
     matrixSum = matrix.sum(axis=1)[:, np.newaxis]
     matrixAvg = matrix.astype('float') / (matrixSum+0.001)
     
@@ -152,7 +224,8 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     print(text)
     f.write(text+"\n")
 
-    f1score = 2*recall*precision/(recall+precision) #metrics.f1_score(level_label, level_p, average='macro')
+    #f1score = 2*recall*precision/(recall+precision) #
+    f1score = metrics.f1_score(level_label, level_p, average='macro')
     text = f"Level {level} (macro) f1-score {f1score:.4f}"
     print(text)
     f.write(text+"\n")
