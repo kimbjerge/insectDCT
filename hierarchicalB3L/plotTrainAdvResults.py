@@ -94,8 +94,8 @@ def checkValidHiearchyMatrix(levelName, matrix, labels):
         # Check hierarchy L1 -> L2
         for x in range(len(labels)):
             if labels[x] in labelsL1:
-                labelsL2 = hierarchyL1[labels[x]]
-                for labelL2 in labelsL2:
+                labelsL2x = hierarchyL1[labels[x]]
+                for labelL2 in labelsL2x:
                     if labelL2 in labels:
                         y = labels.index(labelL2)
                         if x != y:
