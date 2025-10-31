@@ -23,6 +23,9 @@ saved_folder = "./models_saved/saved_128_ConvNextV5/"
 #saved_folder = "./saved_128_ConvNextV5/"
 graph_folder = "./graph_folder/"
 
+# Check taxon prediction correct in hiearachy when plotting confusion matrix L2, L3 and saving scores
+checkHierarchy = False
+
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
 with open(label_file, 'rb') as f:
@@ -32,6 +35,7 @@ with open(label_file, 'rb') as f:
     print("L2", labelsL2)
     print("L3", labelsL3)
         
+    
 def plotAccuracy(resultFile):
 
     with open(resultFile, 'rb') as f:
@@ -63,8 +67,83 @@ def plotAccuracy(resultFile):
     print("Predicted wrong in hierarchy", test_epoch_countWrongHierarchy[best_epoch_idx-1])
     
     return test_epoch_level1_accuracy[best_epoch_idx-1], test_epoch_level2_accuracy[best_epoch_idx-1], test_epoch_level3_accuracy[best_epoch_idx-1], test_epoch_countWrongHierarchy[best_epoch_idx-1], best_epoch_idx
-    
 
+
+# Move predictions to diagonal in confusion matrix for true positive predictions in hierarchy
+def moveTruePositives(x, y, checkedMatrix, labels, labelLx):
+
+    if checkedMatrix[x][y] > 0:
+        print(labels[x], "same as", labelLx, checkedMatrix[x][y])
+    checkedMatrix[x][x] += checkedMatrix[x][y] # Accept predictions by moving to diagnonal in matrix
+    checkedMatrix[x][y] = 0
+    if checkedMatrix[y][x] > 0:
+        print(labelLx, "same as", labels[x], checkedMatrix[y][x])
+    checkedMatrix[y][y] += checkedMatrix[y][x] # Accept predictions by moving to diagnonal in matrix
+    checkedMatrix[y][x] = 0
+
+    return checkedMatrix    
+
+
+# Check and create cleaned confusion matrix for 
+def checkValidHiearchyMatrix(levelName, matrix, labels):
+    
+    checkedMatrix = matrix.copy()
+    
+    if ("L2" in levelName) or ("L3" in levelName):
+        
+        # Check hierarchy L1 -> L2
+        for x in range(len(labels)):
+            if labels[x] in labelsL1:
+                labelsL2 = hierarchyL1[labels[x]]
+                for labelL2 in labelsL2:
+                    if labelL2 in labels:
+                        y = labels.index(labelL2)
+                        if x != y:
+                            checkedMatrix = moveTruePositives(x, y, checkedMatrix, labels, labelL2)
+                            
+    if "L3" in levelName:
+        
+        # Check for L3 if species rank of genus
+        for x in range(len(labels)):
+            if labels[x] in labelsL3:
+                genus = labels[x].split(' ')[0]
+                if len(labels[x].split(' ')) == 1: # Genus
+                    for y in range(len(labels)):
+                        if labels[y] in labelsL3:
+                            species = labels[y]
+                            if len(labels[y].split(' ')) == 2: # Species
+                                if genus in species:
+                                    if x != y:
+                                        checkedMatrix = moveTruePositives(x, y, checkedMatrix, labels, species)                                  
+                
+                    
+        
+        # Check hierarchy L2 -> L3
+        for x in range(len(labels)):
+            if labels[x] in labelsL2:
+                labelsL3x = hierarchyL2[labels[x]]
+                for labelL3 in labelsL3x:
+                    if labelL3 in labels:
+                        y = labels.index(labelL3)
+                        if x != y:
+                            checkedMatrix = moveTruePositives(x, y, checkedMatrix, labels, labelL3)
+
+        # Check hierarchy L1 -> L2 -> L3
+        for x in range(len(labels)):
+            if labels[x] in labelsL1:
+                labelsL2x = hierarchyL1[labels[x]]
+                for labelL2 in labelsL2x:
+                    labelsL3x = hierarchyL2[labels[x]]
+                    for labelL3 in labelsL3x:
+                        if labelL3 in labels:
+                            y = labels.index(labelL3)
+                            if x != y:
+                                checkedMatrix = moveTruePositives(x, y, checkedMatrix, labels, labelL3)       
+    
+    return checkedMatrix
+
+
+# Computes macro and micro recall, precision and f1scores for each class in the confusion matrix
 def saveClassScores(levelName, labels, confMatrix):
     
     matrixSumTrue = confMatrix.sum(axis=1)[:] # Number of labeled samples for each class
@@ -106,8 +185,8 @@ def saveClassScores(levelName, labels, confMatrix):
             f1scores[idx] = 2*recalls[idx]*precisions[idx]/(recalls[idx] + precisions[idx])
         line = f"{levelName},{labels[idx]},{matrixSumTP[idx]},{matrixSumPredicted[idx]},{matrixSumTrue[idx]},{precisions[idx]},{recalls[idx]},{f1scores[idx]}\n"
         
-        if f1scores[idx] < 0.3:
-            print(line)
+        #if f1scores[idx] < 0.3:
+        #    print(line)
         file.write(line)
             
     macroRecall = np.mean(recalls)
@@ -135,7 +214,7 @@ def saveClassScores(levelName, labels, confMatrix):
     plt.show()
     
 
-def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, normalize=False, font_size=14):
+def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, checkHierarchy=checkHierarchy, normalize=False, font_size=14):
 
     matrix = np.zeros((len(labels), len(labels))).astype('int')
 
@@ -147,6 +226,8 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
             count += 1
             print("Invalid label", levelName, level_label[i], i, count)
     
+    if checkHierarchy:
+        matrix = checkValidHiearchyMatrix(levelName, matrix, labels)
     saveClassScores(levelName, labels, matrix)
     
     matrixSum = matrix.sum(axis=1)[:, np.newaxis]
@@ -198,8 +279,8 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     plt.savefig(graph_folder+levelName +'ConfTest.png')
     plt.show()   
 
-def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
 
+def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     
     level_p = np.argmax(level_pred, axis=1)
     font_size = 28
@@ -245,7 +326,6 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     print(text)
     f.write(text+"\n")
     f.close()
-    
     
     
 def plotConfusionMatrix(resultFile):
@@ -311,6 +391,7 @@ def createScore(labels, level_pred, level_label):
             
     return scores
         
+
 def plotHist(level, labelsL, classIdx, score, file):
     
     if len(score) > 0:
@@ -347,6 +428,7 @@ def plotHist(level, labelsL, classIdx, score, file):
     plt.savefig(graph_folder + 'histL'+ str(level) + labelsL[classIdx] + '.png')
     plt.show()
     
+    
 def plotHistogram(resultFile):
 
     with open(resultFile, 'rb') as f:
@@ -374,6 +456,7 @@ def plotHistogram(resultFile):
         plotHist(3, labelsL3, classIdx, score, file)
     
     file.close()
+    
     
 #%% MAIN
 if __name__=='__main__':
