@@ -5,6 +5,7 @@ Modified on Sat April 10 18:19:03 2025
 @author: Kim Bjerge
 """
 
+import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,12 +20,13 @@ from hierarchical_loss import HierarchicalLossNetwork
 #saved_folder = "./saved_128_ConvNextV4/"
 #saved_folder = "./saved_128_finalV4/"
 #saved_folder = "./models_saved/saved_128_ResNetV5/"
+#saved_folder = "./models_saved/saved_128_ConvNextV6_1/"
 saved_folder = "./models_saved/saved_128_ConvNextV5/"
-#saved_folder = "./saved_128_ConvNextV5/"
 graph_folder = "./graph_folder/"
 
 # Check taxon prediction correct in hiearachy when plotting confusion matrix L2, L3 and saving scores
 checkHierarchy = False
+checkedName = ""
 
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
@@ -155,10 +157,10 @@ def saveClassScores(levelName, labels, confMatrix):
     matrixSumTP = np.zeros(len(labels)).astype('int')
     
     if "L1" in levelName:
-        file = open(graph_folder + "classScores.csv", "w")
+        file = open(graph_folder + checkedName + "ClassScores.csv", "w")
         file.write("level,label,TP,TP_FP,TP_FN,precision,recall,f1score\n")
     else:
-        file = open(graph_folder + "classScores.csv", "a")
+        file = open(graph_folder + checkedName + "ClassScores.csv", "a")
         
     for idx in range(len((labels))):
         matrixSumTP[idx] = confMatrix[idx][idx]
@@ -210,7 +212,7 @@ def saveClassScores(levelName, labels, confMatrix):
     plt.xlabel('Samples in class')
     plt.ylabel('F1-score')
     plt.xscale('log', base=10)
-    plt.savefig(graph_folder+levelName +'F1scores.png')
+    plt.savefig(graph_folder+checkedName+levelName+'F1scores.png')
     plt.show()
     
 
@@ -276,7 +278,7 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, chec
     
     #ax.set_title(levelName)
     fig.tight_layout()
-    plt.savefig(graph_folder+levelName +'ConfTest.png')
+    plt.savefig(graph_folder + checkedName + levelName +'ConfTest.png')
     plt.show()   
 
 
@@ -291,9 +293,9 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=False, font_size=font_size)
   
     if level == 1:
-        f = open(graph_folder+"results.txt", "w")
+        f = open(graph_folder+"Results.txt", "w")
     else:
-        f = open(graph_folder+"results.txt", "a")
+        f = open(graph_folder+"Results.txt", "a")
         
     precision = metrics.precision_score(level_label, level_p, average='macro')
     text = f"Level {level} (macro) precision {precision:.4f}"
@@ -516,11 +518,25 @@ if __name__=='__main__':
     print(alpha_values, best_epoch, acc_avg_levels)
 
     resultFile = saved_folder+'predictLabels3Ltrainval.pkl'    
-    #plotHistogram(resultFile)
+    plotHistogram(resultFile)
     
-    resultFile = saved_folder+'predictLabels3Ltest.pkl' # val
+    # Evaluate model on validations datasets
+    resultFile = saved_folder+'predictLabels3Lval.pkl'
     level3False = plotConfusionMatrix(resultFile)
-    checkList = checkHierarcy(resultFile)
-    
+
+    checkList = checkHierarcy(resultFile)  
     countWrongHierarchy = sum(map(lambda x : x == False, checkList))
     print("Number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
+    
+    # Evaluate model on test datasets
+    resultFile = saved_folder+'predictLabels3Ltest.pkl'
+    graph_folder += "test/"
+    if not os.path.exists(graph_folder):
+        os.mkdir(graph_folder)        
+    level3False = plotConfusionMatrix(resultFile)
+    
+    checkHierarchy = True
+    checkedName = "Taxonomy"
+    level3False = plotConfusionMatrix(resultFile)
+    
+
