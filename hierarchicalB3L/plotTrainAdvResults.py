@@ -533,7 +533,7 @@ if __name__=='__main__':
     graph_folder += "test/"
     if not os.path.exists(graph_folder):
         os.mkdir(graph_folder)        
-    #level3False = plotConfusionMatrix(resultFile)
+    level3False = plotConfusionMatrix(resultFile)
     
     checkHierarchy = True
     checkedName = "Taxonomy"
