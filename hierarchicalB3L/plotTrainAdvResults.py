@@ -216,7 +216,7 @@ def saveClassScores(levelName, labels, confMatrix):
     plt.show()
     
 
-def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, checkHierarchy=checkHierarchy, normalize=False, font_size=14):
+def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, normalize=False, font_size=14):
 
     matrix = np.zeros((len(labels), len(labels))).astype('int')
 
@@ -533,7 +533,7 @@ if __name__=='__main__':
     graph_folder += "test/"
     if not os.path.exists(graph_folder):
         os.mkdir(graph_folder)        
-    level3False = plotConfusionMatrix(resultFile)
+    #level3False = plotConfusionMatrix(resultFile)
     
     checkHierarchy = True
     checkedName = "Taxonomy"
