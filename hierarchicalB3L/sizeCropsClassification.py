@@ -9,6 +9,10 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+useTestDataset = True
+
+
 #%% MAIN
 if __name__=='__main__':
     
@@ -23,16 +27,33 @@ if __name__=='__main__':
                        '/home/don/data/Arthropods/GBIF_cropsV2'
                       ]
     
-    # Classification dataset V5 - GBIF
-    image_path_list = ['D:/insectsDCT_datasets/classifier/NI2classesV2',
-                       'D:/insectsDCT_datasets/classifier/NI2sortedV2',
-                       'D:/insectsDCT_datasets/classifier/NItrainV2',
-                       'D:/insectsDCT_datasets/classifier/NIvalV2',
-                       'D:/insectsDCT_datasets/classifier/sorted_orchard_crops',
-                       'D:/insectsDCT_datasets/classifier/Orchard_cropsV2',
-                       'D:/insectsDCT_datasets/classifier/NI2_MAMBOV2',
-                       'D:/insectsDCT_datasets/classifier/GBIF_cropsV2'
+    # Classification dataset V5 with GBIF
+    image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV5/NI2classesV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/NI2sortedV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/NItrainV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/NIvalV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/sorted_orchard_crops',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/Orchard_cropsV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/NI2_MAMBOV2',
+                       'E:/insectsDCT_datasets/classifier/datasetV5/GBIF_cropsV2'
                       ]
+    
+    if useTestDataset:
+        # Test dataset - new names and reorganization
+        image_path_list = [
+                           'E:/insectsDCT_datasets/classifier/dataset_test/NI2_MAMBO',
+                           'E:/insectsDCT_datasets/classifier/dataset_test/RTNI',
+                           'E:/insectsDCT_datasets/classifier/dataset_test/Orchard'
+                          ]
+    else:
+        # Classification dataset V6 - new names and reorganization
+        image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                           'E:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                           'E:/insectsDCT_datasets/classifier/datasetV6/NI',
+                           'E:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                           'E:/insectsDCT_datasets/classifier/datasetV6/GBIF'
+                          ]
+        
     
     boxesWidth = []
     boxesHeight = []
@@ -69,7 +90,10 @@ if __name__=='__main__':
             print(taxaPath, countImages)
 
     print("==========================================================================")
-    file = open("datasetV5_taxaList.csv", 'w')
+    if useTestDataset:
+        file = open("datasetTest_taxaList.csv", 'w')
+    else:
+        file = open("datasetV6_taxaList.csv", 'w')
     header = "taxa,crops\n"
     file.write(header)
     for key in sorted(taxaCrops.keys()):
@@ -91,28 +115,53 @@ if __name__=='__main__':
     plt.plot(listTh, listPb, 'r')
     
     
-    #plt.title("Insect pixel size (datasetV5 without GBIF)")
-    plt.title("Insect pixel size (datasetCV5)")
-    plt.xlabel('Pixel size (max.[w|h])')
-    plt.ylabel('Probability')
-    #plt.xlim(0, 500)
-    plt.xlim(0, 1000)
-    plt.savefig("./plots/classificationDatasetV5.png")
-    plt.show()
-    
-    longTail = sorted(taxaCrops.values(), reverse=True)
-    plt.plot(longTail)
-    plt.title("Class distribution CV5")
-    plt.xlabel('Class Id')
-    plt.ylabel('Images')
-    plt.savefig("./plots/distributionDatasetV5.png")
-    plt.show()
-    
-    plt.plot(longTail)
-    plt.yscale('log')
-    plt.title("Class distribution CV5")
-    plt.xlabel('Class Id')
-    plt.ylabel('Images')
-    plt.savefig("./plots/distributionLogDatasetV5.png")
-    plt.show()
-                                        
+    if useTestDataset:
+        plt.title("Insect pixel size (Test dataset)")
+        plt.xlabel('Pixel size (max.[w|h])')
+        plt.ylabel('Probability')
+        #plt.xlim(0, 500)
+        plt.xlim(0, 1000)
+        plt.savefig("./plots/classificationDatasetTest.png")
+        plt.show()
+        
+        longTail = sorted(taxaCrops.values(), reverse=True)
+        plt.plot(longTail)
+        plt.title("Class distribution test dataset")
+        plt.xlabel('Class Id')
+        plt.ylabel('Images')
+        plt.savefig("./plots/distributionDatasetTest.png")
+        plt.show()
+        
+        plt.plot(longTail)
+        plt.yscale('log')
+        plt.title("Class distribution test dataset")
+        plt.xlabel('Class Id')
+        plt.ylabel('Images')
+        plt.savefig("./plots/distributionLogDatasetTest.png")
+        plt.show()
+    else:
+        #plt.title("Insect pixel size (datasetV5 without GBIF)")
+        plt.title("Insect pixel size (CV6)")
+        plt.xlabel('Pixel size (max.[w|h])')
+        plt.ylabel('Probability')
+        #plt.xlim(0, 500)
+        plt.xlim(0, 1000)
+        plt.savefig("./plots/classificationDatasetV6.png")
+        plt.show()
+        
+        longTail = sorted(taxaCrops.values(), reverse=True)
+        plt.plot(longTail)
+        plt.title("Class distribution (CV6)")
+        plt.xlabel('Class Id')
+        plt.ylabel('Images')
+        plt.savefig("./plots/distributionDatasetV6.png")
+        plt.show()
+        
+        plt.plot(longTail)
+        plt.yscale('log')
+        plt.title("Class distribution (CV6)")
+        plt.xlabel('Class Id')
+        plt.ylabel('Images')
+        plt.savefig("./plots/distributionLogDatasetV6.png")
+        plt.show()
+                                            
