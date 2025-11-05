@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Modified on Sat April 10 18:19:03 2025
+Modified on Wen November 05 13:19:03 2025
 
 @author: Kim Bjerge
 """
@@ -9,12 +9,23 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import metrics
-#from level_testNI_dict import labelsL1, labelsL2, labelsL3
-from level_NI_dict import labelsL1, labelsL2, labelsL3
+import pandas as pd
 from hierarchical_loss import HierarchicalLossNetwork
 
 graph_folder = './graph_folder/'
+saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
 
+thresholdSTD = 5.0
+
+label_file = saved_folder+"labelsAdv3L.pkl"
+# Load labels shared by several functions
+with open(label_file, 'rb') as f:
+    image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
+    print("Labels and hierarchy dependency loaded from ", label_file)
+    print("L1", labelsL1)
+    print("L2", labelsL2)
+    print("L3", labelsL3)
+    
 def renameUnknownLabels(labelsL, level_label):
     
     unknownIdx = len(labelsL)
@@ -26,40 +37,61 @@ def renameUnknownLabels(labelsL, level_label):
     
     return labelsL, level_label
 
-# Level thresholds for unknown idx found on train dataset as mean - 2xstd
-# Trained model dhc_save1_00_best.pth
-#level1Thresholds = [7.4, 4.4, 4.2, 6.9]
-#level2Thresholds = [8.6, 5.1, 3.7, 3.9, 8.1]
-#level3Thresholds = [9.6, 6.3, 6.3, 3.9, 4.5, 5.9, 7.1, 4.5, 8.5]
 
-# Level thresholds for unknown idx found on train dataset as mean - 2xstd, dhc0_20_best.pth
-level1Thresholds = [6.4, 2.5, 2.8, 4.5] # Min 2.5
-level2Thresholds = [6.6, 2.5, 2.5, 2.9, 5.1] # Min 2.5
-level3Thresholds = [8.2, 2.6, 3.1, 3.4, 3.5, 5.0, 4.1, 2.6, 5.0]
+# Class to handle loading thresholds and marking unsure predictions
+class Thresholds:
 
-# Level thresholds for unknown idx found on train dataset as mean - 2xstd, dhc_GBIFNI.pth - MIX
-#level1Thresholds = [5.1, 3.5, 3.1, 3.0] # Min 2.5
-#level2Thresholds = [5.7, 4.1, 3.9, 2.5, 3.5] # Min 2.5
-#level3Thresholds = [6.7, 3.9, 5.4, 4.4, 4.1, 5.3, 6.4, 3.4, 4.1]
-
-def unknownPredictions(level, labels, level_pred):
-    if level == 1:
-        levelThredsholds = level1Thresholds
-    if level == 2:
-        levelThredsholds = level2Thresholds
-    if level == 3:
-        levelThredsholds = level3Thresholds
-    unknownIdx = len(labels)-1
-    level_p = np.argmax(level_pred, axis=1)
-    max_p = np.max(level_pred, axis=1)
-    for idx in range(len(level_p)):
-        #if max_p[idx] < 3.8: # KBE?? level to be found based on training dataset 3.8 - 9.1
-        if max_p[idx] < levelThredsholds[level_p[idx]]:
-            level_p[idx] = unknownIdx
-    return level_p
+    def __init__(self, threshold_file, thresholdSTD=0):
+        self.thresholdSTD = thresholdSTD
+        self.loadThresholds(threshold_file)
+    
+    def loadThresholds(self, threshold_file):
+        
+        data_thresholds = pd.read_csv(threshold_file)
+        self.levels = data_thresholds["Level"].to_list() 
+        self.labels = data_thresholds["ClassName"].to_list()
+        self.thresholds = data_thresholds["Threshold"].to_list()
+        self.means = data_thresholds["Mean"].to_list()
+        self.stds = data_thresholds["Std"].to_list()
+        
+        self.level1Thresholds = []
+        self.level2Thresholds = []
+        self.level3Thresholds = []
+        for idx in range(len(self.levels)):
+                       
+            if self.thresholdSTD == 0:
+                threshold = self.thresholds[idx]
+            else:
+                threshold = self.means[idx] - self.thresholdSTD*self.stds[idx]
+            
+            if self.levels[idx] == 1:
+                self.level1Thresholds.append(threshold)
+            if self.levels[idx] == 2:
+                self.level2Thresholds.append(threshold)
+            if self.levels[idx] == 3:
+                self.level3Thresholds.append(threshold)
+                
+    def unsurePredictions(self, level, labels, level_pred):
+        
+        if level == 1:
+            levelThredsholds = self.level1Thresholds
+        if level == 2:
+            levelThredsholds = self.level2Thresholds
+        if level == 3:
+            levelThredsholds = self.level3Thresholds
+        
+        unknownIdx = len(labels)-1
+        level_p = np.argmax(level_pred, axis=1)
+        max_p = np.max(level_pred, axis=1)
+        for idx in range(len(level_p)):
+            #if max_p[idx] < 3.8: # KBE?? level to be found based on training dataset 3.8 - 9.1
+            if max_p[idx] < levelThredsholds[level_p[idx]]:
+                level_p[idx] = unknownIdx
+        
+        return level_p
     
 
-def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, normalize=False):
+def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thredsholds, normalize=False, font_size=14):
 
     matrixAll = np.zeros((len(labels), len(labels))).astype('int')
 
@@ -91,14 +123,17 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
          
     if normalize:
         matrixSum = matrix.sum(axis=1)[:, np.newaxis]
-        matrix = matrix.astype('float') / (matrixSum+0.001)
+        #matrix = matrix.astype('float') / (matrixSum+0.001)
+        matrix = np.round(100 * (matrix.astype('float') / (matrixSum+0.001)))
+        matrix = matrix.astype('int')
         print("Normalized confusion matrix")
     else:
         print('Confusion matrix, without normalization')
 
     #print(matrix, matrixSum)        
-        
-    fig, ax = plt.subplots(figsize=(8, 6))
+    
+    plt.rcParams.update({'font.size': font_size})
+    fig, ax = plt.subplots(figsize=(30, 30))
     ax.imshow(matrix, cmap='Greens')
     
     yLabels = []
@@ -118,13 +153,16 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     
     # Loop over data dimensions and create text annotations.
-    fmt = '.2f' if normalize else 'd'
+    #fmt = '.2f' if normalize else 'd'
+    fmt = 'd'
     for i in range(len(labelsTrue)):
         for j in range(len(labelsPredict)):
             color = 'k'
-            if matrix[i, j] > 0.495:
+            if matrix[i, j] > 69:
+            #if matrix[i, j] > 0.495:
                 color = 'w'
-            if matrix[i,j] > 0.005:
+            if matrix[i,j] > 0:
+            #if matrix[i,j] > 0.005:
                 ax.text(j, i, format(matrix[i, j], fmt), ha="center", va="center", color=color)
     
     #ax.set_title(levelName)
@@ -132,27 +170,18 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     plt.savefig(graph_folder+levelName +'ConfTest.png')
     plt.show()   
     
-def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
+def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thredsholds):
 
     #level_p = np.argmax(level_pred, axis=1)
-    level_p = unknownPredictions(level, labels, level_pred)
+    level_p = thredsholds.unsurePredictions(level, labels, level_pred)
     
-    plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=True)
-    
-    """
-    #confusion_matrix = metrics.confusion_matrix(level_label, level_p)
-    #cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = labels)
-    fig, ax = plt.subplots(figsize=(12, 8))
-    metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize='true', display_labels=labels, #Normalized labels
-    #metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize='pred', display_labels=labels, #Normalized predictions
-                                                    xticks_rotation='vertical', values_format='.2g', cmap='Greens', ax=ax)
-    #metrics.ConfusionMatrixDisplay.from_predictions(level_label, level_p, normalize=None, display_labels=labels, 
-    #                                                xticks_rotation='vertical', values_format='.d', cmap='Greens', ax=ax)
-    plt.title('L' + str(level) + ' ' + level_name)
-    plt.savefig( graph_folder+'levelTest'+ str(level) + '.png')
-    plt.show()
-    """
-    
+    font_size = 28
+    if level == 2:
+        font_size = 20        
+    if level == 3:
+        font_size = 14
+    plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, thresholds, normalize=True, font_size=font_size)
+       
     precision = metrics.precision_score(level_label, level_p, average='macro')
     print("Level %d (macro) precision %.4f" % (level, precision))
     recall = metrics.recall_score(level_label, level_p, average='macro')
@@ -168,7 +197,7 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
     print("Level %d (micro) f1-score  %.4f" % (level, f1score))
     
     
-def plotConfusionMatrix(resultFile):
+def plotConfusionMatrix(resultFile, thresholds):
 
     with open(resultFile, 'rb') as f:
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
@@ -177,9 +206,9 @@ def plotConfusionMatrix(resultFile):
     labelsrL1, level1_label = renameUnknownLabels(labelsL1, level1_label)
     labelsrL2, level2_label = renameUnknownLabels(labelsL2, level2_label)
     labelsrL3, level3_label = renameUnknownLabels(labelsL3, level3_label)
-    plotLevelConfusion(1, level1_pred, level1_label, labelsrL1, "Order")
-    plotLevelConfusion(2, level2_pred, level2_label, labelsrL2, "Family")
-    plotLevelConfusion(3, level3_pred, level3_label, labelsrL3, "Species")
+    plotLevelConfusion(1, level1_pred, level1_label, labelsrL1, "Order", thresholds)
+    plotLevelConfusion(2, level2_pred, level2_label, labelsrL2, "Family", thresholds)
+    plotLevelConfusion(3, level3_pred, level3_label, labelsrL3, "Species", thresholds)
     
     level1p = np.argmax(level1_pred, axis=1)
     level2p = np.argmax(level2_pred, axis=1)
@@ -214,20 +243,18 @@ def checkHierarcy(resultFile):
             checkList[idx] = False
             print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
     
-    return checkList
-    
+    return checkList    
 
 #%% MAIN
 if __name__=='__main__':
     
     
-    #resultFile = './saved/predictTestLabels3L_alpha1_e17.pkl'
-    #resultFile = './saved/predictTestLabels3L_alpha0_2.pkl'
-    #resultFile = './saved/predictTestLabels3L_alpha0_5_T4.pkl'
-    resultFile = './saved/predictLabels3Lval.pkl'
-    # Trained mix model
-    #resultFile = './saved/predictTestLabels3L_GBIFNIMix.pkl'
-    level3False = plotConfusionMatrix(resultFile)
+    #resultFile = './saved/predictLabels3Lval.pkl'
+    resultFile = saved_folder + "predictLabels3Lval.pkl"
+    thredsholdFile = saved_folder + "thresholds.csv"
+
+    thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
+    level3False = plotConfusionMatrix(resultFile, thresholds)
     checkList = checkHierarcy(resultFile)
     
     countWrongHierarchy = sum(map(lambda x : x == False, checkList))
