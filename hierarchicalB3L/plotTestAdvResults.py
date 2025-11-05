@@ -15,7 +15,7 @@ from hierarchical_loss import HierarchicalLossNetwork
 graph_folder = './graph_folder/'
 saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
 
-thresholdSTD = 5.0
+thresholdSTD = 0.0
 
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
@@ -216,7 +216,7 @@ def plotConfusionMatrix(resultFile, thresholds):
     level3False = 0
     for idx in range(len(level3p)):
         if level3p[idx] != level3_label[idx]:
-            print(labelsrL1[level1p[idx]], labelsrL2[level2p[idx]], labelsrL3[level3p[idx]])
+            #print(labelsrL1[level1p[idx]], labelsrL2[level2p[idx]], labelsrL3[level3p[idx]])
             level3False += 1
     
     return level3False
@@ -228,8 +228,10 @@ def checkHierarcy(resultFile):
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
         print("Predictions and labels and loss loaded from ", resultFile)
         
-    HLN = HierarchicalLossNetwork(total_level=3, device="cpu", simple=True)
-
+    HLN = HierarchicalLossNetwork(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, 
+                                  [None, None, None], 
+                                  total_level=3, device="cpu", simple=True) 
+        
     level1p = np.argmax(level1_pred, axis=1)
     level2p = np.argmax(level2_pred, axis=1)
     level3p = np.argmax(level3_pred, axis=1)
@@ -241,17 +243,15 @@ def checkHierarcy(resultFile):
     for idx in range(len(checkList)):
         if checkL3[idx] == False or checkL2[idx] == False:
             checkList[idx] = False
-            print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
+            #print(labelsL1[level1p[idx]], labelsL2[level2p[idx]], labelsL3[level3p[idx]])
     
     return checkList    
 
 #%% MAIN
 if __name__=='__main__':
-    
-    
-    #resultFile = './saved/predictLabels3Lval.pkl'
-    resultFile = saved_folder + "predictLabels3Lval.pkl"
+        
     thredsholdFile = saved_folder + "thresholds.csv"
+    resultFile = saved_folder + "predictLabels3Lval.pkl"
 
     thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
     level3False = plotConfusionMatrix(resultFile, thresholds)

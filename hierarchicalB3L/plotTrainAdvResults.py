@@ -20,13 +20,14 @@ from hierarchical_loss import HierarchicalLossNetwork
 #saved_folder = "./saved_128_ConvNextV4/"
 #saved_folder = "./saved_128_finalV4/"
 #saved_folder = "./models_saved/saved_128_ResNetV5/"
-#saved_folder = "./models_saved/saved_128_ConvNextV6_1/"
-saved_folder = "./models_saved/saved_128_ConvNextV5/"
+saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
+#saved_folder = "./models_saved/saved_128_ConvNextV5/"
 graph_folder = "./graph_folder/"
 
 # Check taxon prediction correct in hiearachy when plotting confusion matrix L2, L3 and saving scores
 checkHierarchy = False
 checkedName = ""
+thresholdSTD = 6.0
 
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
@@ -404,7 +405,7 @@ def plotHist(level, labelsL, classIdx, score, file):
     
     #print(labelsL[classIdx], mu, std)
     #classThreshold = round((mu - 2*std)*10)/10 # Used in paper
-    classThreshold = round((mu - 3*std)*100)/100 # Less number of unsure
+    classThreshold = round((mu - thresholdSTD*std)*100)/100 # Less number of unsure
     if std == 0:
         classThreshold = -1.0 # No threshold when standard deviation is zero 
     print(level, classIdx, labelsL[classIdx], mu, std, classThreshold)
