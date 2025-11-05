@@ -17,9 +17,10 @@ class HierarchicalDatasetLoader():
     '''Reads the directory of image files and create hierarchy labels
     '''
 
-    def __init__(self, image_path_list, split_validate): # Percentage used for validation
+    def __init__(self, image_path_list, split_validate, split_offset=0): # Percentage used for validation
         
         self.split_validate = int(100/split_validate)
+        self.split_offset = split_offset
         self.data_path_list = image_path_list
         self.path_names = self.create_labels_file_list()
         self.create_hierarchy_labels()
@@ -112,7 +113,7 @@ class HierarchicalDatasetLoader():
                         """
                          
                         count += 1
-                        if count % self.split_validate == 0:
+                        if count % self.split_validate == self.split_offset:
                             self.data_list_val.append(record) # Use image for validation
                             num_images = [0, 1] # Validate image
                         else:   

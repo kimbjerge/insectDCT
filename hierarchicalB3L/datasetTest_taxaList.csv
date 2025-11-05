@@ -32,10 +32,10 @@ Hymenoptera_bees Apidae Bombus pascuorum,109
 Hymenoptera_bees Apidae Bombus sylvarum,323
 Hymenoptera_bees Apidae Bombus terrestris,352
 Hymenoptera_bees Apidae Nomada,1
-Hymenoptera_bees Apoidea_red_abdomen,8
-Hymenoptera_bees Apoidea_reddish,50
-Hymenoptera_bees Apoidea_small,530
-Hymenoptera_bees Apoidea_striped,212
+Hymenoptera_bees Apoidea Apoidea red_abdomen,8
+Hymenoptera_bees Apoidea Apoidea reddish,50
+Hymenoptera_bees Apoidea Apoidea small,530
+Hymenoptera_bees Apoidea Apoidea striped,212
 Hymenoptera_bees Megachilidae,899
 Hymenoptera_bees Megachilidae Anthidium oblongatum,48
 Hymenoptera_nobees Crabronidae,89
