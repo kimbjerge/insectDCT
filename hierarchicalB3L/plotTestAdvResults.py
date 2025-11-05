@@ -103,24 +103,24 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thre
     
     labelsTrue = []
     labelsPredict = []
+    for i in range(len(labels)-1): # Skip unsure
+        #if matrixSumTrue[i] > 0:
+        labelsTrue.append(labels[i])
     for i in range(len(labels)):
-        if matrixSumTrue[i] > 0:
-            labelsTrue.append(labels[i])
-    for i in range(len(labels)):
-        if matrixSumPredict[i] > 0:
-            labelsPredict.append(labels[i])
+        #if matrixSumPredict[i] > 0:
+        labelsPredict.append(labels[i])
             
     matrix = np.zeros((len(labelsTrue), len(labelsPredict))).astype('int') 
     x = 0;
-    for i in range(len(labels)):
+    for i in range(len(labelsTrue)):
         y = 0;
-        if matrixSumTrue[i] > 0:
-            for j in range(len(labels)):
-                if matrixSumPredict[j] > 0:
-                    matrix[x, y] = matrixAll[i, j] 
-                    y += 1               
-            x += 1
-         
+        #if matrixSumTrue[i] > 0:
+        for j in range(len(labelsPredict)):
+            #if matrixSumPredict[j] > 0:
+            matrix[x, y] = matrixAll[i, j] 
+            y += 1               
+        x += 1
+    
     if normalize:
         matrixSum = matrix.sum(axis=1)[:, np.newaxis]
         #matrix = matrix.astype('float') / (matrixSum+0.001)
@@ -251,7 +251,8 @@ def checkHierarcy(resultFile):
 if __name__=='__main__':
         
     thredsholdFile = saved_folder + "thresholds.csv"
-    resultFile = saved_folder + "predictLabels3Lval.pkl"
+    #resultFile = saved_folder + "predictLabels3Lval.pkl"
+    resultFile = saved_folder + "predictLabels3Ltest.pkl"
 
     thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
     level3False = plotConfusionMatrix(resultFile, thresholds)

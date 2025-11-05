@@ -279,7 +279,7 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     
     #ax.set_title(levelName)
     fig.tight_layout()
-    plt.savefig(graph_folder + checkedName + levelName +'ConfTest.png')
+    plt.savefig(graph_folder + checkedName + levelName +'Confusion.png')
     plt.show()   
 
 
