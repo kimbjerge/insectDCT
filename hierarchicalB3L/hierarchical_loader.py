@@ -199,7 +199,27 @@ if __name__=='__main__':
                        '/home/don/data/Arthropods/GBIF_cropsV2'
                       ]
 
-    datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
+    # Classification dataset V6 experiment vegetation
+    image_path_list = ['/home/don/data/insectsDCTtrain/NI2',
+                       '/home/don/data/insectsDCTtrain/NItrain',
+                       '/home/don/data/insectsDCTtrain/NIval',
+                       '/home/don/data/insectsDCTtrain/Orchard_I',
+                       '/home/don/data/insectsDCTtrain/Orchard_II',
+                       '/home/don/data/insectsDCTtrain/MAMBO_NI2',
+                       '/home/don/data/insectsDCTtrain/GBIF'
+                      ]
+
+    # Classification dataset V6
+    image_path_list = ['/home/don/data/ArthropodsTrain/NI2',
+                       '/home/don/data/ArthropodsTrain/NI',
+                       '/home/don/data/ArthropodsTrain/Orchard',
+                       '/home/don/data/ArthropodsTrain/NI2_MAMBO',
+                       '/home/don/data/ArthropodsTrain/GBIF'
+                      ]
+
+
+    #datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
+    datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)
     path_names = datasetLoader.get_path_names()
     #print("=============================================================================================")
     #print(path_names)

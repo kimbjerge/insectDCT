@@ -1,10 +1,10 @@
 taxa,crops
 Aranaea,2001
-Birds,265
+Birds,269
 Coleoptera,2698
 Coleoptera Cantharidae Rhagonycha fulva,1359
 Coleoptera Coccinellidae Coccinella septempunctata,7270
-Dermaptera,260
+Dermaptera,439
 Diptera,456
 Diptera Bombyliidae,479
 Diptera Sarcophagidae,811
@@ -26,7 +26,6 @@ Diptera Syrphidae Syrphus,321
 Diptera Syrphidae Xanthogramma,189
 Hemiptera,1628
 Herpetofauna,95
-Hymenoptera_bees,663
 Hymenoptera_bees Apidae Apis mellifera,10499
 Hymenoptera_bees Apidae Bombus,435
 Hymenoptera_bees Apidae Bombus hypnorum,208
@@ -35,10 +34,11 @@ Hymenoptera_bees Apidae Bombus pascuorum,264
 Hymenoptera_bees Apidae Bombus sylvarum,359
 Hymenoptera_bees Apidae Bombus terrestris,4021
 Hymenoptera_bees Apidae Nomada,419
-Hymenoptera_bees Apoidea_red_abdomen,280
-Hymenoptera_bees Apoidea_reddish,350
-Hymenoptera_bees Apoidea_small,1976
-Hymenoptera_bees Apoidea_striped,1663
+Hymenoptera_bees Apoidea,663
+Hymenoptera_bees Apoidea Apoidea red_abdomen,280
+Hymenoptera_bees Apoidea Apoidea reddish,350
+Hymenoptera_bees Apoidea Apoidea small,1976
+Hymenoptera_bees Apoidea Apoidea striped,1663
 Hymenoptera_bees Megachilidae,2490
 Hymenoptera_bees Megachilidae Anthidium oblongatum,382
 Hymenoptera_nobees Chrysididae,792
