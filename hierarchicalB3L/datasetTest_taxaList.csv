@@ -48,7 +48,7 @@ Hymenoptera_nobees Vespidae Vespula vulgaris,256
 Isopoda,132
 Larvae,72
 Lepidoptera,13
-Lepidoptera Hesperidae,46
+Lepidoptera Hesperidae,26
 Lepidoptera Lycaenidae,3
 Lepidoptera Lycaenidae Lycaena phlaeas,2
 Lepidoptera Moths,167
@@ -64,11 +64,11 @@ Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw,45
 Lepidoptera_fw Nymphalidae_fw Satyrinae_fw,14
 Milipedes,38
 Odonata,62
-Orthoptera,19
-Orthoptera Acrididae,306
-Orthoptera Acrididae Chorthippus,259
-Orthoptera Acrididae Omocestus viridulus,4
-Orthoptera Tettigoniidae Pholidoptera griseoaptera,28
+Orthoptera,6
+Orthoptera Acrididae,108
+Orthoptera Acrididae Chorthippus,70
+Orthoptera Acrididae Omocestus viridulus,6
+Orthoptera Tettigoniidae Pholidoptera griseoaptera,11
 Slugs,359
 Snails,811
 Vegetation,871
