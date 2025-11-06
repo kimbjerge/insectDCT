@@ -13,7 +13,8 @@ import pandas as pd
 from hierarchical_loss import HierarchicalLossNetwork
 
 graph_folder = './graph_folder/'
-saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
+#saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
+saved_folder = "./models_saved/saved_128_ConvNextV6/"
 
 thresholdSTD = 0.0
 
@@ -89,7 +90,56 @@ class Thresholds:
                 level_p[idx] = unknownIdx
         
         return level_p
+
+# Computes macro and micro recall, precision and f1scores for each class in the confusion matrix
+def computeClassScores(levelName, labels, confusionMatrix, clearUnsure=True):
     
+    confMatrix = confusionMatrix.copy()
+    
+    if clearUnsure:
+        confMatrix[:][-1] = 0
+    
+    matrixSumTrue = confMatrix.sum(axis=1)[:] # Number of labeled samples for each class
+    matrixSumPredicted = confMatrix.T.sum(axis=1)[:] # Number of predicted samples for each class
+    
+    recalls = np.zeros(len(labels))
+    precisions = np.zeros(len(labels))
+    f1scores = np.zeros(len(labels))
+    matrixSumTP = np.zeros(len(labels)).astype('int')
+       
+    for idx in range(len((labels))):
+        matrixSumTP[idx] = confMatrix[idx][idx]
+        
+        if matrixSumTrue[idx] == 0: # No labeled samples for class
+            recalls[idx] = 1.0 # KBE??? not done in standard computations
+        else:
+            recalls[idx] = matrixSumTP[idx] /matrixSumTrue[idx]
+            
+        if matrixSumPredicted[idx] == 0: # No predicitons for class
+            if matrixSumTrue[idx] == 0: #  No labeled samples for class
+                precisions[idx] = 1.0 # Found all non existing labels
+            else:
+                precisions[idx] = 0.0 # Predicted samples for class without labeled samples
+        else:
+            precisions[idx] = matrixSumTP[idx] /matrixSumPredicted[idx]
+        
+        if (recalls[idx] + precisions[idx]) == 0:
+            if  matrixSumTrue[idx] == 0: # KBE??? not done in standard computations
+                f1scores[idx] = 1.0 # No predictions or labels for class
+            else:
+                f1scores[idx] = 0.0
+        else:
+            f1scores[idx] = 2*recalls[idx]*precisions[idx]/(recalls[idx] + precisions[idx])
+            
+    macroRecall = np.mean(recalls)
+    macroPrecision = np.mean(precisions)
+    macroF1score = np.mean(f1scores)
+
+    microRecall = sum(matrixSumTP)/sum(matrixSumTrue)
+    microPrecision = sum(matrixSumTP)/sum(matrixSumPredicted)
+    microF1score =  2*microRecall*microPrecision/(microRecall + microPrecision)
+    
+    return macroRecall, macroPrecision, macroF1score, microF1score       
 
 def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thredsholds, normalize=False, font_size=14):
 
@@ -167,7 +217,7 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thre
     
     #ax.set_title(levelName)
     fig.tight_layout()
-    plt.savefig(graph_folder+levelName +'ConfTest.png')
+    plt.savefig(graph_folder+levelName +'ConfidenceUnsure.png')
     plt.show()   
     
 def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thredsholds):
@@ -251,13 +301,19 @@ def checkHierarcy(resultFile):
 if __name__=='__main__':
         
     thredsholdFile = saved_folder + "thresholds.csv"
-    #resultFile = saved_folder + "predictLabels3Lval.pkl"
-    resultFile = saved_folder + "predictLabels3Ltest.pkl"
+    resultFile = saved_folder + "predictLabels3Lval.pkl"
 
     thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
     level3False = plotConfusionMatrix(resultFile, thresholds)
     checkList = checkHierarcy(resultFile)
-    
     countWrongHierarchy = sum(map(lambda x : x == False, checkList))
-    print("Number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
+    print("Validation dataset - number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
+    
+    graph_folder += "test/"
+    resultFile = saved_folder + "predictLabels3Ltest.pkl"
+    level3False = plotConfusionMatrix(resultFile, thresholds)
+    checkList = checkHierarcy(resultFile)
+    countWrongHierarchy = sum(map(lambda x : x == False, checkList))
+    print("Test dataset - number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
+    
     
