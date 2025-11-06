@@ -86,27 +86,27 @@ Level 1               train validate 19
 Aranaea                1901    100
 Birds                   256     13
 Coleoptera            10761    566
-Dermaptera              417     22
-Diptera               13777    725
+Dermaptera              418     21
+Diptera               13776    726
 Hemiptera              1547     81
 Herpetofauna             90      5
 Hymenoptera_bees      25128   1323
 Hymenoptera_nobees     8226    433
 Isopoda                 836     44
 Larvae                  550     29
-Lepidoptera            5008    264
+Lepidoptera            5009    263
 Lepidoptera_fw         5030    264
 Milipedes               168      9
 Odonata                 481     26
-Orthoptera             3083    162
+Orthoptera             3476    183
 Slugs                  1133     59
 Snails                 1602     85
 Vegetation             5434    286
 =============================================================================================
 Level 2               train validate 39
-Acrididae              2364    124
+Acrididae              2730    143
 Apidae                17714    933
-Apoidea                4685    247
+Apoidea                4686    246
 Aranaea                1901    100
 Birds                   256     13
 Bombyliidae             455     24
@@ -115,7 +115,7 @@ Chrysididae             753     39
 Coccinellidae          6907    363
 Coleoptera             2563    135
 Crabronidae             846     45
-Dermaptera              417     22
+Dermaptera              418     21
 Diptera                 433     23
 Formidicidae            920     48
 Hemiptera              1547     81
@@ -127,34 +127,34 @@ Larvae                  550     29
 Lepidoptera             148      8
 Lepidoptera_fw          258     13
 Lycaenidae              549     28
-Megachilidae           2729    143
+Megachilidae           2728    144
 Milipedes               168      9
 Moths                   207     11
-Nymphalidae            3361    178
+Nymphalidae            3362    177
 Nymphalidae_fw         4772    251
 Odonata                 481     26
-Orthoptera              217     11
+Orthoptera              229     12
 Pieridae                250     13
 Pompilidae              604     32
 Sarcophagidae           770     41
 Slugs                  1133     59
 Snails                 1602     85
-Syrphidae             12119    637
-Tettigoniidae           502     27
+Syrphidae             12118    638
+Tettigoniidae           517     28
 Vegetation             5434    286
 Vespidae               4470    236
 =============================================================================================
 Level 3                         train validate 80
-Acrididae                        1463     77
+Acrididae                        1651     87
 Aglais io                         238     12
 Aglais urticae                   1825     96
 Aglais urticae_fw                 334     18
-Anthidium oblongatum              363     19
+Anthidium oblongatum              362     20
 Aphantopus hyperantus             134      8
 Apis mellifera                   9974    525
 Apoidea                           630     33
 Apoidea red_abdomen               266     14
-Apoidea reddish                   332     18
+Apoidea reddish                   333     17
 Apoidea small                    1878     98
 Apoidea striped                  1579     84
 Aranaea                          1901    100
@@ -166,7 +166,7 @@ Bombus pascuorum                  250     14
 Bombus sylvarum                   341     18
 Bombus terrestris                3820    201
 Bombyliidae                       455     24
-Chorthippus                       753     40
+Chorthippus                       933     49
 Chrysididae                       753     39
 Chrysotoxum                       301     16
 Coccinella septempunctata        6907    363
@@ -174,7 +174,7 @@ Coenonympha pamphilus             433     22
 Coleoptera                       2563    135
 Crabronidae                       846     45
 Decticus verrucivorus             182     10
-Dermaptera                        417     22
+Dermaptera                        418     21
 Diptera                           433     23
 Episyrphus balteatus             2595    137
 Eristalis                         694     36
@@ -195,7 +195,7 @@ Lycaenidae                        285     15
 Maniola jurtina                   612     33
 Maniola jurtina_fw               3214    169
 Megachilidae                     2366    124
-Melanargia galathea                90      5
+Melanargia galathea                91      4
 Meliscaeva cinctella              221     12
 Milipedes                         168      9
 Moths                             207     11
@@ -204,9 +204,9 @@ Nomada                            398     21
 Nymphalidae                        29      2
 Odonata                           481     26
 Odynerus spinipes                2404    127
-Omocestus viridulus               148      7
-Orthoptera                        217     11
-Pholidoptera griseoaptera         320     17
+Omocestus viridulus               146      7
+Orthoptera                        229     12
+Pholidoptera griseoaptera         335     18
 Pieridae                          250     13
 Platycheirus                      386     20
 Pompilidae                        604     32
@@ -224,4 +224,4 @@ Syrphus                           305     16
 Vegetation                       5434    286
 Vespidae                          576     31
 Vespula vulgaris                 1490     78
-Xanthogramma                      180      9
+Xanthogramma                      179     10
