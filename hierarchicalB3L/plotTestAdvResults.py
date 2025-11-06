@@ -23,21 +23,20 @@ label_file = saved_folder+"labelsAdv3L.pkl"
 with open(label_file, 'rb') as f:
     image_path_list, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, trainL1, trainL2, trainL3, valL1, valL2, valL3 = pickle.load(f)
     print("Labels and hierarchy dependency loaded from ", label_file)
-    print("L1", labelsL1)
-    print("L2", labelsL2)
-    print("L3", labelsL3)
+    #print("L1", labelsL1)
+    #print("L2", labelsL2)
+    #print("L3", labelsL3)
     
-def renameUnknownLabels(labelsL, level_label):
+def renameUnsureLabels(labelsL, level_label):
     
-    unknownIdx = len(labelsL)
+    unsureIdx = len(labelsL)
     for idx in range(len(level_label)):
         if level_label[idx] == -1:
-            level_label[idx] = unknownIdx
+            level_label[idx] = unsureIdx
             
     labelsL = labelsL + ['Unsure']
     
     return labelsL, level_label
-
 
 # Class to handle loading thresholds and marking unsure predictions
 class Thresholds:
@@ -81,6 +80,7 @@ class Thresholds:
         if level == 3:
             levelThredsholds = self.level3Thresholds
         
+        unsurePredictions = 0
         unknownIdx = len(labels)-1
         level_p = np.argmax(level_pred, axis=1)
         max_p = np.max(level_pred, axis=1)
@@ -88,17 +88,25 @@ class Thresholds:
             #if max_p[idx] < 3.8: # KBE?? level to be found based on training dataset 3.8 - 9.1
             if max_p[idx] < levelThredsholds[level_p[idx]]:
                 level_p[idx] = unknownIdx
+                unsurePredictions += 1
         
-        return level_p
+        return level_p, unsurePredictions
 
 # Computes macro and micro recall, precision and f1scores for each class in the confusion matrix
-def computeClassScores(levelName, labels, confusionMatrix, clearUnsure=True):
+def computeClassScores(level, level_predict, level_label, labels, thresholds, clearUnsure=True):
     
-    confMatrix = confusionMatrix.copy()
+    total_predictions = len(level_predict)
+    level_predict, unsurePredictions = thresholds.unsurePredictions(level, labels, level_predict)
     
-    if clearUnsure:
-        confMatrix[:][-1] = 0
+    confMatrix = np.zeros((len(labels), len(labels))).astype('int')
     
+    unsureIdx = len(labels)-1 # Unsure last entry in matrix
+    for i in range(len(level_predict)):
+        addValue = 1
+        if clearUnsure and level_predict[i] == unsureIdx:
+            addValue = 0   
+        confMatrix[level_label[i], level_predict[i]] += addValue
+            
     matrixSumTrue = confMatrix.sum(axis=1)[:] # Number of labeled samples for each class
     matrixSumPredicted = confMatrix.T.sum(axis=1)[:] # Number of predicted samples for each class
     
@@ -139,7 +147,14 @@ def computeClassScores(levelName, labels, confusionMatrix, clearUnsure=True):
     microPrecision = sum(matrixSumTP)/sum(matrixSumPredicted)
     microF1score =  2*microRecall*microPrecision/(microRecall + microPrecision)
     
-    return macroRecall, macroPrecision, macroF1score, microF1score       
+    percentageUnsure = (unsurePredictions/total_predictions)*100
+    print(f"Number of unsure predictions {unsurePredictions} {percentageUnsure:.2f}%")
+    print(f"Performance level L{level}:")
+    print(f"            Recall {macroRecall:.3f} Precision {macroPrecision:.3f}")
+    print(f"            F1-score (Macro) {macroF1score:.3f} F1-score (Micro) {microF1score:.3f}")
+    
+    #return macroRecall, macroPrecision, macroF1score, microF1score, unsurePredictions, percentageUnsure      
+    return macroF1score, microF1score, unsurePredictions, percentageUnsure      
 
 def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thredsholds, normalize=False, font_size=14):
 
@@ -148,8 +163,8 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thre
     for i in range(len(level_predict)):
         matrixAll[level_label[i], level_predict[i]] += 1
         
-    matrixSumTrue = matrixAll.sum(axis=1)[:, np.newaxis]
-    matrixSumPredict = matrixAll.sum(axis=0)[:, np.newaxis] 
+    #matrixSumTrue = matrixAll.sum(axis=1)[:, np.newaxis]
+    #matrixSumPredict = matrixAll.sum(axis=0)[:, np.newaxis] 
     
     labelsTrue = []
     labelsPredict = []
@@ -220,10 +235,11 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, thre
     plt.savefig(graph_folder+levelName +'ConfidenceUnsure.png')
     plt.show()   
     
-def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thredsholds):
+def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thresholds):
 
     #level_p = np.argmax(level_pred, axis=1)
-    level_p = thredsholds.unsurePredictions(level, labels, level_pred)
+    total_predictions = len(level_pred)
+    level_p, unsurePredictions = thresholds.unsurePredictions(level, labels, level_pred)
     
     font_size = 28
     if level == 2:
@@ -231,7 +247,9 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thred
     if level == 3:
         font_size = 14
     plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, thresholds, normalize=True, font_size=font_size)
-       
+    
+    percentageUnsure = (unsurePredictions/total_predictions)*100
+    print(f"Number of unsure predictions {unsurePredictions} {percentageUnsure:.2f}%")
     precision = metrics.precision_score(level_label, level_p, average='macro')
     print("Level %d (macro) precision %.4f" % (level, precision))
     recall = metrics.recall_score(level_label, level_p, average='macro')
@@ -245,17 +263,16 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name, thred
     print("Level %d (micro) recall    %.4f" % (level, recall))
     f1score = metrics.f1_score(level_label, level_p, average='micro')
     print("Level %d (micro) f1-score  %.4f" % (level, f1score))
-    
-    
+        
 def plotConfusionMatrix(resultFile, thresholds):
 
     with open(resultFile, 'rb') as f:
         level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
         print("Predictions and labels and loss loaded from ", resultFile)
     
-    labelsrL1, level1_label = renameUnknownLabels(labelsL1, level1_label)
-    labelsrL2, level2_label = renameUnknownLabels(labelsL2, level2_label)
-    labelsrL3, level3_label = renameUnknownLabels(labelsL3, level3_label)
+    labelsrL1, level1_label = renameUnsureLabels(labelsL1, level1_label)
+    labelsrL2, level2_label = renameUnsureLabels(labelsL2, level2_label)
+    labelsrL3, level3_label = renameUnsureLabels(labelsL3, level3_label)
     plotLevelConfusion(1, level1_pred, level1_label, labelsrL1, "Order", thresholds)
     plotLevelConfusion(2, level2_pred, level2_label, labelsrL2, "Family", thresholds)
     plotLevelConfusion(3, level3_pred, level3_label, labelsrL3, "Species", thresholds)
@@ -270,8 +287,56 @@ def plotConfusionMatrix(resultFile, thresholds):
             level3False += 1
     
     return level3False
-            
+
+def printPerformanceMetrics(resultFile, thredsholdFile, clearUnsure=True):
+
+    with open(resultFile, 'rb') as f:
+        level1_pred, level2_pred, level3_pred, level1_label, level2_label, level3_label = pickle.load(f)
+        print("Predictions and labels and loss loaded from ", resultFile)
     
+    labelsrL1, level1_label = renameUnsureLabels(labelsL1, level1_label)
+    labelsrL2, level2_label = renameUnsureLabels(labelsL2, level2_label)
+    labelsrL3, level3_label = renameUnsureLabels(labelsL3, level3_label)
+
+    pctL1 = []
+    pctL2 = []
+    pctL3 = []
+    f1L1 =  []
+    f1L2 =  []
+    f1L3 =  []
+    
+    thresholdIdx = 8 # Default used 6.0
+    thresholdSTDs = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1]
+    for thresh in thresholdSTDs:
+        print(f"Using threshold of {thresh}*STD")
+        thresholds = Thresholds(thredsholdFile, thresholdSTD=thresh)
+        
+        macroF1score, microF1score, unsurePredictions, percentageUnsure = computeClassScores(1, level1_pred, level1_label, labelsrL1, thresholds, clearUnsure=clearUnsure)
+        pctL1.append(percentageUnsure)
+        f1L1.append(macroF1score)
+        
+        macroF1score, microF1score, unsurePredictions, percentageUnsure = computeClassScores(2, level2_pred, level2_label, labelsrL2, thresholds, clearUnsure=clearUnsure)
+        pctL2.append(percentageUnsure)
+        f1L2.append(macroF1score)
+        
+        macroF1score, microF1score, unsurePredictions, percentageUnsure = computeClassScores(3, level3_pred, level3_label, labelsrL3, thresholds, clearUnsure=clearUnsure)
+        pctL3.append(percentageUnsure)
+        f1L3.append(macroF1score)
+    
+    plt.plot(pctL1, f1L1, "b--", label="L1")
+    plt.scatter(pctL1[thresholdIdx], f1L1[thresholdIdx], color="k", marker="s")
+    plt.plot(pctL2, f1L2, "m--", label="L2")
+    plt.scatter(pctL2[thresholdIdx], f1L2[thresholdIdx], color="k", marker="s")
+    plt.plot(pctL3, f1L3, "g--", label="L3")
+    plt.scatter(pctL3[thresholdIdx], f1L3[thresholdIdx], color="k", marker="s")
+    title = "Unsure threshold (10-1)"
+    plt.title(title)
+    plt.xlabel('Unsure (%)')
+    plt.ylabel('F1-score')
+    plt.legend()
+    plt.savefig(graph_folder+'UsureThresholds.png')
+    plt.show()
+      
 def checkHierarcy(resultFile):    
     
     with open(resultFile, 'rb') as f:
@@ -302,7 +367,9 @@ if __name__=='__main__':
         
     thredsholdFile = saved_folder + "thresholds.csv"
     resultFile = saved_folder + "predictLabels3Lval.pkl"
-
+    
+    printPerformanceMetrics(resultFile, thredsholdFile)
+    
     thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
     level3False = plotConfusionMatrix(resultFile, thresholds)
     checkList = checkHierarcy(resultFile)
@@ -311,9 +378,12 @@ if __name__=='__main__':
     
     graph_folder += "test/"
     resultFile = saved_folder + "predictLabels3Ltest.pkl"
+
+    printPerformanceMetrics(resultFile, thredsholdFile)
+
+    thresholds = Thresholds(thredsholdFile, thresholdSTD=thresholdSTD)
     level3False = plotConfusionMatrix(resultFile, thresholds)
     checkList = checkHierarcy(resultFile)
     countWrongHierarchy = sum(map(lambda x : x == False, checkList))
     print("Test dataset - number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
-    
     
