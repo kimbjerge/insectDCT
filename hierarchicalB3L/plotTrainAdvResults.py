@@ -20,8 +20,8 @@ from hierarchical_loss import HierarchicalLossNetwork
 #saved_folder = "./saved_128_ConvNextV4/"
 #saved_folder = "./saved_128_finalV4/"
 #saved_folder = "./models_saved/saved_128_ResNetV5/"
-saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
-#saved_folder = "./models_saved/saved_128_ConvNextV5/"
+#saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
+saved_folder = "./models_saved/saved_128_ConvNextV6/"
 graph_folder = "./graph_folder/"
 
 # Check taxon prediction correct in hiearachy when plotting confusion matrix L2, L3 and saving scores
@@ -241,7 +241,9 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
         ylabels.append(labels[idx] + " (" + str(matrixSum[idx][0]) + ")")
         
     if normalize:
-        matrix = matrixAvg
+        #matrix = matrixAvg
+        matrix = np.round(100 * matrixAvg)
+        matrix = matrix.astype('int')
         print("Normalized confusion matrix")
     else:
         print('Confusion matrix, without normalization')
@@ -268,7 +270,8 @@ def plotConfusionMatrixLevel(levelName, level_predict, level_label, labels, norm
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     
     # Loop over data dimensions and create text annotations.
-    fmt = '.2f' if normalize else 'd'
+    #fmt = '.2f' if normalize else 'd'
+    fmt = 'd'
     for i in range(len(labels)):
         for j in range(len(labels)):
             color = 'k'
@@ -291,7 +294,7 @@ def plotLevelConfusion(level, level_pred, level_label, labels, level_name):
         font_size = 20        
     if level == 3:
         font_size = 14
-    plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=False, font_size=font_size)
+    plotConfusionMatrixLevel('L' + str(level) + ' ' + level_name, level_p, level_label, labels, normalize=True, font_size=font_size)
   
     if level == 1:
         f = open(graph_folder+"Results.txt", "w")
