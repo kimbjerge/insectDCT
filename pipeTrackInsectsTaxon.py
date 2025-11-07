@@ -11,6 +11,7 @@ import argparse
 import datetime
 import time
 from skimage import io
+from skimage.transform import resize
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
 from idac.tracker.tracker import Tracker
@@ -278,11 +279,14 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 else:
                     file_name = imagePath+filepath
                     im = io.imread(file_name)
+                    
 
                 if success:
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
-                    #print("Image shape", height, width, channel)
+                    print("Image shape", height, width, channel)
+                    if height != 1920 and width != 1080:
+                        image = resize(image, (1920, 1080), anti_aliasing=True)
                     #bytesPerLine = 3 * width
                     #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
             
