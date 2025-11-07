@@ -11,7 +11,6 @@ import argparse
 import datetime
 import time
 from skimage import io
-from skimage.transform import resize
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
 from idac.tracker.tracker import Tracker
@@ -286,7 +285,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     height, width, channel = image.shape
                     print("Image shape", width, height, channel)
                     if width != 1920 and height != 1080:
-                        image = resize(image, (1920, 1080, 3), anti_aliasing=True)
+                        image = cv2.resize(image, (1920, 1080), interpolation=cv2.INTER_AREA)
                     #bytesPerLine = 3 * width
                     #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
             
