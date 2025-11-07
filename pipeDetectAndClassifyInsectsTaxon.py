@@ -46,17 +46,6 @@ else:
     
 labelNames = ['Insect'] # YOLO Only one label
 
-# labelSpeciesNames = ["A1-Coccinellidae", "B2-Coleoptera", "C3-Background", "D4-Bombus", "E5-Syrphidae", 
-#                      "F6-Lepidoptera", "G7-Araneae", "H8-Formidicidae", "I9-Diptera", "J10-Hemiptera", 
-#                      "K11-Isopoda", "L12-Unspecified", "N13-Hymenoptera", "O14-Orthoptera", "P15-Rhagnoycha_fulva", 
-#                      "Q16-Satyrinae", "R17-Aglais_urticea", "S18-Odonata", "T19-Apis_mellifera"]
-
-# Specises for flat CnnClassifier with 19 classes
-labelSpeciesNames = ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syrphidae", 
-                     "Lepidoptera", "Araneae", "Formidicidae", "Diptera", "Hemiptera", 
-                     "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", 
-                     "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"]
-
 def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0', modelName="ResNet50"):
     
     with open(label_file, 'rb') as f:
@@ -178,7 +167,6 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
     # Run YOLO inference on the frame
     results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device) # Automatic scales to HD image size
-    #results = modelDetector.predict(frame, imgsz=imgWidth, batch=1, conf=args.confidence, device=args.device)
     
     if useMotion and args.videoMIE == False:
         frame = imgPrev
@@ -308,9 +296,6 @@ if __name__=='__main__':
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects5Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
-    #parser.add_argument('--classifier', default='./models_save/EfficientNetB4-19cls-50-Ext-Finetuned.keras') # 224x224 F1 0.85
-    parser.add_argument('--classifier', default='')
-    
     # First model trained on dataset from NI2 and NI1 (Nature Impact - Wingscapes cameras and Logitech webcameras)
     #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
@@ -342,11 +327,7 @@ if __name__=='__main__':
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
-    #parser.add_argument('--video', default='D:/UFZ_BOS_STR/C2_2022_07_21_09_46_22.h264')
-    #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi12024_05_24_05_00_01.mp4')
-    #parser.add_argument('--video', default='/home/don/yolov5r/yolov5/PollNI2/pi102024_06_11_05_00_02.mp4')
     #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
-    #parser.add_argument('--video', default='./datasets/beemoni12025_04_03_12_59_47.mp4') # 45 fps -> 5 fps (stride 5) Jordanargs.device
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
@@ -390,12 +371,7 @@ if __name__=='__main__':
         modelDetector = YOLO(args.yoloWeights)  # load trained model
     
     # Load the insect classifier model
-    modelClassifier = 0
-    if args.classifier != '': # Classify detected insects into categories of taxa
-        print("Loading insect classifier model", args.classifier)
-        print(labelSpeciesNames)
-        #modelClassifier = CnnClassifier(args.classifier, labelSpeciesNames, (224,224)) # Uncomment if flat classifier should be used
-        
+    modelClassifier = 0        
     if args.hierachical != '':
         if args.modelType == "ResNet50":
             hierarchicalWeights = args.hierachical
@@ -432,7 +408,6 @@ if __name__=='__main__':
         args.camera = videoSplit[0]
         dateTimeStr = videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + videoSplit[5] + videoSplit[6] # Format: YYYYMMDDHHMMSS
         start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
-        #csvFilename = results_dir + args.video.split('/')[-1].replace('mp4','csv')
         csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
         csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
         if args.moviePredict != "": # Save results in a movie file 
@@ -531,7 +506,6 @@ if __name__=='__main__':
                 #if (frame_count % frame_stride == 0):  
                 print(image_file, dateTimeStr)
                 frame = cv2.imread(args.images + image_file)
-                #frame = cv2.resize(full_frame, (imgWidth, imgHeight), cv2.INTER_AREA) # Downsize image to HD size
                 prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
                 frame_count += 1
 
