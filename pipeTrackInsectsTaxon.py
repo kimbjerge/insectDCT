@@ -284,9 +284,9 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 if success:
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
-                    print("Image shape", height, width, channel)
-                    if height != 1920 and width != 1080:
-                        image = resize(image, (1920, 1080), anti_aliasing=True)
+                    print("Image shape", width, height, channel)
+                    if width != 1920 and height != 1080:
+                        image = resize(image, (1920, 1080, 3), anti_aliasing=True)
                     #bytesPerLine = 3 * width
                     #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
             
