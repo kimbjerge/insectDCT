@@ -283,7 +283,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 if success:
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
-                    print("Image shape", width, height, channel)
+                    #print("Image shape", width, height, channel)
                     if width != 1920 and height != 1080:
                         image = cv2.resize(image, (1920, 1080), interpolation=cv2.INTER_AREA)
                     #bytesPerLine = 3 * width
@@ -323,7 +323,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.0.0\n"
+    version = "pipeTrackInsectsTaxon.py version: 1.0.1\n"
 
     print('Tracking insects based on detection files *-DL.csv')
     
