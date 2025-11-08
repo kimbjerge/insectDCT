@@ -91,7 +91,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
         On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ResNet  <br />
-     	Performs detection and classification using ResNet50v2 model (faster performing model)
+     	Performs detection and classification using ResNet50v2 model (faster model, lesser accurate)
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
      	Performs detection and classification using models trained on classification dataset V5 instead of V6
