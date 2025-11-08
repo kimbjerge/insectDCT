@@ -7,7 +7,11 @@ Created on Sun Jun  8 13:28:48 2025
 
 import matplotlib.pyplot as plt
 import numpy as np
+from hierarchical_loader import HierarchicalDatasetLoader
 
+
+"""
+# Dataset V2
 level1 = {
 'Aranaea':[                1658,    184],
 'Birds':[                    74,      9],
@@ -165,6 +169,33 @@ level3 = {
 'Vespula vulgaris':[                 1052,    117]
 }
 
+"""
+
+# Classification dataset V6
+image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                   'E:/insectsDCT_datasets/classifier/datasetV6/NI',
+                   'E:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                   'E:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                   'E:/insectsDCT_datasets/classifier/datasetV6/GBIF'
+                  ]
+
+
+datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)
+path_names = datasetLoader.get_path_names()
+hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
+
+level1 = {}
+for l, t, v in zip(labelsL1, datasetLoader.get_cls_num_list(0), datasetLoader.get_cls_num_list(0, 1)):
+    level1[l] = [t, v]
+    
+level2 = {}
+for l, t, v in zip(labelsL2, datasetLoader.get_cls_num_list(1), datasetLoader.get_cls_num_list(1, 1)):
+    level2[l] = [t, v]
+    
+level3 = {}
+for l, t, v in zip(labelsL3, datasetLoader.get_cls_num_list(2), datasetLoader.get_cls_num_list(2, 1)):
+    level3[l] = [t, v]
+        
 print(len(level1))
 print(len(level2))
 print(len(level3))

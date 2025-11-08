@@ -37,7 +37,7 @@ def plot_loss_acc(path, num_epoch, train_accuracies_level1, train_accuracies_lev
     plt.show()
     
     sns.lineplot(data=data_levels, x='Epochs', y='Accuracy', hue='Level', style='Mode')
-    plt.xticks(np.arange(1, 75, 2))
+    plt.xticks(np.arange(0, 75, 5))
     plt.title('Train and validation accuracy')
     plt.savefig(path+f'accuracy_train_validation_epoch.png')
 
