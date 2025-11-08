@@ -60,6 +60,9 @@ https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=shari
 V5. Fifth model (HierarchicalClassifierV5_05092025) was trained on the same images as V3, supplemented with Pi Camera images of challenging species. <br />
 https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
 
+V6. Sixth model (HierarchicalClassifierV6) was trained on the same images as V5, with less vegetation and reorganized, supplemented with additional images of challenging species. <br />
+https://drive.google.com/file/d/1f0vz0V7VMOPkAVbGKhmFrmGUMGtH6Dhq/view?usp=drive_link
+
 Download the weights, labels, and thresholds from the above links. 
 Save and unzip the file to the sub directory: insectsDCT/models_save
 
@@ -78,20 +81,20 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py  <br />
-     	Performs detection and classification with ResNet50 on CUDA:0
+     	Performs detection and classification with ConvNextBase on CUDA:0
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu  <br />
-	Performs detection and classification with ResNet50 on CPU
+	Performs detection and classification with ConvNextBase on CPU
    
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu --optimized ncnn <br />
 	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
         On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ConvNextBase  <br />
-     	Performs detection and classification using ConvNextBase model (best performing model)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ResNet  <br />
+     	Performs detection and classification using ResNet50v2 model (faster performing model)
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V4  <br />
-     	Performs detection and classification using models trained on classification dataset V4 instead of V5
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
+     	Performs detection and classification using models trained on classification dataset V5 instead of V6
      
    - $ python pipeTrackInsectsTaxon.py  <br />
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
@@ -126,7 +129,7 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
  
 - taxaId and taxaLevel will be updated with the following classification codes
 
-Hierarchical taxa of classes in the model HierarchicalClassifierV5_05092025:
+Hierarchical taxa of classes in the model HierarchicalClassifierV5_05092025 (List to be updated for V6)
 
 taxaLevel 1: (21 groups of taxa primary Order)
 
@@ -300,35 +303,36 @@ Example of *-CL.csv content:
 
 Content of *-HI.csv files which contain hierarchical taxonomic information for each detection (subdir3-subdir2-subdir1-CL.csv):
 
-	Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId
+	Label1,LabelId1,Logit1,Conf1,Above1,Label2,Logit2,LabelId2,Conf2,Above2,Label3,Logit2,LabelId3,Conf3,Above3,Checked,frameId
 
-LabelX, LabelIdX is ConfX is the name, id, confidence score on the taxonomic levels 1, 2 and 3.  <br />
+LabelX, LabelIdX, LogitX is ConfX is the name, id, logits, confidence score on the taxonomic levels 1, 2 and 3.  <br />
 AboveX is True if the confidence scores is within the distribution of the training data. <br />
 Checked is True if the classification is correct according to the dependences in the taxonomic hierarchy.
 
 Example of content with same frameId as in example above (*-CL.csv content):
 
-	Hymenoptera,7,0.0016508539215075745,False,Halictidae,14,0.05190288999028045,True,Sphaerophoria scripta-complex,72,0.003527139374961427,False,False,441
-	Diptera,3,0.06632232090118803,True,Syrphidae,36,0.05682376443188935,True,Sphaerophoria scripta-complex,72,0.00486999349185118,False,True,442
-	Diptera,3,0.47108301131483055,True,Syrphidae,36,0.38675071058276406,True,Sphaerophoria scripta-complex,72,0.4498128146023822,True,True,451
+	Hymenoptera_bees,7,10.368386268615723,0.17764412872969426,True,Apoidea,2,12.671218872070312,0.26314053164088247,True,Apoidea small,10,13.290820121765137,0.056937230205690026,True,True,23
+	Hymenoptera_bees,7,10.621867179870605,0.23793470980477627,True,Megachilidae,23,8.891632080078125,7.889724331655447e-10,False,Apoidea striped,11,8.226250648498535,9.556289827149367e-14,False,False,24
+	Hymenoptera_bees,7,11.440793991088867,0.4880629168943492,True,Apidae,1,9.150934219360352,0.0004416117697434911,True,Apis mellifera,6,9.045608520507812,3.784884581385603e-10,False,True,25
 
  ### CSV and JSON files in tracks directory ###
 
 Content of *.csv files which contain lines for each track (piX_YYYY_MM_DD-TR.csv):
 
-	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance
+	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance,alternative
 
 Where class is the name of the taxonId at level 1-3 and id is the track number
 
 Example:
 
-	0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171  
-	1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364
+	0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171,Apoidae 
+	1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364,Unsure
 
 counts is the number of detections in a track (at least two detections to make a track)  <br />
 confidence is the number of times the class was predicted relative to all detections in the track   <br />
 size is the average pixel size of the tracked insect   <br />
 distance is the distance in pixels the insect was tracked   <br />
+alternative is the second best estimate on the taxon class with at least two of the same taxa in the track <br />
 
 Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DD-TRS.csv):
 
