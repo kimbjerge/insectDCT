@@ -323,7 +323,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.0.1\n"
+    version = "pipeTrackInsectsTaxon.py version: 1.1.0\n" # Updated for models trained on datasetV6
 
     print('Tracking insects based on detection files *-DL.csv')
     
@@ -333,7 +333,7 @@ if __name__ == '__main__':
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
     #parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD', not used anymore
-    parser.add_argument('--dataset', default='V5') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
+    parser.add_argument('--dataset', default='V6') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images used by project Orchard
     parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
@@ -350,7 +350,9 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV3"])
     if args.dataset == 'V5':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
-
+    if args.dataset == 'V6':
+        conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV6"])
+        
     print(version, args)
     with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "a") as f:
         f.write(version)

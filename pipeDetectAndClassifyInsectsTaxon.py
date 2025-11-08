@@ -287,7 +287,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.0.4\n"
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.1.0\n" # New classification models
     
     parser = argparse.ArgumentParser()
     
@@ -296,34 +296,34 @@ if __name__=='__main__':
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects5Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
+    parser.add_argument('--modelType', default="ConvNextBase") # Support for ResNet50 and ConvNextBase (CNB)
+    parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF), "V4" without GBIF data, 
+                                                   # "V5" with more Orchard data and GBIF and lots of vegetation, "V6" with more data and reorganized hierarchy
+
     # First model trained on dataset from NI2 and NI1 (Nature Impact - Wingscapes cameras and Logitech webcameras)
     #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH2.csv') # Use thresholds below = mean-2*std
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
     
-    parser.add_argument('--modelType', default="ResNet50") # Support for ResNet50 and ConvNextBase (CNB)
-    parser.add_argument('--dataset', default="V5") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data or "V5" with more Orchard data and GBIF
-
-    # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)
-    
+    # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)    
     # Weights, labels and thresholds for ResNet50 with dataset V2 (+UFZ Pi3Cam)
     #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
     
-    # Weights, labels and thresholds for ResNet50 with dataset V3 (+GBIF +NI2_MAMBO)
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V3_05092025.csv') # Use thresholds below = mean-3*std
+    # Weights, labels and thresholds for ResNet50 with dataset V6 
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V6.pth') # 128x128 crops
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V6.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V6.csv') # Use thresholds below = mean-3.5*std
 
-    # Weights, labels and thresholds for ConvNextBase (CNB) with dataset V3 (+GBIF +NI2_MAMBO)
-    parser.add_argument('--CNBhierachical', default='./models_save/HierarchicalClassifier_CNB_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--CNBlabels', default='./models_save/HierarchicalLabels3L_CNB_V3_05092025.pkl') # Hierarchical taxon of labels with 3 layers
-    parser.add_argument('--CNBthresholds', default='./models_save/HierarchicalThresholds3S_CNB_V3_05092025.csv') # Use thresholds below = mean-3*std
+    # Weights, labels and thresholds for ConvNextBase (CNB) with dataset V6 
+    parser.add_argument('--CNBhierachical', default='./models_save/HierarchicalClassifier_CNB_V6.pth') # 128x128 crops
+    parser.add_argument('--CNBlabels', default='./models_save/HierarchicalLabels3L_CNB_V6.pkl') # Hierarchical taxon of labels with 3 layers
+    parser.add_argument('--CNBthresholds', default='./models_save/HierarchicalThresholds3S_CNB_V6.csv') # Use thresholds below = mean-5.5*std
     
     parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
-    parser.add_argument('--project', default='UFZ') # Default UFZ else use MAMBO used for naming CSV files
+    parser.add_argument('--project', default='') # Default empty else use MAMBO used for naming CSV files
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
@@ -381,10 +381,11 @@ if __name__=='__main__':
             hierarchicalWeights = args.CNBhierachical
             hierarchicalLabels = args.CNBlabels
             hierarchicalThresholds = args.CNBthresholds
-        if args.dataset != 'V3': # Select model weights trained on dataset V3 or V4
-            hierarchicalWeights = hierarchicalWeights.replace('V3', args.dataset)
-            hierarchicalLabels = hierarchicalLabels.replace('V3', args.dataset)
-            hierarchicalThresholds = hierarchicalThresholds.replace('V3', args.dataset)
+        if args.dataset != 'V6': # Select model weights trained on dataset V3, V4 or V5
+            oldVersionsDate = "_05092025" # V3-V5 used date in file names
+            hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
+            hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
+            hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset + oldVersionsDate)
             
         print("Loading hierarchical insect classifier model", hierarchicalWeights, args.modelType, args.dataset)
             
@@ -431,7 +432,7 @@ if __name__=='__main__':
             args.camera = imagesSubDir4 + '/' + imagesSubDir3 
             if args.moviePredict != "": # Save results in a movie file 
                 args.moviePredict = resultName + '.avi'  # use same name as csv file   
-        else:
+        else: # Generic project
             csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
             csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
             args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 

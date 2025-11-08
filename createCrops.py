@@ -100,6 +100,8 @@ def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCa
         print("Create directory:", dstPath + cropDirName)
         os.mkdir(dstPath + cropDirName)
     imgNameCrop = csvName +'-' + str(frameId) + '-' + x1_str + '-' + y1_str + '.jpg'
+    
+    #if cropDirName != "Vegetation" and cropDirName != "Unsure":
     print(dstPath + cropDirName + '/' + imgNameCrop)
     cv2.imwrite(dstPath + cropDirName + '/' + imgNameCrop, imgCrop) 
     
@@ -171,6 +173,7 @@ if __name__=='__main__':
     
     parser.add_argument('--CSVfiles', default='./detections/') # Directory that contains CSV files
     parser.add_argument('--imagesPath', default='./images/') # Directory that contains images
+    
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/au/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsV1/') # Directory that contains CSV files
@@ -183,19 +186,24 @@ if __name__=='__main__':
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/UFZ/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='/RTNI/detections/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/NI/RT/') # Directory that contains images
+
+    #parser.add_argument('--CSVfiles', default='/PollNI/S2/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/PollinatorWatch/FIN/S2/') # Directory that contains images
     
     #parser.add_argument('--CSVfiles', default='D:/UFZ_BOS_STR/detections/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='D:/UFZ_BOS_STR/') # Directory that contains images
     #parser.add_argument('--videoPath', default="D:/UFZ_BOS_STR/") # Directory that contains video, if empty then imagesPath is used
+    
     parser.add_argument('--videoPath', default="") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--cropsPath', default='./crops/') # Directory to save images crops
-    #parser.add_argument('--cropsPath', default='D:/UFZ_BOS_STR/crops/') # Directory to save images crops
+    #parser.add_argument('--cropsPath', default='J:/PollNI/crops/') # Directory to save images crops
     
-    parser.add_argument('--dataset', default="V5") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data or "V5" with GBIF and additional data
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V3_05092025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V3_05092025.csv') # Use thresholds below = mean-3*std
+    parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data 
+                                                   # or "V5" with GBIF and additional data, "V6" with more data and reorganized hierarchy
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V6.pth') # 128x128
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V6.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V6.csv') # Use thresholds below = mean-3.5*std
 
     #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
@@ -206,10 +214,11 @@ if __name__=='__main__':
     hierarchicalWeights = args.hierachical
     hierarchicalLabels = args.labels
     hierarchicalThresholds = args.thresholds
-    if args.dataset != 'V3': # Select model weights trained on dataset V3 or V4f
-        hierarchicalWeights = hierarchicalWeights.replace('V3', args.dataset)
-        hierarchicalLabels = hierarchicalLabels.replace('V3', args.dataset)
-        hierarchicalThresholds = hierarchicalThresholds.replace('V3', args.dataset)
+    if args.dataset != 'V6': # Select model weights trained on dataset V3, V4, V5 of V6
+        oldVersionsDate = "_05092025" # V3-V5 used date in file names
+        hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
+        hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
+        hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset + oldVersionsDate)
             
     print("Loading hierarchical insect classifier model", hierarchicalWeights)
     hierarchicalClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128)
