@@ -147,9 +147,9 @@ if __name__=='__main__':
     print('-------------------------------------------------------------------------------------------')
     
     if (args.validate == "validate"):
-        predictedLablesFile = './saved/predictLabels3Lval.pkl'
+        predictedLablesFile = args.model_save_path+'predictLabels3Lval.pkl'
     else:
-        predictedLablesFile = './saved/predictLabels3Ltrain.pkl'
+        predictedLablesFile = args.model_save_path+'predictLabels3Ltrain.pkl'
         
     with open(predictedLablesFile, 'wb') as f:
         objs = [level1_pred, 
