@@ -129,7 +129,11 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
  
 - taxaId and taxaLevel will be updated with the following classification codes
 
-Hierarchical taxa of classes in the model HierarchicalClassifierV5_05092025 (List to be updated for V6)
+Hierarchical taxa of classes in the model HierarchicalClassifierV6:
+
+https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV6.txt
+
+Hierarchical taxa of classes in the model HierarchicalClassifierV5_05092025: 
 
 taxaLevel 1: (21 groups of taxa primary Order)
 
