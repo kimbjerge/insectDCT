@@ -103,7 +103,7 @@ def trainModel(alpha, save_path):
     else: 
         if args.model == "EfficientNet":
             model = EfficientNet(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
-            print("Training EfficientNet_v2_m model")
+            print("Training EfficientNet_v2 model")
         else:        
             model = ResNet50(num_classes=[len(labelsL1), len(labelsL2), len(labelsL3)], simple=True) 
             print("Training ResNet50 model")
