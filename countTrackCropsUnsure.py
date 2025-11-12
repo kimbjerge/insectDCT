@@ -101,12 +101,16 @@ if __name__ == '__main__':
     cropPaths = ["/UFZ/trackCrops_AllV5/",
                  "/UFZ/trackCrops_UnsureV5/"
                  ]
-    
+
+    cropPaths = ["/Orchard/trackCrops_AllV6/",
+                 "/Orchard/trackCrops_UnsureV6/"
+                 ]
+        
     classes = {}
     for cropPath in cropPaths:    
         for dirName in sorted(os.listdir(cropPath)):
             if dirName != '.gitignore':
-                if dirName == "Unsure" and ("AllV5" in cropPath):
+                if dirName == "Unsure" and ("AllV6" in cropPath):
                     continue
 
                 if not dirName in classes.keys():   
@@ -116,7 +120,7 @@ if __name__ == '__main__':
                 files = os.listdir(pathTrue)
                 files = [f for f in files if os.path.isfile(pathTrue + '/' + f)]
                 
-                if "AllV5" in cropPath:
+                if "AllV6" in cropPath:
                     classes[dirName][trueIdx] += len(files)
                 else:
                     classes[dirName][falseAIdx] = len(files)

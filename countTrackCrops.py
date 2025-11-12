@@ -14,7 +14,7 @@ trueIdx = 0 # True positive crops (Correct predictions)
 falseAIdx = 1 # False positive arthropods (Wrong prediction)
 falseBIdx = 2 # False positive background (Plant parts - wrong prediction)
 
-def printStat(classes, path, below=True):
+def printStat(classes, path, below=True, useUnsure=False):
     
     
     fileName = 'resultsTrackCrops.csv'
@@ -31,6 +31,7 @@ def printStat(classes, path, below=True):
     truePs = []
     falseAs = []
     falseBs = []
+    totalUnsure = 0
     classes = dict(sorted(classes.items()))
     for keyName in classes.keys():
         #if keyName == "Unsure":
@@ -54,7 +55,14 @@ def printStat(classes, path, below=True):
         truePs.append(trueP)
         falseAs.append(falseA)
         falseBs.append(falseB)
+        if keyName == 'Unsure':
+            totalUnsure = total
     
+    if useUnsure:
+        print("Accuracy (with unsure", sum(truePs)/(sum(truePs)+sum(falseAs)) )
+    else:
+        print("Accuracy (without unsure)", (sum(truePs)-totalUnsure)/(sum(truePs)-totalUnsure+sum(falseAs)) )
+        
     csvFile.close()
     
     plt.figure(figsize=(12,8))
@@ -82,8 +90,10 @@ def printStat(classes, path, below=True):
     #if not below:
     plt.xscale('log') # Only log scale above
     #plt.legend((p1[0], p2[0], p3[0]), ('True Positive', 'FP-Arthropods', 'FP-Background'), loc="lower right")
+    plt.legend((p1[0], p2[0]), ('True Positive', 'False Positive'), loc="upper right")
     plt.tight_layout()
-    plt.savefig('/UFZ/plots/'+cropsName+'_'+fName+'.png')
+    plt.savefig('/RTNI/plots_V6/'+cropsName+'_'+fName+'.png')
+    #plt.savefig('/Orchard/plots_V6/'+cropsName+'_'+fName+'.png')
     plt.show()
 
 
@@ -100,6 +110,17 @@ if __name__ == '__main__':
 
     cropPaths = ["/UFZ/trackCrops_AllV5/",
                  "/UFZ/trackCrops_UnsureV5/"
+                 ]
+    
+    cropPaths = ["/Orchard/trackCrops_CheckTaxaStd6/",
+                 "/Orchard/trackCrops_CheckTaxa/"
+                 ]
+    
+    cropPaths = [
+                 "/Orchard/trackCrops_AllV6/"
+                 ]
+    
+    cropPaths = ["/RTNI/trackCrops_V6/"
                  ]
     
     #classes = {}
@@ -121,8 +142,8 @@ if __name__ == '__main__':
                 pathFalseA = cropPath + dirName + '/False'
                 if os.path.exists(pathFalseA):
                     files = os.listdir(pathFalseA)
-                    #classes[dirName][falseAIdx] = len(files)
-                    classes[dirName][trueIdx] += len(files)
+                    classes[dirName][falseAIdx] = len(files)
+                    #classes[dirName][trueIdx] += len(files)
                 
                 pathFalseB = cropPath + dirName + '/FalseB'
                 if os.path.exists(pathFalseB):
