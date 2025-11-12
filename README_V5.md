@@ -133,157 +133,167 @@ Hierarchical taxa of classes in the model HierarchicalClassifierV6:
 
 https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV6.txt
 
-Hierarchical taxa of classes in the model HierarchicalClassifierV6: 
+Hierarchical taxa of classes in the model HierarchicalClassifierV5_05092025: 
 
-taxaLevel 1: (19 groups of taxa primary Order)
+taxaLevel 1: (21 groups of taxa primary Order)
 
-    1 Aranaea 
-    2 Birds 
-    3 Coleoptera 
-    4 Dermaptera
-    5 Diptera  
-    6 Hemiptera
-    7 Herpetofauna 
-    8 Hymenoptera_bees
-    9 Hymenoptera_nobees  
-    10 Isopoda 
-    11 Larvae 
-    12 Lepidoptera 
-    13 Lepidoptera_fw 
-    14 Milipedes 
-    15 Odonata 
-    16 Orthoptera 
-    17 Slugs 
-    18 Snails 
-    19 Vegetation 
+    1. Apoidea
+    2. Aranaea 
+    3. Birds 
+    4. Coleoptera
+    5. Dermaptera
+    6. Diptera
+    7. Feathers
+    8. Frogs
+    9. Hemiptera
+    10. Hymenoptera
+    11. Isopoda
+    12. Larvae
+    13. Lepidoptera
+    14. Lepidoptera_fw
+    15. Lizards
+    16. Milipedes
+    17. Odonata
+    18. Orthoptera
+    19. Slugs
+    20. Snails
+    21. Vegetation
 
+taxaLevel 2: (43 groups of taxa primary Family - some of the below labels do also contain level 1 names)
 
-taxaLevel 2: (39 groups of taxa primary Family - some of the below labels do also contain level 1 names)
+    1. Acrididae
+    2. Andrenidae
+    3. Apidae
+    4. Apoidea
+    5. Apoidea_small
+    6. Aranaea
+    7. Birds
+    8. Bombyliidae
+    9. Cantharidae
+    10. Coccinellidae
+    11. Coleoptera
+    12. Crabronidae
+    13. Dermaptera
+    14. Diptera
+    15. Feathers
+    16. Formidicidae
+    17. Frogs
+    18. Halictidae
+    19. Hemiptera
+    20. Hesperidae
+    21. Ichneumonidae
+    22. Isopoda
+    23. Larvae
+    24. Lepidoptera
+    25. Lepidoptera_fw
+    26. Lizards
+    27. Lycaenidae
+    28. Megachilidae
+    29. Milipedes
+    30. Moths
+    31. Nymphalidae
+    32. Nymphalidae_fw
+    33. Odonata
+    34. Pieridae
+    35. Pompilidae
+    36. Sarcophagidae
+    37. Slugs
+    38. Snails
+    39. Syrphidae
+    40. Tetrigidae
+    41. Tettigoniidae
+    42. Vegetation
+    43. Vespidae
 
-    1 Acrididae  
-    2 Apidae 
-    3 Apoidae
-    4 Aranaea 
-    5 Birds 
-    6 Bombyliidae
-    7 Cantharidae
-    8 Chrysididae 
-    9 Coccinellidae 
-    10 Coleoptera 
-    11 Crabronidae
-    12 Dermaptera 
-    13 Diptera 
-    14 Formidicidae  
-    15 Hemiptera
-    16 Herpetofauna 
-    17 Hesperidae 
-    18 Ichneumonidae 
-    19 Isopoda 
-    20 Larvae
-    21 Lepidoptera 
-    22 Lepidoptera_fw  
-    23 Lycenidae 
-    24 Megachilidae 
-    25 Milipedes 
-    26 Moths 
-    27 Nymphalidae 
-    28 Nymphalidae_fw 
-    29 Odonata
-    30 Orthoptera 
-    31 Pieridae 
-    32 Pompilidae 
-    33 Sarcophagidae 
-    34 Slugs 
-    35 Snails 
-    36 Syrphidae 
-    37 Tettigoniidae 
-    38 Vegetation 
-    39 Vespidae 
+taxaLevel 3: (87 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
 
-
-taxaLevel 3: (80 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
-
-     1 Acrididae 
-     2 Aglais io 
-     3 Aglais urticae 
-     4 Aglais urticae_fw 
-     5 Anthidium oblongatum
-     6 Aphantopus hyperantus
-     7 Apis mellifera 
-     8 Apoidea
-     9 Apoidea red_abdomen
-     10 Apoidea reddish
-     11 Apoidea small
-     12 Apoidea striped
-     13 Aranaea 
-     14 Birds 
-     15 Bombus 
-     16 Bombus hypnorum 
-     17 Bombus lapidarius 
-     18 Bombus pascuorum
-     19 Bombus sylvarum 
-     20 Bombus terrestris 
-     21 Bombyliidae
-     22 Chorthippus
-     23 Chrysididae 
-     24 Chrysotoxum 
-     25 Coccinella septempunctata 
-     26 Coenonympha pamphilus 
-     27 Coleoptera 
-     28 Crabronidae 
-     29 Decticus verrucivorus 
-     30 Dermaptera
-     31 Diptera 
-     32 Episyrphus balteatus 
-     33 Eristalis 
-     34 Eupeodes 
-     35 Eurimyia 
-     36 Formidicidae 
-     37 Helophilus 
-     38 Hemiptera
-     39 Herpetofauna 
-     40 Hesperidae
-     41 Ichneumonidae
-     42 Isopoda
-     43 Larvae 
-     44 Lepidoptera 
-     45 Lepidoptera_fw  
-     46 Lycaena phlaeas 
-     47 Lycenidae 
-     48 Maniola jurtina 
-     49 Maniola jurtina_fw 
-     50 Megachilidae 
-     51 Melanargia galathea
-     52 Meliscaeva cinctella 
-     53 Milipedes 
-     54 Moths 
-     55 Myathropa florea 
-     56 Nomada 
-     57 Nymphalidae
-     58 Odonata 
-     59 Odynerus spinipes
-     60 Omocestus viridulus 
-     61 Orthoptera 
-     62 Pholidoptera griseoaptera 
-     63 Pieridae 
-     64 Platycheirus 
-     65 Pompilidae 
-     66 Rhagonycha fulva 
-     67 Sarcophagidae
-     68 Satyrinae_fw 
-     69 Scaeva 
-     70 Scaeva pyrastri 
-     71 Slugs 
-     72 Snails 
-     73 Sphaerophoria scripta-complex 
-     74 Syritta pipiens 
-     75 Syrphidae 
-     76 Syrphus 
-     77 Vegetation
-     78 Vespidae 
-     79 Vespula vulgaris
-     80 Xanthogramma 
-                
+    1. Acrididae
+    2. Aglais io
+    3. Aglais urticae
+    4. Aglais urticae_fw
+    5. Ancistrocerus nigricornis
+    6. Andrena red_abdomen
+    7. Andrena reddish
+    8. Anthidium oblongatum
+    9. Aphantopus hyperantus
+    10. Apis mellifera     
+    11. Apoidea            
+    12. Apoidea_small      
+    13. Aranaea            
+    14. Birds              
+    15. Bombus             
+    16. Bombus hypnorum    
+    17. Bombus lapidarius  
+    18. Bombus pascuorum   
+    19. Bombus sylvarum    
+    20. Bombus terrestris  
+    21. Bombyliidae        
+    22. Chorthippus        
+    23. Chorthippus apricarius
+    24. Chrysotoxum           
+    25. Coccinella septempunctata
+    26. Coenonympha pamphilus    
+    27. Coleoptera               
+    28. Crabronidae              
+    29. Decticus verrucivorus    
+    30. Dermaptera               
+    31. Diptera                  
+    32. Episyrphus balteatus     
+    33. Eristalis                
+    34. Eumenes coronatus        
+    35. Eupeodes                 
+    36. Eurimyia                 
+    37. Feathers                 
+    38. Formidicidae             
+    39. Frogs                    
+    40. Halictidae striped       
+    41. Helophilus               
+    42. Hemiptera                
+    43. Hesperidae               
+    44. Ichneumonidae            
+    45. Isopoda                  
+    46. Larvae                   
+    47. Lasiommata megera        
+    48. Lepidoptera              
+    49. Lepidoptera_fw           
+    50. Lizards                  
+    51. Lycaena phlaeas          
+    52. Lycaenidae               
+    53. Maniola jurtina          
+    54. Maniola jurtina_fw       
+    55. Megachilidae 
+	56. Melanargia galathea
+    57. Meliscaeva cinctella     
+    58. Melitaea cinxia          
+    59. Milipedes                
+    60. Moths                    
+    61. Myathropa florea
+	62. Nomada 
+    63. Odonata
+	64. Odynerus spinipes
+    65. Omocestus viridulus      
+    66. Pholidoptera griseoaptera
+    67. Pieridae                 
+    68. Platycheirus             
+    69. Pompilidae               
+    70. Rhagonycha fulva         
+    71. Sarcophagidae            
+    72. Satyrinae                
+    73. Satyrinae_fw             
+    74. Scaeva pyrastri          
+    75. Scaeva selenitica        
+    76. Slugs                    
+    77. Snails                   
+    78. Sphaerophoria scripta-complex
+    79. Sphecodes                    
+    80. Syritta pipiens              
+    81. Syrphidae                    
+    82. Syrphus                      
+    83. Tetrix                       
+    84. Vegetation                   
+    85. Vespidae                     
+    86. Vespula vulgaris             
+    87. Xanthogramma                 
 
 - taxaConf is the confidence score from the classifier (0-100%)  <br />
 - taxaSure is True if the confidence score is within the distribution of the training data and the classification is valid  <br />
