@@ -14,7 +14,7 @@ class EfficientNet(nn.Module):
     '''ConvNext-Base Architecture with pretrained weights - default configuration
     '''
 
-    def __init__(self, image_depth=3, num_classes=[20,100], simple=True, effNet="medium"): # large, medium, small
+    def __init__(self, image_depth=3, num_classes=[20,100], simple=True, effNet="small"): # large, medium, small
         '''Params init and build arch.
         '''
         super(EfficientNet, self).__init__()
