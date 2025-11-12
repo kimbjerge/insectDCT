@@ -47,6 +47,6 @@ parser.add_argument('--weight_decay', type=float, help='Specify the SGD weitht_d
 parser.add_argument('--num_workers', type=int, help='Specify the number of workers to be used to load the data.', default=0)
 parser.add_argument('--img_size', type=int, help='Specify the size of the input image.', default=128) # 224 Wingscapes 8MP, 128 Logitech 2MP
 parser.add_argument('--img_depth', type=int, help='Specify the depth of the input image.', default=3)
-parser.add_argument('--device', type=str, help='Specify which device to be used for the evaluation. Either "cpu" or "gpu".', default='cpu')
+parser.add_argument('--device', type=str, help='Specify which device to be used for the evaluation. Either "cpu" or "gpu".', default='gpu')
 
 args = parser.parse_args()
