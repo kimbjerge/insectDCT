@@ -63,7 +63,7 @@ https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive
 V6. Sixth model (HierarchicalClassifierV6) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
 https://drive.google.com/file/d/1f0vz0V7VMOPkAVbGKhmFrmGUMGtH6Dhq/view?usp=drive_link
 
-Download the weights, labels, and thresholds from the above links. 
+Download the weights, labels, and thresholds from the above links. (At least the latest version V6) 
 Save and unzip the file to the sub directory: insectsDCT/models_save
 
 ### Getting started ###
@@ -132,6 +132,10 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
 Hierarchical taxa of classes in the model HierarchicalClassifierV6:
 
 https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV6.txt
+
+Classification metrics (precision, recall, F1-score) for each class and model (ResNet50 and ConvNext-Base) on the validation and test datasets can be found here:
+
+https://github.com/kimbjerge/insectsDCT/tree/main/metrics
 
 Hierarchical taxa of classes in the model HierarchicalClassifierV6: 
 
