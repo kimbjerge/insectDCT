@@ -133,6 +133,10 @@ Hierarchical taxa of classes in the model HierarchicalClassifierV6:
 
 https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV6.txt
 
+Classification metrics (precision, recall, F1-score) for each class and model (ResNet50 and ConvNext-Base) on the validation and test datasets can be found here:
+
+https://github.com/kimbjerge/insectsDCT/tree/main/metrics
+
 Hierarchical taxa of classes in the model HierarchicalClassifierV6: 
 
 taxaLevel 1: (19 groups of taxa primary Order)
