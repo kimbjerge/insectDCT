@@ -36,8 +36,9 @@ class EfficientNet(nn.Module):
         # overwrite the 'fc' layer
         num_in_features = self.model_ft.classifier[1].in_features
         print("In features", num_in_features)
-        self.model_ft.classifier[1] =  nn.Identity() # Do nothing just pass input to output
- 
+        #self.model_ft.classifier[1] =  nn.Identity() # Do nothing just pass input to output
+        self.model_ft.classifier =  nn.Identity() # Do nothing just pass input to output
+
         self.layers = len(num_classes)
         
         # At least one layer
