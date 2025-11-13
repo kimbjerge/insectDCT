@@ -18,17 +18,20 @@ from plot import plot_loss_acc
 from hierarchical_loss import HierarchicalLossNetwork
 
 #saved_folder = "./models_saved/saved_128_ResNetV6/"
-saved_folder = "./models_saved/saved_128_ConvNextV6/"
+#saved_folder = "./models_saved/saved_128_ConvNextV6/"
+saved_folder = "./models_saved/saved_128_EfficientNetV6/"
+
 graph_folder = "./graph_folder/"
 
 # Check taxon prediction correct in hiearachy when plotting confusion matrix L2, L3 and saving scores
 checkHierarchy = False
 checkedName = ""
 
+thresholdSTD = 3.5 # ResNet
+if "EfficientNet" in saved_folder:
+    thresholdSTD = 4.5 # EfficientNet   
 if "ConvNext" in saved_folder:
     thresholdSTD = 5.5 # ConvNext
-else:
-    thresholdSTD = 3.5 # ResNet
 
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
