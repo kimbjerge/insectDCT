@@ -61,7 +61,7 @@ V5. Fifth model (HierarchicalClassifierV5_05092025) was trained on the same imag
 https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
 
 V6. Sixth model (HierarchicalClassifierV6) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
-https://drive.google.com/file/d/1f0vz0V7VMOPkAVbGKhmFrmGUMGtH6Dhq/view?usp=drive_link
+https://drive.google.com/file/d/1V8uWDIjT1DHo3CyxRjOk6vZYkeBjKX_0/view?usp=drive_link
 
 Download the weights, labels, and thresholds from the above links. (At least the latest version V6) 
 Save and unzip the file to the sub directory: insectsDCT/models_save
@@ -90,11 +90,11 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
         On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType ResNet  <br />
-     	Performs detection and classification using ResNet50v2 model (faster model, lesser accurate)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S  <br />
+     	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
-     	Performs detection and classification using models trained on classification dataset V5 instead of V6
+     	Performs detection and classification using models trained on classification dataset V5 instead of V6 (Only for ConvNextBase and ResNet50)
      
    - $ python pipeTrackInsectsTaxon.py  <br />
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
