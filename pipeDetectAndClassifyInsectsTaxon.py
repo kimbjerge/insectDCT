@@ -40,9 +40,11 @@ if useMambo:
     #imgWidth = 4224 # Wingscapes
     #imgHeight = 2376
 else:
-# Jordan and Simon
+# Jordan, Simon and CAAS
     imgWidth = 1920 # Logitech and Pi3
     imgHeight = 1080
+    #imgWidth = 2592  # Camera used by CAAS
+    #imgHeight = 1944
     
 labelNames = ['Insect'] # YOLO Only one label
 
@@ -287,7 +289,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.1.0\n" # New classification models
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.0\n" # New classification models EfficientNetV2S
     
     parser = argparse.ArgumentParser()
     
@@ -296,31 +298,14 @@ if __name__=='__main__':
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects5Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
-    parser.add_argument('--modelType', default="ConvNextBase") # Support for ResNet50 and ConvNextBase (CNB)
+    parser.add_argument('--modelType', default="ConvNextBase") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
     parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF), "V4" without GBIF data, 
                                                    # "V5" with more Orchard data and GBIF and lots of vegetation, "V6" with more data and reorganized hierarchy
-
-    # First model trained on dataset from NI2 and NI1 (Nature Impact - Wingscapes cameras and Logitech webcameras)
-    #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
-    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH2.csv') # Use thresholds below = mean-2*std
-    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below = mean-3*std
     
-    # Model trained with added dataset "sorted_orchard_crops" from UFZ (+Camera pi3 camera images)    
-    # Weights, labels and thresholds for ResNet50 with dataset V2 (+UFZ Pi3Cam)
-    #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifierV2_30082025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
-    #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3LV2_30082025.pkl')
-    #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholdsV2_30082025_TH3.csv') # Use thresholds below = mean-3*std
-    
-    # Weights, labels and thresholds for ResNet50 with dataset V6 
-    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_RES_V6.pth') # 128x128 crops
-    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_RES_V6.pkl')
-    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_RES_V6.csv') # Use thresholds below = mean-3.5*std
-
-    # Weights, labels and thresholds for ConvNextBase (CNB) with dataset V6 
-    parser.add_argument('--CNBhierachical', default='./models_save/HierarchicalClassifier_CNB_V6.pth') # 128x128 crops
-    parser.add_argument('--CNBlabels', default='./models_save/HierarchicalLabels3L_CNB_V6.pkl') # Hierarchical taxon of labels with 3 layers
-    parser.add_argument('--CNBthresholds', default='./models_save/HierarchicalThresholds3S_CNB_V6.csv') # Use thresholds below = mean-5.5*std
+    # Weights, labels and thresholds for ResNet50 (MODEL=RES), ConvNextBase (MODEL=CNB), EfficientNetV2S (MODEL=EFF2S) with dataset V6 
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_MODEL_V6.pth') # 128x128 crops
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_MODEL_V6.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_MODEL_V6.csv') # Use thresholds below = mean-x*std (X=3.5 RES, x=4.5 EFF2S, x=5.5 CNB)
     
     parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
     parser.add_argument('--project', default='') # Default empty else use MAMBO used for naming CSV files
@@ -351,7 +336,7 @@ if __name__=='__main__':
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
     #fps=1/frame_stride
-    fps=0.5
+    fps=0.5 # Play back frame rate (moviePredict)
     store_frames_after = 1 # Video 2
 
     prevFilename = ''
@@ -374,14 +359,21 @@ if __name__=='__main__':
     modelClassifier = 0        
     if args.hierachical != '':
         if args.modelType == "ResNet50":
-            hierarchicalWeights = args.hierachical
-            hierarchicalLabels = args.labels
-            hierarchicalThresholds = args.thresholds
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_RES_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_RES_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_RES_")
         if args.modelType == "ConvNextBase":
-            hierarchicalWeights = args.CNBhierachical
-            hierarchicalLabels = args.CNBlabels
-            hierarchicalThresholds = args.CNBthresholds
-        if args.dataset != 'V6': # Select model weights trained on dataset V3, V4 or V5
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_CNB_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_CNB_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_CNB_")
+        if args.modelType == "EfficientNetV2S": # Only trained on dataset V6
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_EFF2S_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_EFF2S_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_EFF2S_")        
+        if args.dataset in ['V3', 'V4', 'V5']: # Select model weights trained on dataset V3, V4 or V5
+            if args.modelType == "EfficientNetV2S":
+                print("Error since EfficientNetV2S not trained on dataset", args.dataset)
+                exit(1)
             oldVersionsDate = "_05092025" # V3-V5 used date in file names
             hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
             hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
@@ -487,8 +479,8 @@ if __name__=='__main__':
             # Read a frame from the video
             success, frame = cap.read()
             if success: 
-                if (frame_count % frame_stride == 0):     
-                            # Increment time based on fps = 1.0
+                if (frame_count % frame_stride == 0):
+                    # Increment time based on fps = 1.0
                     frame_time = frame_time + datetime.timedelta(milliseconds=time_interval)
                     prevFilname, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, args.video.split('/')[-1], prevFilename)              
                 frame_count += 1

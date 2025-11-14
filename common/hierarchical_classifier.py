@@ -13,6 +13,7 @@ from scipy.stats import norm
 #from skimage.transform import resize
 from common.resnet50tf import ResNet50
 from common.convNext import ConvNextBase
+from common.efficientNet import EfficientNet
 #from resnet50tf import ResNet50
 
 class HierarchicalClassifier:
@@ -158,7 +159,7 @@ class HierarchicalClassifier:
     
         return cv2.resize(mask, size, interpolation)
  
-    # Loading model with model weights model names: ResNet50, ConvNextLarge, ConvNextBase, ConvNextSmall, ConvNextTiny
+    # Loading model with model weights model names: ResNet50, ConvNextLarge, ConvNextBase, ConvNextSmall, ConvNextTiny, EfficientNetV2S, EfficientNetV2M, EfficientNetV2L
     def loadmodel(self, model_weights, threshold_file, modelName="ResNet50"):
         
         print("Load model", modelName)
@@ -171,7 +172,14 @@ class HierarchicalClassifier:
         if modelName == "ConvNextSmall":
             self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Small") 
         if modelName == "ConvNextTiny":
-            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Tiny") 
+            self.model = ConvNextBase(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, ConvNext="Tiny")
+        if modelName == "EfficientNetV2S":
+            self.model = EfficientNet(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, effNet="small")
+        if modelName == "EfficientNetV2M":
+            self.model = EfficientNet(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, effNet="medium")
+        if modelName == "EfficientNetV2L":
+            self.model = EfficientNet(num_classes=[len(self.labelsL1), len(self.labelsL2), len(self.labelsL3)], simple=True, effNet="large")
+            
         
         self.model.load_state_dict(torch.load(model_weights, map_location=self.device)) 
         print('Loaded model: ', model_weights)   
