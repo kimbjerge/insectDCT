@@ -1,48 +1,27 @@
-insects5Color-train-images-CL.csv insects5Color
---------------------------------------------------------------------------------------------------------
-Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Color/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects3Color-train-images-CL.csv
-Uses saved labels from insects5Color_labels.npy
--------------------------------------------------------------------------------------------------------
-Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects3Color-train-images-CL.csv
-[[    0  3847]
- [ 8769 16866]]
-TP       : [16866]
-FP       : [3847]
-FN       : [8769]
-Recall    TP/(TP+FN): [0.658]
-Precision TP/(TP+FP): [0.814]
-F1-score 2*P*R/(P+R): [0.728]
-Confusion matrix, without normalization
-========================================================================================================
-insects5Motion-train-images-CL.csv insects5Motion
---------------------------------------------------------------------------------------------------------
-Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Motion/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects3Motion-train-images-CL.csv
-Uses saved labels from insects5Motion_labels.npy
--------------------------------------------------------------------------------------------------------
-Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects3Motion-train-images-CL.csv
-[[    0  9947]
- [ 7697 17938]]
-TP       : [17938]
-FP       : [9947]
-FN       : [7697]
-Recall    TP/(TP+FN): [0.7]
-Precision TP/(TP+FP): [0.643]
-F1-score 2*P*R/(P+R): [0.67]
-Confusion matrix, without normalization
-========================================================================================================
-insects5Motion-train-images-CL.csv insects5Motion
---------------------------------------------------------------------------------------------------------
-Evaluation based on labels and predictions  D:/insectsDCT_datasets/insects5Motion/train/labels/ D:/insectsDCT_datasets/insectsModelCSV/insects5Motion-train-images-CL.csv
-Uses saved labels from insects5Motion_labels.npy
--------------------------------------------------------------------------------------------------------
-Confusion matrix with probability thresholds: D:/insectsDCT_datasets/insectsModelCSV/insects5Motion-train-images-CL.csv
-[[    0  8021]
- [ 6696 18939]]
-TP       : [18939]
-FP       : [8021]
-FN       : [6696]
-Recall    TP/(TP+FN): [0.739]
-Precision TP/(TP+FP): [0.702]
-F1-score 2*P*R/(P+R): [0.72]
-Confusion matrix, without normalization
-========================================================================================================
+YOLO11m detector V5 with motion informed enhanced images:
+========================================================
+
+results = model.val(data='./data/insects5Motion.yaml', batch=16, imgsz=1920, conf=0.25, device=0, show=False, name='insects5MotionVal')
+(yolo11) don@freja:~/insectsDCT$ python insectsMotionVal.py
+Ultralytics 8.3.78 🚀 Python-3.11.11 torch-2.6.0+cu124 CUDA:0 (Quadro RTX 8000, 48403MiB)
+YOLO11m summary (fused): 125 layers, 20,030,803 parameters, 0 gradients, 67.6 GFLOPs
+val: Scanning /home/don/insectsDCT/datasets/insects5Motion/val/labels.cache... 6846 images, 1848 backgrounds, 0 corrupt: 100%|██████████| 6846/6846 [00:00<?, ?it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 428/428 [07:10<00:00,  1.01s/it]
+                   all       6846       6690       0.91      0.942      0.949      0.707
+Speed: 1.1ms preprocess, 54.0ms inference, 0.0ms loss, 2.9ms postprocess per image
+Results saved to runs/detect/insects5MotionVal3
+
+YOLO11m detector V5 with colored images:
+=======================================
+
+results = model.val(data='./data/insects5Color.yaml', batch=16, imgsz=1920, conf=0.25, device=0, show=False, name='insects5ColorVal')
+(yolo11) don@freja:~/insectsDCT$ python insectsColorVal.py
+Ultralytics 8.3.78 🚀 Python-3.11.11 torch-2.6.0+cu124 CUDA:0 (Quadro RTX 8000, 48403MiB)
+YOLO11m summary (fused): 125 layers, 20,030,803 parameters, 0 gradients, 67.6 GFLOPs
+val: Scanning /home/don/insectsDCT/datasets/insects5Color/val/labels.cache... 6846 images, 1848 backgrounds, 0 corrupt: 100%|██████████| 6846/6846 [00:00<?, ?it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 428/428 [06:47<00:00,  1.05it/s]
+                   all       6846       6690      0.918      0.922       0.94       0.69
+Speed: 0.9ms preprocess, 54.1ms inference, 0.0ms loss, 1.4ms postprocess per image
+Results saved to runs/detect/insects5ColorVal
+
+
