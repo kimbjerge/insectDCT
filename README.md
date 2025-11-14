@@ -94,7 +94,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
      	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
-     	Performs detection and classification using models trained on classification dataset V5 instead of V6 (Only for ConvNextBase and ResNet50)
+     	Performs detection and classification using models trained on classification dataset V5 instead of V6 (Works only for modelType: ConvNextBase and ResNet50)
      
    - $ python pipeTrackInsectsTaxon.py  <br />
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
