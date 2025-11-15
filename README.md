@@ -90,6 +90,9 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
         On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --useExifTime True  <br />
+     	Uses the Exif file information to get data and time stamp from image files instead of file name: <camera>_YYYY_MM_DD_HH_MM_SS.jpg
+
    - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S  <br />
      	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
      
