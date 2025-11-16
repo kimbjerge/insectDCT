@@ -17,16 +17,24 @@ from scipy.stats import pearsonr
 
 ignoreInsectNames = ["Vegetation", "Unsure"]
 
+config_filename = './Taxon_config.json'
+
+"""
 labelInsectsPlot = ["Apidae", "Apis mellifera","Bombus terrestris", "Bombus lapidarius", "Bombus pascuorum", 
                     "Apoidea", "Apoidea small", "Hymenoptera_nobees", "Vespula vulgaris", "Syrphidae", 
                     "Eristalis",  "Eupeodes", "Episyrphus balteatus", "Sphaerophoria scripta-complex", "Aglais urticae"]
 
-config_filename = './Taxon_config.json'
-
 projectPath ="/RTNI/"
 trackPath = projectPath + "tracks_V6/"
-csvPath = projectPath + "detections_V6/"
+detectionPath = projectPath + "detections_V6/"
 plotsDir = projectPath + "plots_V6/"
+"""
+
+projectPath ="/MAMBO/"
+selectedYear = 2024
+trackPath = projectPath + "tracks_V6/"
+detectionPath = projectPath + "detections_V6/"
+plotsDir = projectPath + "detections_V6/plots/"
 
 class timedate:
     
@@ -78,18 +86,24 @@ class timedate:
         text = str(minutes).zfill(2) + ":" + str(seconds).zfill(2)
         return text
     
-def createDatelist(dataset):
+def createDatelist(dataset, useDetections=False):
 
     td = timedate()
     currentDate = 0
     nextDate = 0
     dates = []
     dayOfYears = []
+    
+    if useDetections:
+        dateKey = 'date'
+    else:        
+        dateKey = 'startdate'
+        
     for i, obj in dataset.iterrows():
-        if currentDate != obj['startdate']:
-            if nextDate != obj['startdate']:
+        if currentDate != obj[dateKey]:
+            if nextDate != obj[dateKey]:
                 print("NextDate", nextDate)
-            currentDate = obj['startdate']
+            currentDate = obj[dateKey]
             nextDate = currentDate + 1
             dates.append(currentDate)
             dayOfYear = td.getDayOfYear(currentDate)
@@ -98,11 +112,16 @@ def createDatelist(dataset):
 
     return dates, dayOfYears
 
-def countAbundance(dataset, dates):
+def countAbundance(dataset, dates, useDetections=False):
 
+    if useDetections:
+        dateKey = 'date'
+    else:        
+        dateKey = 'startdate'
+        
     abundance = np.zeros(len(dates)).tolist()
     for i, obj in dataset.iterrows():
-        dateIdx = dates.index(obj['startdate'])
+        dateIdx = dates.index(obj[dateKey])
         abundance[dateIdx] += 1
 
     return abundance
@@ -111,8 +130,8 @@ def countSnapAbundance(predicted, dates, labelName, valid=True):
 
     abundance = np.zeros(len(dates)).tolist()
     for insect in predicted:
-        if insect["className"] == labelName:
-            if valid == False or insect['valid'] == True:
+        if insect["taxaLabel"] == labelName:
+            if valid == False or insect['taxaSure'] == True:
                 if insect['date'] in dates:
                     dateIdx = dates.index(insect['date'])
                     abundance[dateIdx] += 1
@@ -141,22 +160,50 @@ def loadTrackFiles(trap, countsTh, percentageTh, trackPath=trackPath):
     
     return dateList, dayOfYear, selDataset2
 
+def loadDetectionFiles(trap, year="", detectionPath=detectionPath):
+    
+    detectionFiles = detectionPath + trap + '/'
+    dataframes = []
+    for fileName in sorted(os.listdir(detectionFiles)):
+        if "CL.csv" in fileName:
+            #print(trap, trackFiles + fileName)
+            #data_df = pd.read_json(trackFiles + fileName)
+            print(fileName)
+            data_df = pd.read_csv(detectionFiles + fileName)
+            dataframes.append(data_df)                
+    dataset = pd.concat(dataframes)
+    dataset = dataset.sort_values(by=['date', 'time'])
+    print("Raw dataset", trap, len(dataset))
+    
+    selDataset1 = dataset.loc[dataset['taxaSure'] == True] # Skip unsure classifications
+    if year != "": # Select only detections from specific year
+        selDataset1 = selDataset1.loc[selDataset1['year'] == year]
+    selDataset2 = selDataset1.loc[selDataset1['taxaLabel'] != 'Vegetation'] # Skip vegetation
+    print("Filtered dataset", trap, len(selDataset2))
+
+    dateList, dayOfYear = createDatelist(selDataset2, useDetections=True)
+    
+    return dateList, dayOfYear, selDataset2
+
 def loadSnapFiles(trap):
     
     conf = readconfig(config_filename)
     predict = Predictions(conf)
-    trackSnapFile = csvPath + trap + ".csv"
+    trackSnapFile = detectionPath + trap + ".csv"
     threshold=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     print("Load taxa predictions", trackSnapFile)
     predicted = predict.load_predictions_taxon(trackSnapFile, filterTime=0, threshold=threshold)
     
     return predicted
 
-def findInsectSpecies(dataframe, numSpecies):
+def findInsectSpecies(dataframe, numSpecies, useDetections=False):
     
     insectSpecies = {}
     for index, row in dataframe.iterrows():
-        className = row['class']
+        if useDetections:
+            className = row['taxaLabel']
+        else:
+            className = row['class']
         if className not in ignoreInsectNames:
             #print(className)
             if className in insectSpecies.keys():
@@ -206,15 +253,18 @@ def plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies, selectedY
     
     plt.show()
 
-def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useSnapImages=False):
+def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useDetections=False, useSnapImages=False):
   
     firstYear = True
     trackFiles = trackPath
-    
     yearTrackPath = trackFiles
     
-    dateList, dayOfYear, selDataset2 = loadTrackFiles(trap, countsTh, percentageTh, trackPath=yearTrackPath)
-    insectSpecies, insectSpeciesNames = findInsectSpecies(selDataset2, 15)
+    if useDetections:
+        dateList, dayOfYear, selDataset2 = loadDetectionFiles(trap, year=selectedYear, detectionPath=detectionPath)        
+    else:
+        dateList, dayOfYear, selDataset2 = loadTrackFiles(trap, countsTh, percentageTh, trackPath=yearTrackPath)
+    
+    insectSpecies, insectSpeciesNames = findInsectSpecies(selDataset2, 15, useDetections=useDetections)
     plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies=50)
   
     td = timedate()
@@ -232,8 +282,8 @@ def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useSna
     idxFig = 1
     if firstYear == True:
         firstYear = False
-        #labelNamesPlot = insectSpeciesNames 
-        labelNamesPlot = labelInsectsPlot
+        labelNamesPlot = insectSpeciesNames 
+        #labelNamesPlot = labelInsectsPlot
         
     for labelName in labelNamesPlot:
 
@@ -261,13 +311,21 @@ def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useSna
         #labelNamesPlot = ["Araneae", "Coleoptera", "Diptera Brachycera", "Diptera Nematocera", "Diptera Tipulidae", 
         #                  "Diptera Trichocera", "Ephemeroptera", "Hemiptera", "Hymenoptera Other", "Hymenoptera Vespidae", 
         #                  "Lepidoptera Macros", "Lepidoptera Micros", "Neuroptera", "Opiliones", "Trichoptera"]
-        selDataset = selDataset2.loc[selDataset2['class'].str.contains(labelName)]
-        abundance = countAbundance(selDataset, dateList)
+        if useDetections:
+            selDataset = selDataset2.loc[selDataset2['taxaLabel'].str.contains(labelName)]
+        else: 
+            selDataset = selDataset2.loc[selDataset2['class'].str.contains(labelName)]
+            
+        abundance = countAbundance(selDataset, dateList, useDetections=useDetections)
         print(trap, labelName, len(selDataset), sum(abundance))
 
         labelText = labelName #+ ' ' + str(countsTh*2) + 's'
         colorIdx = labelNamesPlot.index(labelName)
-        ax.plot(dayOfYear, abundance, label="Tracks", color=colors[colorIdx])
+        
+        if useDetections:
+            ax.plot(dayOfYear, abundance, label="Detections", color=colors[colorIdx])
+        else:
+            ax.plot(dayOfYear, abundance, label="Tracks", color=colors[colorIdx])
         
         if useSnapImages:    
             abundanceSnap = countSnapAbundance(predicted, dateList, labelName)
@@ -285,8 +343,8 @@ def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useSna
             ax.set_xlabel('Day of Year')
         ax.set_xlim(dayOfYear[0], dayOfYear[-1]) # NB adjust for days operational
         if idxFig in [1, 4, 7, 10, 13]: 
-            if useSnapImages:
-                ax.set_ylabel('Observations')
+            if useSnapImages or useDetections:
+                ax.set_ylabel('Detections')
             else:
                 ax.set_ylabel('Tracks')
         #ax.set_xlim(130, 310)
@@ -305,9 +363,14 @@ if __name__ == '__main__':
     percentageTh = 50  
          
     plt.rcParams.update({'font.size': 14})
-       
+    
+    """
     traps = ['RTNI']
-
     for trap in traps:
         plotAbundanceAllClasses(trap, countsTh, percentageTh, "abundance")
+    """
     
+    traps = ['au', 'cirad', 'ecoinn', 'ufz', 'ukceh', 'uva']
+    for trap in traps:
+        plotAbundanceAllClasses(trap, countsTh, percentageTh, trap + "_abundance", useDetections=True)
+
