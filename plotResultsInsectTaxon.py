@@ -220,7 +220,7 @@ def findInsectSpecies(dataframe, numSpecies, useDetections=False):
    
     return insectSpeciesSorted, insectSpeciesNames
 
-def plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies, selectedYear=""):
+def plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies, selectedYear="", useDetections=False):
     
     figure = plt.figure(figsize=(20,20))
     figure.tight_layout(pad=1.0)
@@ -246,8 +246,11 @@ def plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies, selectedY
     
     ax.barh(species, abundance)
     
-    ax.set_xlabel('Tracks')
-    ax.set_title('Abundance of insect species ' + trap + ' ' + selectedYear)
+    if useDetections:
+        ax.set_xlabel('Detections')
+    else:
+        ax.set_xlabel('Tracks')
+    ax.set_title('Abundance of insect taxon ' + trap + ' ' + selectedYear)
     plt.tight_layout(pad=2.0)
     plt.savefig(plotsDir + resultFileName + "LT" + selectedYear + ".png")
     
@@ -265,7 +268,7 @@ def plotAbundanceAllClasses(trap, countsTh, percentageTh, resultFileName, useDet
         dateList, dayOfYear, selDataset2 = loadTrackFiles(trap, countsTh, percentageTh, trackPath=yearTrackPath)
     
     insectSpecies, insectSpeciesNames = findInsectSpecies(selDataset2, 15, useDetections=useDetections)
-    plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies=50)
+    plotInsectSpecies(trap, insectSpecies, resultFileName, numSpecies=50, useDetections=useDetections)
   
     td = timedate()
     subtitle = trap + " (" + td.strMonthDay(dateList[0]) + '-' + td.strMonthDay((dateList[-1])) + ")"
