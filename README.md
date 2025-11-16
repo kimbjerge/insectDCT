@@ -375,7 +375,7 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 
 ## Additional helper functions ##
 
- - plotResultsMAMBO.py and plotResultsNI2.py - examples of reading CSV files with detections and classifications and plots histograms of taxa of arthoropods
+ - plotResultsInsectTaxon.py, plotResultsMAMBO.py and plotResultsNI2.py - examples of reading CSV files with tracks or detections and plots histograms and abundance of classified taxa
    
 ### Helper functions to create datasets for the insect detector model ###
 
