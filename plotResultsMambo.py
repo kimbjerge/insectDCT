@@ -17,7 +17,7 @@ from idac.configreader.configreader import readconfig
 from idac.predictions.predictions import Predictions
 from scipy.stats import pearsonr
 
-save_dir = "./mamboResults/"
+save_dir = "/MAMBO/detections/plots/"
 
 class timedate:
     
@@ -141,6 +141,7 @@ def plotHistogram(trapName, selDataset, figsize=(10,10)):
     ax.barh(taxonsKey, taxonsValue)
     ax.plot()
     ax.set_xlabel('Detections')
+    ax.set_xscale('log')
     ax.set_title(trapName)
     plt.tight_layout(pad=2.0)
     plt.savefig(save_dir + trapName + ".png")
@@ -184,41 +185,47 @@ if __name__ == '__main__':
     trapPathAll = []
     trapNamesAll = {}
     
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/uva/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/uva/detectionsTH3"
+    trapPath = "/MAMBO/detections/uva"
     trapNames = ["uva-NL11", "uva-NL21", "uva-NL22"]
     plotAllTraps(trapPath, trapNames)
     trapPathAll.append(trapPath)
     trapNamesAll[0] = trapNames
 
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ukceh/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ukceh/detectionsTH3"
+    trapPath = "/MAMBO/detections/ukceh"
     trapNames = ["ukceh-UK_1_1", "ukceh-UK_1_2", "ukceh-UK_2_1", "ukceh-UK_2_2"]
     plotAllTraps(trapPath, trapNames)
     trapPathAll.append(trapPath)
     trapNamesAll[1] = trapNames
     
     #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoin/errorsn/detectionsTH3err"
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsTH3"
+    trapPath = "/MAMBO/detections/ecoinn"
     trapNames = ["ecoinn-MT_1_1", "ecoinn-MT_1_2", "ecoinn-MT_2_1", "ecoinn-MT_2_2"]
     plotAllTraps(trapPath, trapNames)
     trapPathAll.append(trapPath)
     trapNamesAll[2] = trapNames
         
     #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/errors/detectionsTH3err"
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/cirad/detectionsTH3"
+    trapPath = "/MAMBO/detections/cirad"
     trapNames = ["FR02_Bagnas-Cam.A", "FR02_Bagnas-Cam.B", "FR03_Parpalhon-Cam.A", "FR03_Parpalhon-Cam.B"]
     plotAllTraps(trapPath, trapNames)
     trapPathAll.append(trapPath)
     trapNamesAll[3] = trapNames
         
     #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/errors/detectionsTH2err"
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/ufz/detectionsTH3"
+    trapPath = "/MAMBO/detections/ufz"
     trapNames = ["DE_1_1", "DE_1_2", "DE_1_2", "DE_2_2"]
     plotAllTraps(trapPath, trapNames, country="ufz-")
     trapPathAll.append(trapPath)
     trapNamesAll[4] = trapNames
     
     #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/errors/detectionsTH3err"
-    trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3"
+    #trapPath = "O:/Tech_TTH-KBE/MAMBO/2024/au/detectionsTH3"
+    trapPath = "/MAMBO/detections/au"
     trapNames = ["-01", "-02", "-03", "-05", "-06", "DK_1_1", "DK_1_2", "DK_2_1", "DK_2_2",  "DK_3_1", "DK_3_2"]
     plotAllTraps(trapPath, trapNames, country="au")
     trapPathAll.append(trapPath)
