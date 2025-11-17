@@ -5,4 +5,6 @@ python -m pip install torch torchvision torchaudio
 pip install -U scikit-image
 pip install -U scikit-learn
 pip install ultralytics
+pip install pandas
+
 
