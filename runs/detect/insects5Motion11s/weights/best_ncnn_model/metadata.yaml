@@ -1,0 +1,18 @@
+description: Ultralytics YOLO11s model trained on ./data/insects5Motion.yaml
+author: Ultralytics
+date: '2025-11-17T09:49:27.078806'
+version: 8.3.153
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 1920
+- 1920
+names:
+  0: Insect
+args:
+  batch: 1
+  half: false
+channels: 3

@@ -6,5 +6,7 @@ pip install -U scikit-image
 pip install -U scikit-learn
 pip install ultralytics
 pip install pandas
+pip install ncnn
+
 
 
