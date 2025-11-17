@@ -153,9 +153,18 @@ def getFrameTime(filePath, image_filename, useTimeExif):
 
     return image_time, dateTimeStr
 
+numDetections = 0
+totalTimeDetections = 0
+numClassifications = 0
+totalTimeClassification = 0
+
 #%% Pipe line to process each frame using motion informed enhancement if useMotion=True
 def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, filename='', prevFilename=''):
     # Global variables:  MIE, modelDetector, modelClassifier, movie_writer, csv_writer
+    global numDetections
+    global totalTimeDetections
+    global numClassifications
+    global totalTimeClassification
        
     # Use timestamp from current frame
     timestamp_year_str = frame_time.strftime("%Y")
@@ -168,7 +177,11 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
             frame_count = frame_count - 1 # Previous frame is the main image to be analyzed for motion
 
     # Run YOLO inference on the frame
+    t1 = time.time()
     results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device) # Automatic scales to HD image size
+    t2 = time.time()
+    totalTimeDetections += t2-t1    
+    numDetections += 1
     
     if useMotion and args.videoMIE == False:
         frame = imgPrev
@@ -193,12 +206,16 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 y2 = int(round(xyxy[0][3]))
                 
                 if type(modelClassifier) is not int:
+                    t3 = time.time()
                     line,  level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
                                                                                         int(round(xywh[0][0])), 
                                                                                         int(round(xywh[0][1])), 
                                                                                         int(round(xywh[0][2])), 
                                                                                         int(round(xywh[0][3])),
                                                                                         str(frame_count))
+                    t4 = time.time()
+                    totalTimeClassification += t4-t3
+                    numClassifications += 1
                     #prob = round(probability*10000)/100 # percentage with two decimals
                     prob = probability*100 # percentage with all decimals
                 else:
@@ -489,6 +506,7 @@ if __name__=='__main__':
                 break
         cap.release()
     else: 
+        tA = time.time()
         # Processing time-lapse images
         for image_file in sorted(os.listdir(args.images)):
             if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
@@ -501,6 +519,8 @@ if __name__=='__main__':
                 frame = cv2.imread(args.images + image_file)
                 prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
                 frame_count += 1
+        tB = time.time()
+        totalTime = tB - tA
 
     # Release the video capture object and close the display window
     csvfile.close()
@@ -508,3 +528,9 @@ if __name__=='__main__':
         movie_writer.release()
     if csvfileInfo is not int:
         csvfileInfo.close()
+        
+    print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
+    print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
+    print(f"{args.modelType} classification time average per detection {totalTimeClassification/numClassifications:.4f} sec.")
+        
+    
