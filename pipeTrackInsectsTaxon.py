@@ -326,7 +326,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.1.0\n" # Updated for models trained on datasetV6
+    version = "pipeTrackInsectsTaxon.py version: 1.1.1\n" # Updated for models trained on datasetV6
 
     print('Tracking insects based on detection files *-DL.csv')
     
