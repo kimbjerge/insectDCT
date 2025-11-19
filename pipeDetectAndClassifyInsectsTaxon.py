@@ -316,6 +316,7 @@ if __name__=='__main__':
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
 
     parser.add_argument('--modelType', default="ConvNextBase") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
+    #parser.add_argument('--modelType', default="EfficientNetV2S") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
     parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF), "V4" without GBIF data, 
                                                    # "V5" with more Orchard data and GBIF and lots of vegetation, "V6" with more data and reorganized hierarchy
     
@@ -329,6 +330,7 @@ if __name__=='__main__':
     
     parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
     parser.add_argument('--video', default='')
+    #parser.add_argument('--video', default='../PAU/video1_2024_02_19_15_24_42.mp4') # 30 fps -> 10 fps (stride 3) Jordan
     #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
     parser.add_argument('--images', default='./images/pi1_2025_02_21/')
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
@@ -337,14 +339,14 @@ if __name__=='__main__':
     parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     #parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
-    parser.add_argument('--frame_stride', default='2', type=int) # for video, not used for images
+    parser.add_argument('--frame_stride', default='3', type=int) # for video, not used for images
     #parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
     parser.add_argument('--scale', default='1.00', type=float) # Scale factor used for creating result video
     parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
-    
+
     args = parser.parse_args() 
     
     if args.resultsDir != "":
@@ -489,6 +491,7 @@ if __name__=='__main__':
     frame_count = 0
     frames_after = 0
     if video_path != '': 
+        tA = time.time()
         # Processing video
         frame_time = start_time # frame_time global variable
         # Loop through the video frames
@@ -505,6 +508,8 @@ if __name__=='__main__':
                 # Break the loop if the end of the video is reached
                 break
         cap.release()
+        tB = time.time()
+        totalTime = tB - tA
     else: 
         tA = time.time()
         # Processing time-lapse images
