@@ -306,7 +306,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.0\n" # New classification models EfficientNetV2S
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.1\n" # New classification models EfficientNetV2S
     
     parser = argparse.ArgumentParser()
     
