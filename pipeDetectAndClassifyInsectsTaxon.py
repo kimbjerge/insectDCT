@@ -354,9 +354,15 @@ if __name__=='__main__':
         print("Store results files (csv, avi) in", results_dir)
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
+    
     #fps=1/frame_stride
     fps=0.5 # Play back frame rate (moviePredict)
-    store_frames_after = 1 # Video 2
+    
+    video_path = args.video
+    if video_path != '':
+        store_frames_after = 3
+    else:
+        store_frames_after = 1
 
     prevFilename = ''
     useMotion = False
@@ -404,7 +410,6 @@ if __name__=='__main__':
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
         
     # Open the input video file if specified
-    video_path = args.video
     if video_path != '': # Process video file
         cap = cv2.VideoCapture(video_path)
         cap_fps = cap.get(cv2.CAP_PROP_FPS)
