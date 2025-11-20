@@ -360,7 +360,7 @@ if __name__=='__main__':
     
     video_path = args.video
     if video_path != '':
-        store_frames_after = 3
+        store_frames_after = 5
     else:
         store_frames_after = 1
 
