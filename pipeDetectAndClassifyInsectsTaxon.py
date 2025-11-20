@@ -149,7 +149,10 @@ def getFrameTime(filePath, image_filename, useTimeExif):
     
     else:    
         nameSplit = image_filename.split('.')[0].split('_')
-        dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS
+        if len(nameSplit) < 7:
+            dateTimeStr = nameSplit[1] # Format:YYYYMMDDSS (MINIMON)
+        else:
+            dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS (UFZ)
     
     image_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
 
@@ -308,7 +311,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.1\n" # New classification models EfficientNetV2S
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.2\n" # New classification models EfficientNetV2S
     
     parser = argparse.ArgumentParser()
     
