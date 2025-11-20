@@ -355,14 +355,15 @@ if __name__=='__main__':
     
     frame_stride = args.frame_stride # Video recorded with 1 fps
     
-    #fps=1/frame_stride
-    fps=0.5 # Play back frame rate (moviePredict)
     
     video_path = args.video
     if video_path != '':
         store_frames_after = 5
+        fps=1.0 # Play back frame rate (moviePredict)
     else:
         store_frames_after = 1
+        #fps=1/frame_stride
+        fps=0.5 # Play back frame rate (moviePredict)
 
     prevFilename = ''
     useMotion = False
