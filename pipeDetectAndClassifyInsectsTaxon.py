@@ -40,11 +40,13 @@ if useMambo:
     #imgWidth = 4224 # Wingscapes
     #imgHeight = 2376
 else:
-# Jordan, Simon and CAAS
+# Jordan, Simon, Pau, MiniMon and CAAS
     imgWidth = 1920 # Logitech and Pi3
     imgHeight = 1080
     #imgWidth = 2592  # Camera used by CAAS
     #imgHeight = 1944
+    #imgWidht = 2560  # MiniMon camera
+    #imgHeight = 1920 
     
 labelNames = ['Insect'] # YOLO Only one label
 
