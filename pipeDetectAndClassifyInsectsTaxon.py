@@ -339,7 +339,7 @@ if __name__=='__main__':
     parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     #parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
-    parser.add_argument('--frame_stride', default='3', type=int) # for video, not used for images
+    parser.add_argument('--frame_stride', default='1', type=int) # for video, not used for images
     #parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
     parser.add_argument('--scale', default='1.00', type=float) # Scale factor used for creating result video
     parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)

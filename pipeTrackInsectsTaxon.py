@@ -264,8 +264,8 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                 if videoCap != None: # Use video recording
                     if insect['frameId'] < 2: # Ignore first 5 frames KBE???
                         success = False
-                    while success and (frame_count < insect['frameId'] + 1): # Why offset needed KBE??? frame_skip = 1
-                    #while success and (frame_count < insect['frameId'] - 1): # Why offset needed KBE??? frame_skip = 3
+                    #while success and (frame_count < insect['frameId'] - 1): # Why offset needed KBE??? frame_stride = 3
+                    while success and (frame_count < insect['frameId'] + 1): # Why offset needed KBE??? frame_stride = 1
                         success, im = videoCap.read()
                         if ".mp4" in args.video:
                             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
