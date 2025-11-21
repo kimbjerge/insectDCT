@@ -7,7 +7,7 @@ Tracking should be used for high time-lapse recordings (0.33 - 1fps); otherwise,
 Full-sized images are resized to 1920x1080 pixels for detection with YOLO11.
 Insects detected with bounding boxes are cropped with rectangular windows and resized to 128x128 pixels for classification with CNN models.
 
-Example shown below of a time-lapse image with a Bumblebee (<em>Bombus lapidarius</em>) visiting flowering Sedum plants. 
+Example shown below of a time-lapse image with two Bumblebees (<em>Bombus lapidarius</em>) visiting flowering Sedum plants. 
 
 ![Alt text](BumblebeeSedum.jpg)
 
