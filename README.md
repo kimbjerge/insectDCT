@@ -106,9 +106,10 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    - $ python pipeTrackInsectsTaxon.py  <br />
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
    
-   See code for additional parameters for the above python scripts (pipeDetectAndClassifyInsectsTaxon.py and pipeTrackInsectsTaxon.py).
+   See code for additional parameters for the above python scripts:  <br />
+   https://github.com/kimbjerge/insectsDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
 
-7. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
+8. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
      Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
