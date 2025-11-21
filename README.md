@@ -91,7 +91,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
         On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --useExifTime True  <br />
-     	Uses the exif file information to get data and time from images instead of file name with format: CAM1_YYYY_MM_DD_HH_MM_SS.jpg
+     	Uses the exif file information to get data and time from images instead of file name with format: CAM1_YYYY_MM_DD_HH_MM_SS.jpg or CAM1_YYYYMMDDHHMMSS_..jpg
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S  <br />
      	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
@@ -398,7 +398,7 @@ https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
  - createCrops.py - creates crops of insect images found by the insect detector and classifier
  - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
  - countCropsOrchard.py - counts crops and plots statistics on validated crops for models V3 and V4 - result files: Test-HierarchicalClassifierVx.csv (Precision Micro and Macro)
- - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 4x4 matrix plot (See examples below)
+ - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 3x4 matrix plot (See examples below)
 
    ![Alt text](ExTrackCrops.png)
 
