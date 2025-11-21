@@ -80,6 +80,8 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
   
 6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
+6.1 Detector and classifier:
+
    - $ python pipeDetectAndClassifyInsectsTaxon.py  <br />
      	Performs detection and classification with ConvNextBase on CUDA:0
      
@@ -98,7 +100,9 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
      
    - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
      	Performs detection and classification using models trained on classification dataset V5 instead of V6 (Works only for modelType: ConvNextBase and ResNet50)
-     
+
+6.2 Tracker to be used for recordings with framerates of 0.25 - 24 fps - works with both videos and images:
+	 
    - $ python pipeTrackInsectsTaxon.py  <br />
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
    
