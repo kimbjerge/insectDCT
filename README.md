@@ -108,6 +108,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    
    See code for additional parameters for the above python scripts:  <br />
    https://github.com/kimbjerge/insectsDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
+   https://github.com/kimbjerge/insectsDCT/blob/main/pipeTrackInsectsTaxon.py
 
 8. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
    
