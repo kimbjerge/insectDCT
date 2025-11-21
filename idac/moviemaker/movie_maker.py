@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class MovieMaker:
-    def __init__(self, config, name='Result.avi'):
+    def __init__(self, config, name='Result.avi'): # or .mp4
         config = config['moviemaker']
         self.maxframes = config['maxframes']
         self.maxim = config['maximages']
@@ -16,7 +16,11 @@ class MovieMaker:
         self.fps = config['fps']
         finaldir = Path(self.resultdir) / name
         if self.writemovie:
-            self.writer = cv2.VideoWriter(str(finaldir), cv2.VideoWriter_fourcc(*'DIVX'), self.fps, self.size)
+            if '.avi' in name:
+                self.writer = cv2.VideoWriter(str(finaldir), cv2.VideoWriter_fourcc(*'DIVX'), self.fps, self.size)
+            else:
+                self.writer = cv2.VideoWriter(str(finaldir), cv2.VideoWriter_fourcc(*'mp4v'), self.fps, self.size)
+                #self.writer = cv2.VideoWriter(str(finaldir), cv2.VideoWriter_fourcc(*'avc1'), self.fps, self.size)
 
     def getImDateTime(self, imname):
         
@@ -33,6 +37,7 @@ class MovieMaker:
                 imdate, imtime = self.getImDateTime(imname)
                 dateTime = imdate + ' ' + imtime
                 cv2.putText(im, dateTime, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+            #im = cv2.resize(im, self.size, interpolation = cv2.INTER_AREA)
             self.writer.write(cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
             self.framecounter = self.framecounter + 1
 

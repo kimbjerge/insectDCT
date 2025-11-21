@@ -10,7 +10,7 @@ import cv2
 import argparse
 import datetime
 import time
-from skimage import io
+#from skimage import io
 from idac.configreader.configreader import readconfig
 from idac.datareader.data_reader import DataReader
 from idac.tracker.tracker import Tracker
@@ -198,6 +198,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
     imod = Imagemod()
     conf['moviemaker']['resultdir'] = trackPath # Overwrite resultDir in configuration with trackPath
     mm = MovieMaker(conf, name=trackName+'-TR.avi')
+    #mm = MovieMaker(conf, name=trackName+'-TR.mp4')
 
     stat = Stats(conf)
     predict = Predictions(conf)
@@ -260,6 +261,7 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
             #print(stat.count)
 
             if writemovie:
+                
                 success = True
                 if videoCap != None: # Use video recording
                     if insect['frameId'] < 2: # Ignore first 5 frames KBE???
@@ -267,8 +269,6 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     #while success and (frame_count < insect['frameId'] - 1): # Why offset needed KBE??? frame_stride = 3
                     while success and (frame_count < insect['frameId'] + 1): # Why offset needed KBE??? frame_stride = 1
                         success, im = videoCap.read()
-                        if ".mp4" in args.video:
-                            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                         frame_count += 1
                     
                     #success = False
@@ -280,15 +280,18 @@ def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignore
                     print("Video frame", frame_count, "detected frame", insect['frameId'], success)
                 else:
                     file_name = imagePath+filepath
-                    im = io.imread(file_name)
-                    
-
+                    #im = io.imread(file_name)
+                    im = cv2.imread(file_name)
+                
+                
                 if success:
+                    im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                     image = imod.drawoois(im, goods)
                     height, width, channel = image.shape
                     #print("Image shape", width, height, channel)
-                    if width != 1920 and height != 1080:
-                        image = cv2.resize(image, (1920, 1080), interpolation=cv2.INTER_AREA)
+                    (w, h) = mm.size # Size of result movie
+                    if width != w and height != h:
+                        image = cv2.resize(image, (w, h), interpolation=cv2.INTER_AREA)
                     #bytesPerLine = 3 * width
                     #qImg = QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
             
@@ -326,16 +329,18 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.1.1\n" # Updated for models trained on datasetV6
+    version = "pipeTrackInsectsTaxon.py version: 1.1.2\n" # Updated for models trained on datasetV6
 
     print('Tracking insects based on detection files *-DL.csv')
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--images', default='./images/') #Path to images used with fileName in *-CL.csv files
     parser.add_argument('--video', default='') # Path to video recording (If video used instead of single images)
+    #parser.add_argument('--video', default='/PAU/videos/') # Path to video recording (If video used instead of single images)
     parser.add_argument('--detections', default='./detections/') #Directory that contains detections in *-CL.csv files
+    #parser.add_argument('--detections', default='/PAU/detections_24fps_conf0_3/') #Directory that contains detections in *-CL.csv files
     parser.add_argument('--tracks', default='./tracks/') #Directory where track results are stored
-    #parser.add_argument('--dateFormat', default='YYYY_MM_DD') #Filename data format or 'YYYYMMDD', not used anymore
+    #parser.add_argument('--tracks', default='/PAU/tracks/') #Directory where track results are stored
     parser.add_argument('--dataset', default='V6') #dataset V2 (ResNet), dataset V3 or V4 (ResNet or ConvNextBase), dataset V4
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images used by project Orchard
