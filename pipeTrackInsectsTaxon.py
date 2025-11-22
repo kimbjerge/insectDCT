@@ -187,9 +187,14 @@ def getDateTime(image_filename):
 """
 
 #%% Run tracking of time-lapse images in CSV file specified by dirName       
-def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation, videoCap=None):
+def run(trackName, imagePath, detectPath, trackPath, conf, taxaHierarchy, ignoreVegetation, movieTrack="movie", videoCap=None):
     
-    writemovie = conf['moviemaker']['writemovie']
+    # Overwrite content of configuration file
+    conf['moviemaker']['writemovie'] = False
+    if movieTrack == "movie":
+        conf['moviemaker']['writemovie'] = True
+    
+    writemovie = conf['moviemaker']['writemovie'] 
     reader = DataReader(conf)
     gen = reader.getimage()
     print(type(gen))
@@ -329,7 +334,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.1.2\n" # Updated for models trained on datasetV6
+    version = "pipeTrackInsectsTaxon.py version: 1.1.3\n" # Updated for models trained on datasetV6
 
     print('Tracking insects based on detection files *-DL.csv')
     
@@ -345,6 +350,7 @@ if __name__ == '__main__':
     parser.add_argument('--checkTaxa', default='', type=bool) # Use hierarchy to check if same insect in track, empty = False 
     parser.add_argument('--trapFilePath', default='', type=bool) # Is trap (system) part of file path to images used by project Orchard
     parser.add_argument('--ignoreVegetation', default='True', type=bool) # Do not use classified vegetation part of tracking, empty = False
+    parser.add_argument('--movieTrack', default='movie') # Create a movie marked with tracks, if empty or different text no movie is created 
     args = parser.parse_args() 
     
     # Read configuration file
@@ -404,7 +410,8 @@ if __name__ == '__main__':
                 videoCap = cv2.VideoCapture(video_path + videoFile)
                 
             print(fileName, trackName)
-            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, taxaHierarchy, args.ignoreVegetation, videoCap)
+            stat, counts, totPred, totFiltered = run(trackName, args.images, args.detections, args.tracks, conf, 
+                                                     taxaHierarchy, args.ignoreVegetation, args.movieTrack, videoCap)
             totalPredictions += totPred
             totalFilteredPredictions += totFiltered
             imageCounts += counts
