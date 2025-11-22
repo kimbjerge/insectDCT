@@ -89,10 +89,10 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 	    Performs detection and classification with ConvNextBase on CPU
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py --images "./project/images/"  <br />
-     	Specify path to folder location of images (*.jpg) to be processed.
+     	Specify path to folder location of images (.jpg) to be processed.
 
    - $ python pipeDetectAndClassifyInsectsTaxon.py --resultsDir "./project/detecions/"  <br />
-     	Specify path to folder location for destination to store results (*.csv and *.avi files).
+     	Specify path to folder location for destination to store results (.csv and .avi files).
     
    - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu --optimized ncnn <br />
 	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
@@ -113,7 +113,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
      	Performs tracking based on the CSV output files (./detections/*-CL.csv)
 
    - $ python pipeTrackInsectsTaxon.py --images "./project/images/" --detections "./project/detections" --tracks "./project/tracks" <br />
-     	Specify the path for source images (*.jpg), detections (*.csv) and resulting track files (*.csv, *.json and *.avi) 
+     	Specify the path for source images (.jpg), detections (.csv) and resulting track files (.csv, .json and .avi) 
 
    - $ python pipeTrackInsectsTaxon.py  --checkTaxa True <br />
      	Performs tracking only using classification where classes are of the same taxon (order, family, genus or species).
