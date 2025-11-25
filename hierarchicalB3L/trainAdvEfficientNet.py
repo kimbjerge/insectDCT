@@ -256,6 +256,10 @@ def trainModel(alpha, save_path):
         print("Testing wrong hierarchy predictions %d/%d (%.5f)" % (countWrongHierarchy, testSize, countWrongPercentage))
         print('-------------------------------------------------------------------------------------------')
        
+        src_model_file_old  = save_path + 'dhc' + str(epoch_idx) + '.pth'
+        if os.path.exists(src_model_file_old):
+            os.remove(src_model_file_old)
+            
         src_model_file = save_path + 'dhc' + str(epoch_idx+1) + '.pth'
         torch.save(model.state_dict(), src_model_file)
         print("Model saved in ", src_model_file)
