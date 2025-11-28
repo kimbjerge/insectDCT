@@ -35,9 +35,9 @@ def saveImages(frameId, srcFilename, count, skip, imageRGB, imageMIE, text="Inse
 
     count += 1
     if count % skip == 0: # Save to test dataset
-        pathToDest = pathToDestDataset.replace("train", "test")
-        pathToDestMIE = pathToDestDatasetMIE.replace("train", "test")
-        print(text + " Test  image", cameraId+labelFileName)
+        pathToDest = pathToDestDataset.replace("train", "val")
+        pathToDestMIE = pathToDestDatasetMIE.replace("train", "val")
+        print(text + " Val   image", cameraId+labelFileName)
     else: # save to train dataset
         pathToDest = pathToDestDataset
         pathToDestMIE = pathToDestDatasetMIE
@@ -89,8 +89,11 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
                 frame_count += 1
                 
             if success:
-                count, _, _ = saveImages(frameIdLast + save_empty_frame_offset, 
-                                         row['fileName'], count, skip, imageRGB, imageMIE, text="Empty ")         
+                count, labelFileName, pathToDest = saveImages(frameIdLast + save_empty_frame_offset, 
+                                         row['fileName'], count, skip, imageRGB, imageMIE, text="Empty ")
+                
+                labelFile = open(pathToDest+cameraId+labelFileName, "w") # Create empty label file
+                labelFile.close()
                 
         # Handle saving image with detections
         framePos = frameId + frame_id_offset
