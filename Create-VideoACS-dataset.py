@@ -11,15 +11,43 @@ Paper:https://doi.org/10.1002/rse2.245
 
 import os
 import cv2
-import shutil
 import pandas 
 import pandas as pd
 from common.motionEnhancement import MotionEnhancement
+
+# Save an empty frame with offset of last detected insects 
+save_empty_frame_offset = 2 # If 0 then no frames are saved
+frame_id_offset = 2 # frame_stride = 1 during detection
+#frame_id_offset = 0 # frame_stride = 3 during detection
+
+# Identification of camera sites
+cameraId = "ACS_"
 
 # UFZ image size, Pi model 3 camera HD resolution
 IMG_WIDTH = 1920
 IMG_HEIGHT = 1080
 
+def saveImages(frameId, srcFilename, count, skip, imageRGB, imageMIE, text="Insect"):
+    
+    frameIdTxt = '_' + str(frameId) + '.jpg'
+    imageFileName = srcFilename.replace('.mp4', frameIdTxt)
+    labelFileName = imageFileName.replace('.jpg', '.txt')
+
+    count += 1
+    if count % skip == 0: # Save to test dataset
+        pathToDest = pathToDestDataset.replace("train", "test")
+        pathToDestMIE = pathToDestDatasetMIE.replace("train", "test")
+        print(text + " Test  image", cameraId+labelFileName)
+    else: # save to train dataset
+        pathToDest = pathToDestDataset
+        pathToDestMIE = pathToDestDatasetMIE
+        print(text + " Train image", cameraId+labelFileName)
+    
+    cv2.imwrite(pathToDest+cameraId+imageFileName, imageRGB)
+    cv2.imwrite(pathToDestMIE+cameraId+imageFileName, imageMIE)
+    
+    return count, labelFileName, pathToDest
+            
 def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDataset, pathToDestDatasetMIE, split):
     
     mie = MotionEnhancement()
@@ -27,6 +55,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
     skip = int(100/split)
     count = 0
     frame_count = 0
+    frameId = 0
     currentVideoFileName = ""
     videoCap = None
     imageRGB = None
@@ -43,12 +72,31 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             videoCap = cv2.VideoCapture(pathToVideoFile) # Opens new video file to capture frames
             frame_count = 0
         
+        frameIdLast = frameId
         frameId = row['frameId']
-        framePos = frameId + 2
+
+        print("Video frame", frame_count, "detected frame", frameId)
+        
+        # Handle saving empty image with save_empty_frame_offset of last frame
+        if (frameId > frameIdLast + save_empty_frame_offset) and (save_empty_frame_offset > 0) and (frameIdLast > 0):
+            framePosEmpty = frameIdLast + save_empty_frame_offset + frame_id_offset
+            success = True
+            while success and (frame_count < framePosEmpty): # Reading next image to create MIE
+                imageRGB = imageNext
+                success, imageNext = videoCap.read()
+                if success and (frame_count > framePosEmpty - 3):
+                    imageMIE, imgPrev = mie.motion_image(imageNext)
+                frame_count += 1
+                
+            if success:
+                count, _, _ = saveImages(frameIdLast + save_empty_frame_offset, 
+                                         row['fileName'], count, skip, imageRGB, imageMIE, text="Empty ")         
+                
+        # Handle saving image with detections
+        framePos = frameId + frame_id_offset
         success = True
         if frameId < 3: # Ignore first frames 
             success = False
-        #while success and (frame_count < insect['frameId']): # Why offset needed KBE??? frame_stride = 3
         while success and (frame_count < framePos): # Reading next image to create MIE
             imageRGB = imageNext
             success, imageNext = videoCap.read()
@@ -56,28 +104,12 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
                 imageMIE, imgPrev = mie.motion_image(imageNext)
             frame_count += 1
         
-        print("Video frame", frame_count, "detected frame", frameId, success)
-
         if success:
+        
+            count, labelFileName, pathToDest = saveImages(frameId, row['fileName'], count, skip, imageRGB, imageMIE)
             
             detections_df = data_df.loc[data_df['fileName'] == currentVideoFileName]
             detections_df = detections_df.loc[detections_df['frameId'] == frameId]
-            
-            frameIdTxt = '_' + str(frameId) + '.jpg'
-            imageFileName = row['fileName'].replace('.mp4', frameIdTxt)
-            labelFileName = imageFileName.replace('.jpg', '.txt')
-            cameraId = "ACS_"
-
-            count += 1
-            if count % skip == 0: # Save to test dataset
-                pathToDest = pathToDestDataset.replace("train", "test")
-                pathToDestMIE = pathToDestDatasetMIE.replace("train", "test")
-                print("Test image", cameraId+labelFileName)
-            else: # save to train dataset
-                pathToDest = pathToDestDataset
-                pathToDestMIE = pathToDestDatasetMIE
-                print("Train image", cameraId+labelFileName)
-                
             labelFile = open(pathToDest+cameraId+labelFileName, "w")
             for i, detection in detections_df.iterrows():
                 #print(detection['fileName'], detection['x1'], detection['y1'], detection['x2'], detection['y2'])
@@ -90,9 +122,6 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
                 print(line)
                 labelFile.write(line + "\n")
             labelFile.close()
-            
-            cv2.imwrite(pathToDest+cameraId+imageFileName, imageRGB)
-            cv2.imwrite(pathToDestMIE+cameraId+imageFileName, imageMIE)
             
             
 if __name__=='__main__':
