@@ -21,7 +21,7 @@ frame_id_offset = 2 # frame_stride = 1 during detection
 #frame_id_offset = 0 # frame_stride = 3 during detection
 
 # Identification of camera sites
-cameraId = "ACS_"
+cameraId = "PP_"
 
 # UFZ image size, Pi model 3 camera HD resolution
 IMG_WIDTH = 1920
