@@ -394,8 +394,8 @@ if __name__ == '__main__':
     totalPredictions = 0
     totalFilteredPredictions = 0
     for fileName in sorted(os.listdir(args.detections)): # fileName must be in format <trapId>_YYYY_MM_DD-CL.csv
-        if '-CL.csv' in fileName:
-            trackName = fileName.split('-')[0] 
+        if "-CL.csv" in fileName:
+            trackName = fileName.replace("-CL.csv", "");
             
             videoCap = None
             videoFile = ""
