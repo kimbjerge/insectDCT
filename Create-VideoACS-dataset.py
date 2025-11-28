@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 27 14:38:53 2025
+Created on Mon Nov 28 14:38:53 2025
 
-Used to create dataset for detection using YOLO11 based on RGB and MIE images selected from Real-time Nature Impact images 
-Use camera systems wiht Jetson Nano and Logitech cameras (Each system with one Logitech Camreas)
-Paper:https://doi.org/10.1002/rse2.245
+Used to create dataset for detection using YOLO11 based on RGB and MIE images selected from the paper:
+Serra-Martin et. al "Comparative assessment of automated and manual monitoring in comprehensive plant–pollinator communities"
+Use systems with ACS-HQ cameras to create 10 sec. videos each 1 minute
+Paper:https://doi.org/10.1111/2041-210X.70165
     
 @author: Kim Bjerge
 """
