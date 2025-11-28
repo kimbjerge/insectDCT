@@ -128,9 +128,9 @@ if __name__=='__main__':
     
     TrainDataset = False
     if TrainDataset == False: # Not used for training
-        numInsects = 2000
-        numUnsure = 250
-        numVegetation = 250
+        numInsects = 500
+        numUnsure = 200
+        numVegetation = 50
         splitPercentage = 20 # Percentage of image used for test
         pathToSrcDataset = 'D:/PAU/detections_A/'
 
