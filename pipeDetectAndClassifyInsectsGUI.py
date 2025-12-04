@@ -25,6 +25,7 @@ class App:
         # -------------------------------
         # Argument variables with defaults
         # -------------------------------
+        self.yoloWeights = tk.StringVar(value="./runs/detect/insects5Motion/weights/best.pt")
         self.modelType = tk.StringVar(value="ConvNextBase")
         self.dataset = tk.StringVar(value="V6")
         self.useExifTime = tk.BooleanVar(value=False)
@@ -63,71 +64,89 @@ class App:
                     btn = ttk.Button(frame, text="Browse", command=lambda: self.browse_file(variable))
                 btn.grid(row=row, column=2, padx=5)
 
+        rowIdx = 0
+        # -------------------------------
+        # YOLO weights (with browse)
+        # -------------------------------
+        add_entry("YOLO Model", self.yoloWeights, rowIdx, browse=True, folder=False)
+  
         # -------------------------------
         # Dropdowns
         # -------------------------------
-        ttk.Label(frame, text="Model Type").grid(row=0, column=0, sticky="w")
+        rowIdx += 1
+        ttk.Label(frame, text="Taxa Model").grid(row=rowIdx, column=0, sticky="w")
         ttk.Combobox(frame, textvariable=self.modelType, 
-                     values=["ResNet50", "ConvNextBase", "EfficientNetV2S"]).grid(row=0, column=1, sticky="ew")
-
-        ttk.Label(frame, text="Dataset").grid(row=1, column=0, sticky="w")
+                     values=["ResNet50", "ConvNextBase", "EfficientNetV2S"]).grid(row=rowIdx, column=1, sticky="ew")
+        rowIdx += 1
+        ttk.Label(frame, text="Dataset").grid(row=rowIdx, column=0, sticky="w")
         ttk.Combobox(frame, textvariable=self.dataset,
-                     values=["V3", "V4", "V5", "V6"]).grid(row=1, column=1, sticky="ew")
+                     values=["V3", "V4", "V5", "V6"]).grid(row=rowIdx, column=1, sticky="ew")
 
         # -------------------------------
         # Video and images (with browse)
         # -------------------------------
-        add_entry("Video", self.video, 2, browse=True, folder=False)
-        add_entry("Images Dir", self.images, 3, browse=True, folder=True)
+        rowIdx += 1
+        add_entry("Video", self.video, rowIdx, browse=True, folder=False)
+        rowIdx += 1
+        add_entry("Images Dir", self.images, rowIdx, browse=True, folder=True)
 
-        ttk.Checkbutton(frame, text="Use Image Exif Time", variable=self.useExifTime).grid(row=4, column=1, sticky="w")
-
-        # -------------------------------
-        # Confidence
-        # -------------------------------
-        add_entry("Confidence", self.confidence, 5)
+        rowIdx += 1
+        ttk.Checkbutton(frame, text="Use Image Exif Time", variable=self.useExifTime).grid(row=rowIdx, column=1, sticky="w")
 
         # -------------------------------
         # Confidence
         # -------------------------------
-        add_entry("Threshold", self.thresholdStd, 6)
+        rowIdx += 1
+        add_entry("Confidence", self.confidence, rowIdx)
+
+        # -------------------------------
+        # Confidence
+        # -------------------------------
+        rowIdx += 1
+        add_entry("Threshold", self.thresholdStd, rowIdx)
 
         # -------------------------------
         # Device dropdown
         # -------------------------------
-        ttk.Label(frame, text="Device").grid(row=7, column=0, sticky="w")
+        rowIdx += 1
+        ttk.Label(frame, text="Device").grid(row=rowIdx, column=0, sticky="w")
         ttk.Combobox(frame, textvariable=self.device, 
-                     values=["cuda:0", "cpu"]).grid(row=7, column=1, sticky="ew")
+                     values=["cuda:0", "cpu"]).grid(row=rowIdx, column=1, sticky="ew")
 
         # -------------------------------
         # Movie Predict dropdown
         # -------------------------------
-        ttk.Label(frame, text="Predictions").grid(row=8, column=0, sticky="w")
+        rowIdx += 1
+        ttk.Label(frame, text="Predictions").grid(row=rowIdx, column=0, sticky="w")
         ttk.Combobox(frame, textvariable=self.moviePredict, 
-                     values=["movie", "CSV only"]).grid(row=8, column=1, sticky="ew")
+                     values=["movie", "CSV only"]).grid(row=rowIdx, column=1, sticky="ew")
 
-        ttk.Checkbutton(frame, text="Movie MIE format", variable=self.videoMIE).grid(row=9, column=1, sticky="w")
+        rowIdx += 1
+        ttk.Checkbutton(frame, text="Movie MIE format", variable=self.videoMIE).grid(row=rowIdx, column=1, sticky="w")
 
         # -------------------------------
         # CSV format dropdown
         # -------------------------------
-        ttk.Label(frame, text="CSV Format").grid(row=10, column=0, sticky="w")
+        rowIdx += 1
+        ttk.Label(frame, text="CSV Format").grid(row=rowIdx, column=0, sticky="w")
         ttk.Combobox(frame, textvariable=self.CSVformat,
-                     values=["tracking", "detection"]).grid(row=10, column=1, sticky="ew")
+                     values=["tracking", "detection"]).grid(row=rowIdx, column=1, sticky="ew")
 
         # -------------------------------
         # Results dir (browse folder)
         # -------------------------------
-        add_entry("Results Dir", self.resultsDir, 11, browse=True, folder=True)
+        rowIdx += 1
+        add_entry("Results Dir", self.resultsDir, rowIdx, browse=True, folder=True)
 
         # -------------------------------
         # Start / Stop buttons
         # -------------------------------
+        rowIdx += 1
         self.start_btn = ttk.Button(frame, text="Start", command=self.start_process)
-        self.start_btn.grid(row=12, column=0, pady=10)
+        self.start_btn.grid(row=rowIdx, column=0, pady=10)
 
         self.stop_btn = ttk.Button(frame, text="Stop", command=self.stop_process, state=tk.DISABLED)
-        self.stop_btn.grid(row=12, column=1, pady=10)
+        self.stop_btn.grid(row=rowIdx, column=1, pady=10)
 
         # -------------------------------
         # Console Output Frame (resizeable)
@@ -168,6 +187,7 @@ class App:
 
         cmd = [
             sys.executable, "pipeDetectAndClassifyInsectsTaxon.py",
+            "--yoloWeights", self.yoloWeights.get(),
             "--modelType", self.modelType.get(),
             "--dataset", self.dataset.get(),
             "--useExifTime", "True" if self.useExifTime.get() else "",
