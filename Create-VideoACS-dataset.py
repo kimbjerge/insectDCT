@@ -18,11 +18,78 @@ from common.motionEnhancement import MotionEnhancement
 
 # Save an empty frame with offset of last detected insects 
 save_empty_frame_offset = 2 # If 0 then no frames are saved
+#save_empty_frame_offset = 0 # If 0 then no frames are saved
 frame_id_offset = 2 # frame_stride = 1 during detection
 #frame_id_offset = 0 # frame_stride = 3 during detection
 
 # Identification of camera sites
 cameraId = "PP_"
+
+videoNames = [
+    "ACS-HQ10_2024_04_13_18_51_16_rotated.mp4",
+    "ACS-HQ10_2024_04_17_13_52_49.mp4",
+    "ACS-HQ11_2024_04_17_13_52_49_NI_ipomoea.mp4",
+    "ACS-HQ12_2024_04_17_13_52_49.mp4",
+    "ACS-HQ13_2024_04_17_13_52_49_GS_ipomoea.mp4",
+    "ACS-HQ14_2024_04_17_13_52_49_GS_asystacia.mp4",
+    "ACS-HQ14_2024_04_17_13_52_49_GS_scaevola.mp4",
+    "ACS-HQ16_2024_02_19_15_54_49_apis.mp4",
+    "ACS-HQ16_2024_04_17_13_52_49.mp4",
+    "ACS-HQ16_2024_04_17_13_52_49_apis.mp4",
+    "ACS-HQ17_2024_04_17_13_52_49_FE_anacardium.mp4",
+    "ACS-HQ17_2024_04_17_13_52_49_GS_premna.mp4",
+    "ACS-HQ17_2024_04_17_13_52_49_GS_stachytarpeta.mp4",
+    "ACS-HQ19_2024_04_17_13_52_49_GS_chrysobalanus.mp4",
+    "ACS-HQ19_2024_04_17_13_52_49_NI_scaevola.mp4",
+    "ACS-HQ19_2024_04_17_13_52_49_thespesia_GS.mp4",
+    "ACS-HQ1_2024_02_19_15_24_42_lasio_xylocopa.mp4",
+    "ACS-HQ1_2024_04_17_13_52_49_AR_scaevola.mp4",
+    "ACS-HQ22_2024_04_17_13_52_49_bee.mp4",
+    "ACS-HQ25_2024_04_17_13_52_49_GS_morinda.mp4",
+    "ACS-HQ27_2024_04_17_13_52_49_GS_chrysobalanus.mp4",
+    "ACS-HQ27_2024_04_17_13_52_49_NI_anacardium.mp4",
+    "ACS-HQ28_2024_04_17_13_52_49_NI_chrysobalanus.mp4",
+    "ACS-HQ29_2024_04_17_13_52_49.mp4",
+    "ACS-HQ29_2024_04_17_13_52_49_GS_premna.mp4",
+    "ACS-HQ2_2024_02_19_15_24_42.mp4",
+    "ACS-HQ2_2024_04_17_13_52_49_GS_chrysobalanus.mp4",
+    "ACS-HQ2_2024_04_17_13_52_49_GS_ipomoea.mp4",
+    "ACS-HQ30_2024_04_17_13_52_49_apis_lasio.mp4",
+    "ACS-HQ34_2024_02_19_15_54_49_megachile.mp4",
+    "ACS-HQ34_2024_04_17_13_52_49_megachile.mp4",
+    "ACS-HQ38_2024_04_17_13_52_49_apis.mp4",
+    "ACS-HQ3_2024_04_14_00_50-23_lasio_sarcophaga.mp4",
+    "ACS-HQ3_2024_04_17_13_52_49.mp4",
+    "ACS-HQ3_2024_04_17_13_52_49_NI_premna.mp4",
+    "ACS-HQ45_2024_04_17_13_52_49.mp4",
+    "ACS-HQ45_2024_04_17_13_52_49_apis.mp4",
+    "ACS-HQ47_2024_04_17_13_52_49_apis_formiga.mp4",
+    "ACS-HQ4_2024_02_19_15_54_49_lasioglossum.mp4",
+    "ACS-HQ4_2024_04_17_13_52_49.mp4",
+    "ACS-HQ4_2024_04_17_13_52_49_AR_scaevola.mp4",
+    "ACS-HQ4_2024_04_17_13_52_49_NI_stachytarpeta.mp4",
+    "ACS-HQ56_2024_04_17_13_52_49.mp4",
+    "ACS-HQ5_2024_04_13_12_19_21_Sirfid.mp4",
+    "ACS-HQ5_2024_04_17_13_52_49_AR_scaevola.mp4",
+    "ACS-HQ5_2024_04_17_13_52_49_GS_premna.mp4",
+    "ACS-HQ5_2024_04_17_13_52_49_NI_stachytarpeta.mp4",
+    "ACS-HQ60_2024_03_04_19_14_44_sarcophaga.mp4",
+    "ACS-HQ61_2024_04_13_17_52_49_nomioides.mp4",
+    "ACS-HQ62_2024_04_13_19_51_17_anthophora_bona.mp4",
+    "ACS-HQ6_2024_03_03_20_33_09_Anthophora.mp4",
+    "ACS-HQ6_2024_04_17_13_52_49_GS_premna.mp4",
+    "ACS-HQ70_2024_04_13_22_55_32.mp4",
+    "ACS-HQ71_2024_04_13_23_05_14.mp4",
+    "ACS-HQ72_2024_04_13_23_35_34.mp4",
+    "ACS-HQ73_2024_04_14_01_01_09.mp4",
+    "ACS-HQ7_2024_03_04_13_35_53_rotated.mp4",
+    "ACS-HQ7_2024_04_17_13_52_49_NI_coco.mp4",
+    "ACS-HQ8_2024_02_20_08_34_20_anthophora.mp4",
+    "ACS-HQ8_2024_04_17_13_52_49_NI_morinda.mp4",
+    "ACS-HQ8_2024_04_17_13_52_49_apis_party.mp4",
+    "ACS-HQ9_2024_02_19_15_54_49_rotated.mp4",
+    "ACS-HQ9_2024_04_17_13_52_49_NI_scaevola.mp4"
+    ]
 
 # UFZ image size, Pi model 3 camera HD resolution
 IMG_WIDTH = 1920
@@ -31,7 +98,9 @@ IMG_HEIGHT = 1080
 def saveImages(frameId, srcFilename, count, skip, imageRGB, imageMIE, text="Insect"):
     
     frameIdTxt = '_' + str(frameId) + '.jpg'
-    imageFileName = srcFilename.replace('.mp4', frameIdTxt)
+    fileId = videoNames.index(srcFilename)
+    #imageFileName = srcFilename.replace('.mp4', frameIdTxt)
+    imageFileName = 'S' + str(fileId) + frameIdTxt
     labelFileName = imageFileName.replace('.jpg', '.txt')
 
     count += 1
@@ -132,16 +201,38 @@ if __name__=='__main__':
     
     TrainDataset = False
     if TrainDataset == False: # Not used for training
-        numInsects = 500
-        numUnsure = 200
-        numVegetation = 20
+    
+        # Selecting videos with large insects and not detected
+        #numInsects = 500 # dataset_L
+        #numUnsure = 200 # dataset_L
+        #numVegetation = 2 # dataset_L
+        #splitPercentage = 20 # Percentage of image used for test
+        #save_empty_frame_offset = 2
+        #pathToSrcDataset = 'D:/PAU/detections_L/'
+        
+        # Selecting videos with normal sized insects and not detected
+        numInsects = 1250 # dataset
+        numUnsure = 350 # dataset
+        numVegetation = 5 # dataset
+        #save_empty_frame_offset = 2
         splitPercentage = 20 # Percentage of image used for test
-        pathToSrcDataset = 'D:/PAU/detections_A/'
+        pathToSrcDataset = 'D:/PAU/detections/'
+        
+        # Selecting videos with false positive background detections
+        #numInsects = 200 # dataset
+        #numUnsure = 300 # dataset
+        #numVegetation = 50 # dataset
+        #save_empty_frame_offset = 0
+        #splitPercentage = 20 # Percentage of image used for test
+        #pathToSrcDataset = 'D:/PAU/detections_FP/'
 
     pathToRecordData = 'D:/PAU/videos/'
     pathToDestDatasetMIE = 'D:/PAU/trainACSHQm/'
     pathToDestDataset = 'D:/PAU/trainACSHQ/'
                 
+    #for filename in sorted(os.listdir(pathToRecordData)):
+    #    print(f"\"{filename}\",")
+        
     firstTime = True
     # File format: S2_123-Aug09_1_88-20190808104930.jpg
     for filename in sorted(os.listdir(pathToSrcDataset)):
