@@ -311,7 +311,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.2\n" # New classification models EfficientNetV2S
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.2.3\n" # New classification models EfficientNetV2S
     
     parser = argparse.ArgumentParser()
     
@@ -548,5 +548,5 @@ if __name__=='__main__':
     print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
     print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
     print(f"{args.modelType} classification time average per detection {totalTimeClassification/numClassifications:.4f} sec.")
-        
+    print("Finished detection and classification of insects in time-lapse image or video recordings");    
     

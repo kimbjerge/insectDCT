@@ -15,7 +15,7 @@ import sys
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Tracking of Insects Ver. 1.1")
+        self.root.title("Insect Tracker Ver. 1.1")
 
         # Make GUI resizeable
         self.root.rowconfigure(1, weight=1)

@@ -13,7 +13,7 @@ import sys
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Detection and Classification of Insects Ver. 1.2")
+        self.root.title("Insect Detector and Classifier Ver. 1.2")
 
         # Make the window fully resizable
         self.root.rowconfigure(0, weight=0)

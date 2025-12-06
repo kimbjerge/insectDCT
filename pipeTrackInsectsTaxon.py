@@ -430,3 +430,4 @@ if __name__ == '__main__':
             """
          
     print("Images", imageCounts, "Predictions", totalPredictions) #, "Filtered", totalFilteredPredictions)
+    print("Finished tracking of insects in time-lapse image or video recordings");    

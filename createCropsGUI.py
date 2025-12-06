@@ -15,7 +15,7 @@ import sys
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Smart Insect Crop Generator")
+        self.root.title("Insect Crop Generator")
 
         # Resizable GUI
         self.root.rowconfigure(1, weight=1)

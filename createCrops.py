@@ -8,6 +8,7 @@ Created on Mon Jun  2 20:34:57 2025
 import os
 import sys
 import cv2
+import time
 import pandas as pd
 import argparse
 import pickle
@@ -242,6 +243,7 @@ if __name__=='__main__':
     hierarchicalClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128)
     
     print(args)
+    time.sleep(5)
     
     for filename in sorted(os.listdir(args.CSVfiles)):
         if filename.endswith('.csv') and '-CL' in filename:
