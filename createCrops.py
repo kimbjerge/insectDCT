@@ -54,8 +54,8 @@ def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCa
             while success and (frame_count < frameId + 1): # Why offset needed KBE??? frame_stride = 1, PAU
                 success, image = videoCap.read()
                 frame_count += 1
-                sys.stdout.write("FrameId %d \r" % (frame_count))
-                sys.stdout.flush()
+                #sys.stdout.write("FrameId %d \r" % (frame_count))
+                #sys.stdout.flush()
 
     if success == False or len(image) == 0:
         print("Error reading image or video")
@@ -176,6 +176,7 @@ def createCrops(csvName, imgPath, videoPath, dstPath, dataset, hierarchicalClass
             
 if __name__=='__main__':
 
+        
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--CSVfiles', default='./detections/') # Directory that contains CSV files
@@ -223,7 +224,9 @@ if __name__=='__main__':
     #parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_13052025.pth') # 128x128 F1: L1 0.93, L2 0.76, L3 0.68
     #parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_13052025.pkl')
     #parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds_13052025_TH3.csv') # Use thresholds below mean-3*std
-    
+
+    print("createCrops.py version: 1.0")
+
     args = parser.parse_args() 
     
     hierarchicalWeights = args.hierachical
@@ -246,3 +249,5 @@ if __name__=='__main__':
             data_df = pd.read_csv(args.CSVfiles + filename)
             #print(args.CSVfiles + filename)
             createCrops(filename.replace('.csv', ''), args.imagesPath, args.videoPath, args.cropsPath, data_df, hierarchicalClassifier)
+            
+    print("Finished creating insect crops from combinded detection and classification");
