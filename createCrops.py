@@ -49,15 +49,17 @@ def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCa
         if (frame_count == frameId - 1): # Crop in same frame as last called
             image = prevImage
             print("More crops in same frame", frame_count)
-        while success and (frame_count < frameId - 1): # Why offset needed KBE???
-            success, image = videoCap.read()
-            frame_count += 1
-            sys.stdout.write("FrameId %d \r" % (frame_count))
-            sys.stdout.flush()
+        else:
+            #while success and (frame_count < frameId - 1): # Why offset needed KBE??? frame_stride = 3, Scarbosa
+            while success and (frame_count < frameId + 1): # Why offset needed KBE??? frame_stride = 1, PAU
+                success, image = videoCap.read()
+                frame_count += 1
+                sys.stdout.write("FrameId %d \r" % (frame_count))
+                sys.stdout.flush()
 
     if success == False or len(image) == 0:
         print("Error reading image or video")
-        return frame_count
+        return frame_count, image, success
     
     height, width, channels = image.shape
     #print(dstPath+cropDirName, height, width)
@@ -105,7 +107,7 @@ def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCa
     print(dstPath + cropDirName + '/' + imgNameCrop)
     cv2.imwrite(dstPath + cropDirName + '/' + imgNameCrop, imgCrop) 
     
-    return frame_count, image
+    return frame_count, image, success
 
 def createCropDirName(level, labelL1, labelL2, labelL3):
     
@@ -160,12 +162,17 @@ def createCrops(csvName, imgPath, videoPath, dstPath, dataset, hierarchicalClass
         
         if videoPath != '' and videoCap == None:
             videoFile = videoPath + obj['fileName']
-            print("Uses video recording", videoFile, "FrameId", obj['frameId'])
             videoCap = cv2.VideoCapture(videoFile)
-        else:
-            print("Used image file", imagePath, "FrameId", obj['frameId'])
 
-        frame_count, image = saveCrop(x1, y1, x2, y2, image, frame_count, obj['frameId'], imagePath, videoCap, cropDirName, dstPath, csvName)       
+        if videoCap == None:
+            print("Used image file", imagePath, "FrameId", obj['frameId'])
+        else:
+            print("Uses video recording", videoFile, "FrameId", obj['frameId'])
+
+        frame_count, image, success = saveCrop(x1, y1, x2, y2, image, frame_count, obj['frameId'], imagePath, videoCap, cropDirName, dstPath, csvName)       
+        
+        if success == False: 
+            return
             
 if __name__=='__main__':
 
@@ -183,9 +190,14 @@ if __name__=='__main__':
     #parser.add_argument('--CSVfiles', default='O:/Tech_TTH-KBE/MAMBO/2024/ecoinn/detectionsV1/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/MAMBO/2024/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='/UFZ/detectionsAllV5/') # Directory that contains CSV files
+    #parser.add_argument('--CSVfiles', default='/Orchard/detections_V6/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/UFZ/') # Directory that contains images
-    #parser.add_argument('--CSVfiles', default='/RTNI/detections/') # Directory that contains CSV files
+    #parser.add_argument('--CSVfiles', default='/RTNI/detections_V6/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/NI/RT/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='D:/MINIMON/detections/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='D:/MINIMON/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='D:/PAU/detections_L/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='D:/PAU/videos/') # Directory that contains images
 
     #parser.add_argument('--CSVfiles', default='/PollNI/S2/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/PollinatorWatch/FIN/S2/') # Directory that contains images
@@ -195,9 +207,12 @@ if __name__=='__main__':
     #parser.add_argument('--videoPath', default="D:/UFZ_BOS_STR/") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--videoPath', default="") # Directory that contains video, if empty then imagesPath is used
+    #parser.add_argument('--videoPath', default="D:/PAU/videos/") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--cropsPath', default='./crops/') # Directory to save images crops
+    #parser.add_argument('--cropsPath', default='/RTNI/crops_V6/') # Directory to save images crops
     #parser.add_argument('--cropsPath', default='J:/PollNI/crops/') # Directory to save images crops
+    #parser.add_argument('--cropsPath', default='D:/PAU/crops/') # Directory to save images crops
     
     parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data 
                                                    # or "V5" with GBIF and additional data, "V6" with more data and reorganized hierarchy
