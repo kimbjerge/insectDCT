@@ -42,7 +42,7 @@ class ParallelApp:
         ttk.Button(frame, text="Insect Crop Generator",
                    command=lambda: self.start_program("createCropsGUI.py")).grid(row=1, column=0, padx=10, pady=10)
 
-        ttk.Button(frame, text="Insect Track Plotter",
+        ttk.Button(frame, text="Insect Track Generator",
                    command=lambda: self.start_program("createTrackCropsGUI.py")).grid(row=1, column=1, padx=10, pady=10)
 
         # -------------------------------------------------------
