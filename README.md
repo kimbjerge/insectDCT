@@ -96,7 +96,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 	- "Open Insect Crops Viewer in Browser" -> insect_crops_viewer.html  <br />
 		- view insect image crops of taxa (*-CL.csv files)  <br />
 	- "Open Track Crops Viewer in Browser" -> track_crops_viewer.html <br />
-		- view insect image crops in tracks of taxa (*-TRS.csv file) <br />
+		- view insect image crops in track and taxa (*-TRS.csv file) <br />
 
 	The first four programs can be executed from the commandline as described in 7 and 8.
 
