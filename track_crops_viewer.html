@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insect Track Crops Viewer</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#0b1220; color:#e5e7eb; margin: 20px; }
+  #images img { margin: 6px; border: 2px solid #444; }
+  #trackSelect { width: 200px; }
+  .imgItem { display: inline-block; text-align: center; position: relative; margin: 6px; }
+  .species, .taxa { font-size: 14px; margin-top: 4px; color:#a0e3ff; }
+
+  /* --- Hover zoom effect for insect crops --- */
+  .imgItem img {
+    width: 80px;
+    height: auto;
+    border: 2px solid #444;
+    transition: transform 0.25s ease-out;
+    cursor: zoom-in;
+  }
+
+  .imgItem:hover img {
+    transform: scale(2.2);
+    z-index: 10;
+    border-color: #a0e3ff;
+  }
+</style>
+</head>
+<body>
+
+<h2>Insect Track Crops Viewer</h2>
+
+<label for="minDetections"><b>Minimum detections per track:</b></label>
+<input type="number" id="minDetections" value="3" min="1" style="width:60px;">
+<button onclick="applyDetectionFilter()">Apply</button><br><br>
+
+<b>Select Tracks *TRS.csv file:</b>
+<input type="file" id="csvFile" accept=".csv"><br><br>
+
+<b>Select Image Folder:</b>
+<input type="file" id="imgFolder" webkitdirectory directory><br><br>
+
+<label><b>Select Track ID:</b></label>
+<select id="trackSelect"></select>
+<button id="showBtn">Show Track Images</button>
+
+<hr>
+<div id="images"></div>
+
+<script>
+let csvData = [];
+let imgFiles = {};
+
+// ---- Load folder contents ----
+document.getElementById("imgFolder").addEventListener("change", function(e) {
+    imgFiles = {};
+    for (const file of e.target.files) {
+        imgFiles[file.name] = URL.createObjectURL(file);
+    }
+    alert("Image folder loaded (" + Object.keys(imgFiles).length + " images)");
+});
+
+// ---- Load & parse CSV ----
+document.getElementById("csvFile").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = event => parseCSV(event.target.result);
+    reader.readAsText(file);
+});
+
+let trackSpeciesMap = {};   // dominant species lookup
+let trackCountMap = {};     // number of detections lookup
+
+function parseCSV(text) {
+    const rows = text.split("\n");
+    const header = rows[0].split(",");
+    csvData = rows.slice(1).map(line => {
+        const values = line.split(",");
+        let row = {};
+        header.forEach((h, i) => row[h.trim()] = values[i] ? values[i].trim() : "");
+        return row;
+    });
+
+    // Filter only Lepidoptera
+    //const lep = csvData.filter(r => r.order.includes("Lepidoptera"));
+    const lep = csvData;
+
+    trackSpeciesMap = {};
+    trackCountMap = {};
+
+    lep.forEach(r => {
+        if (!trackSpeciesMap[r.id]) trackSpeciesMap[r.id] = {};
+        const sp = r.taxaLabel || "Unknown";
+        trackSpeciesMap[r.id][sp] = (trackSpeciesMap[r.id][sp] || 0) + 1;
+
+        trackCountMap[r.id] = (trackCountMap[r.id] || 0) + 1;
+    });
+
+    populateTrackDropdown();
+    alert("CSV loaded — " + Object.keys(trackSpeciesMap).length + " Insect tracks found");
+}
+
+function populateTrackDropdown() {
+    const min = parseInt(document.getElementById("minDetections").value) || 3;
+    const select = document.getElementById("trackSelect");
+    select.innerHTML = "";
+
+    Object.keys(trackSpeciesMap).forEach(trackId => {
+        const count = trackCountMap[trackId];
+        if (count < min) return;  // filter by minimum detections
+
+        const dominantSpecies = Object.entries(trackSpeciesMap[trackId])
+            .sort((a, b) => b[1] - a[1])[0][0];
+
+        const opt = document.createElement("option");
+        opt.value = trackId;
+        opt.textContent = `Track ${trackId} — ${dominantSpecies} (n=${count})`;
+        select.appendChild(opt);
+    });
+}
+
+function applyDetectionFilter() {
+    populateTrackDropdown();
+}
+
+// ---- Show selected track ----
+document.getElementById("showBtn").addEventListener("click", function() {
+    const trackId = document.getElementById("trackSelect").value;
+
+    const rows = csvData.filter(
+        //r => r.id === trackId && r.order.includes("Lepidoptera")
+        r => r.id === trackId
+    );
+
+    const container = document.getElementById("images");
+    container.innerHTML = "";
+
+    rows.forEach(r => {
+        const imgPath = imgFiles[r.fileName];
+        if (!imgPath) {
+            let missing = document.createElement("div");
+            missing.textContent = "Missing image: " + r.fileName;
+            container.appendChild(missing);
+            return;
+        }
+
+        let img = new Image();
+        img.onload = function() {
+            let canvas = document.createElement("canvas");
+            canvas.width = parseInt(r.width);
+            canvas.height = parseInt(r.height);
+
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(img,
+                parseInt(r.x1), parseInt(r.y1), parseInt(r.width), parseInt(r.height),
+                0, 0, parseInt(r.width), parseInt(r.height)
+            );
+
+            let cropped = new Image();
+            cropped.src = canvas.toDataURL();
+
+            let block = document.createElement("div");
+            block.className = "imgItem";
+
+            let species = document.createElement("div");
+            species.className = "taxa";
+            species.textContent = r.taxaLabel;
+
+            block.appendChild(cropped);
+            block.appendChild(species);
+            container.appendChild(block);
+        };
+        img.src = imgPath;
+    });
+});
+</script>
+
+</body>
+</html>
