@@ -78,7 +78,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
    - Anaconda: $ conda activate yolo11
 
-6a. Run the "Smart AI Insect Program Launcher": $ python smartInsectGUI.py
+6. Run the "Smart AI Insect Program Launcher": $ python smartInsectGUI.py
 
 	This program has six programs for easy use of the AI pipeline:  <br />
 	- "Insect Detector and Classifier" -> pipeDetectAndClassifyInsectsGUI.py  <br />
@@ -88,9 +88,9 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 	- "Open Insect Viewer in Browser" -> insect_viewer.html - view detections and classification of insect taxa (*-CL.csv files)  <br />
 	- "Open Track Viewer in Browser" -> track_viewer.html  - view tracked insect taxa (*-TR.csv files) <br />
 
-	The first four programs can be executed from the commandline as described in 6b.
-	
-6b. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
+	The first four programs can be executed from the commandline as described in 7 and 8.
+
+7. Commandline Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
    Detector and classifier - works with both videos and images:
 
@@ -134,7 +134,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    https://github.com/kimbjerge/insectsDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
    https://github.com/kimbjerge/insectsDCT/blob/main/pipeTrackInsectsTaxon.py
 
-8. Run the Python code to generate images of insect crops based on taxa classification and tracking described in 6.
+8. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
      Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
