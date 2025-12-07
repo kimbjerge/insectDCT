@@ -81,12 +81,18 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 6. Run the "Smart AI Insect Program Launcher": $ python smartInsectGUI.py
 
 	This GUI can launch six different programs for easy use of the AI pipeline:  <br />
-	- "Insect Detector and Classifier" -> pipeDetectAndClassifyInsectsGUI.py - interface for YOLO detector and hierachical classifier <br />
-	- "Insect Tracker" -> pipeTrackInsectsGUI.py - interface for insect tracker based on *-CL.csv outputs from detector and classifier <br />
-	- "Insect Crop Generator" -> createCropsGUI.py - create image crops of detected and classified insects (*-CL.csv files) <br />
-	- "Insect Track Plotter" -> createTrackCropsGUI.py  - create plots of crops for tracked insects (*-TRS.csv files) <br />
-	- "Open Insect Viewer in Browser" -> insect_viewer.html - view detections and classification of insect taxa (*-CL.csv files)  <br />
-	- "Open Track Viewer in Browser" -> track_viewer.html  - view tracked insect taxa (*-TR.csv files) <br />
+	- "Insect Detector and Classifier" -> pipeDetectAndClassifyInsectsGUI.py  <br />
+		- interface for YOLO detector and hierachical classifier <br />
+	- "Insect Tracker" -> pipeTrackInsectsGUI.py <br />
+		- interface for insect tracker based on *-CL.csv outputs from detector and classifier <br />
+	- "Insect Crop Generator" -> createCropsGUI.py <br />
+		- create image crops of detected and classified insects (*-CL.csv files) <br />
+	- "Insect Track Plotter" -> createTrackCropsGUI.py <br />
+		- create plots of crops for tracked insects (*-TRS.csv files) <br />
+	- "Open Insect Viewer in Browser" -> insect_viewer.html  <br />
+		- view detections and classification of insect taxa (*-CL.csv files)  <br />
+	- "Open Track Viewer in Browser" -> track_viewer.html <br />
+		- view tracked insect taxa (*-TR.csv files) <br />
 
 	The first four programs can be executed from the commandline as described in 7 and 8.
 
