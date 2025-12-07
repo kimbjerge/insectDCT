@@ -217,7 +217,7 @@ function downloadCSV(){
   const blob = new Blob([lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'filtered.csv';
+  a.download = 'filtered-TR.csv';
   a.click();
 }
 
