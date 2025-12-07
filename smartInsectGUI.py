@@ -40,7 +40,7 @@ class ParallelApp:
                    command=lambda: self.start_program("createCropsGUI.py")).grid(row=1, column=0, padx=10, pady=10)
 
         ttk.Button(frame, text="Insect Track Plotter",
-                   command=lambda: self.start_program("createTrackCrops.py")).grid(row=1, column=1, padx=10, pady=10)
+                   command=lambda: self.start_program("createTrackCropsGUI.py")).grid(row=1, column=1, padx=10, pady=10)
 
     # -----------------------------------------------------------
     # Start a separate Python script

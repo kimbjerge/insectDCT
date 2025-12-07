@@ -10,8 +10,10 @@ Used the *-TRS.csv files as inputs from the insect tracker
 import os
 import cv2
 import argparse
+import time
 import pandas as pd
 import matplotlib.pyplot as plt
+#from rembg import remove
 
 smallInsects = True # UFZ is small, MAMBO is not
 showAxis = 'on' # Or 'on'
@@ -19,6 +21,7 @@ showAxis = 'on' # Or 'on'
 validTrackLength = 3 # Overwritten by args parameter validNum
 validTrackConfidence = 50 # Overwritten by args parameter validConfTH
 
+#def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, confidence, trackRows, removeBackground=False):
 def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, confidence, trackRows):
     
     # Define grid size
@@ -83,9 +86,13 @@ def plotTrackCrops(pathToRecordData, pathToDestCrops, trackDate, trackId, taxa, 
                 else:
                     color = [255, 0, 0] # Red
                 axes[i].set_title(row['taxaLabel'])
+            #if removeBackground:
+            #    imgCrop = remove(imgCrop)
+            #else:
             for r in range(imgCrop.shape[0]):
                 imgCrop[r, 0, :] = color 
                 imgCrop[r, 1, :] = color 
+        
             axes[i].imshow(imgCrop)
             axes[i].axis(showAxis)  # Hide axes
      
@@ -145,7 +152,7 @@ def calcConfidence(trackRows):
         if (maximum >= args.unsureTaxa): # At least "unsureTaxa" crops classified as taxa different from "Unsure"
             taxa = taxaMax
             print("Unsure track use", taxa, maximum)
-    #else:
+    #else: # Used when analyse additional "Unsure" tracks
     #    confidence = 0
     
     return confidence, taxa, counts 
@@ -204,24 +211,29 @@ if __name__=='__main__':
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
     #parser.add_argument('--resultsDir', default='/UFZ/trackCropsUnsureV5') # Optimized for embedded processing (ncnn)
     
-    #parser.add_argument('--tracks', default='/Orchard/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--tracks', default='/Orchard/tracks_V6') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/UFZ') #Directory that contains the image files
-    #parser.add_argument('--resultsDir', default='/Orchard/trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--resultsDir', default='/Orchard/trackCrops_UnsureV6') # Optimized for embedded processing (ncnn)
 
-    #parser.add_argument('--tracks', default='/RTNI/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--tracks', default='/RTNI/tracks_V6') #Directory that contains CSV files of tracks
     #parser.add_argument('--images', default='O:/Tech_TTH-KBE/NI/RT') #Directory that contains the image files
-    #parser.add_argument('--resultsDir', default='/RTNI/trackCrops') # Optimized for embedded processing (ncnn)
+    #parser.add_argument('--resultsDir', default='/RTNI/trackCrops_V6') # Optimized for embedded processing (ncnn)
+    
+    #parser.add_argument('--tracks', default='D:/MINIMON/tracks') #Directory that contains CSV files of tracks
+    #parser.add_argument('--images', default='D:/MINIMON/') #Directory that contains the image files
+    #parser.add_argument('--resultsDir', default='D:/MINIMON/trackCrops') # Optimized for embedded processing (ncnn)
     
     parser.add_argument('--date', default="") # if date specified then only create track crops for specified date (YYYY_MM_DD or YYYMMDD)
 
     parser.add_argument('--validNum', default='3', type=int) # Number of detections used to define valid track
     
-    parser.add_argument('--validConfTH', default='20', type=int) # Confidence threshold used to define valid track
-    #parser.add_argument('--validConfTH', default='50', type=int) # Confidence threshold used to define valid track
+    parser.add_argument('--validConfTH', default='25', type=int) # Confidence threshold used to define valid track
+    #parser.add_argument('--validConfTH', default='10', type=int) # Confidence threshold used to define valid track
     parser.add_argument('--unsureTaxa', default='0', type=int) # Use relaxed approached, threshold for number of same taxa in unsure track  
 
     args = parser.parse_args() 
     print(args)
+    time.sleep(5)
     
     validTrackLength = args.validNum 
     validTrackConfidence = args.validConfTH
@@ -251,3 +263,5 @@ if __name__=='__main__':
                 else:
                     pathToRecordDataSubDir = pathToRecordData + subDir + '/'
                 analyseTracks(data_df, pathToRecordDataSubDir, pathToDestCrops)
+                
+    print("Finished creating insect track plots from tracks *-TRS.csv files");
