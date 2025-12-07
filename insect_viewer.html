@@ -38,7 +38,7 @@
 
   <!-- Main -->
   <main class="main">
-    <h2 id="selectedTitle">Filtered CL Detections</h2>
+    <h2 id="selectedTitle">Filter Insect Detections (only detection format of *-CL.csv)</h2>
 
     <div class="controls">
       <input type="file" id="fileInput" accept=".csv" multiple>
@@ -190,7 +190,8 @@ function showClass(cls){
   selectedClass = cls;
   document.getElementById('selectedTitle').textContent =
     cls ? `Taxon: ${cls}` :
-    `CL Detections (taxaSure=${taxaSureFilter})`;
+    `Filtered Insect Detections`;
+  //  `Insect Detections (taxaSure=${taxaSureFilter})`;
 
   const filtered = cls ? rows.filter(r => r.taxaLabel === cls) : rows; 
   //const filtered = rows.filter(r => r.taxaSure === true);  //KBE???
