@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Insect Viewer — fixed bbox</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#0b1220;--panel:#111827;--muted:#9ca3af;--accent:#00ff00}
+    body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:#e5e7eb;margin:0;padding:0}
+    .app{display:flex;flex-wrap:wrap;gap:20px;padding:20px;max-width:1600px;margin:auto}
+    .sidebar{width:300px;background:var(--panel);border-radius:12px;padding:16px}
+    .main{flex:1;min-width:300px;background:var(--panel);border-radius:12px;padding:16px}
+    .class-item{padding:8px 10px;margin:4px 0;border-radius:8px;background:#1f2937;cursor:pointer}
+    .class-item:hover{background:#374151}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+    th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #1f2937;vertical-align:middle}
+    th{color:var(--muted)}
+    .controls{margin-top:10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    input,button,select{padding:6px 8px;border-radius:6px;border:none}
+    button{cursor:pointer;background:#2563eb;color:#fff}
+    .search{width:100%;margin-bottom:10px}
+    #fileInput{margin-bottom:10px}
+    label{font-size:13px;color:var(--muted)}
+    /* thumbnail */
+    .crop-thumb{
+      width:80px;height:80px;object-fit:cover;border-radius:6px;cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .crop-thumb:hover{transform:scale(2.0);z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.6);position:relative}
+    /* modal */
+    #imgModal{
+      position:fixed;inset:0;display:none;background:rgba(0,0,0,0.85);
+      justify-content:center;align-items:center;z-index:99999;padding:20px;
+    }
+    #modalInner{position:relative;display:inline-block;margin:0;padding:0}
+    #fullImg{display:block;max-width:90vw;max-height:90vh;margin:0;padding:0}
+    #bboxOverlay{position:absolute;border:3px solid var(--accent);pointer-events:none;box-sizing:border-box}
+    /* small responsive tweak */
+    @media (max-width:800px){ .crop-thumb{width:60px;height:60px} }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Taxa</h2>
+      <input id="classFilter" class="search" placeholder="Search taxa...">
+      <div id="classList"></div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <h2 id="selectedTitle">Filter Insect Detections (only detection format of *-CL.csv)</h2>
+
+      <div class="controls">
+        <label style="white-space:nowrap">Select images folder:</label>
+        <input type="file" id="imgFolder" webkitdirectory directory multiple>
+
+        <label style="white-space:nowrap">CSV files:</label>
+        <input type="file" id="fileInput" accept=".csv" multiple>
+
+        <label for="sureFilter">taxaSure:</label>
+        <select id="sureFilter"><option value="any">Any</option></select>
+
+        <button id="showAll">Show All</button>
+        <button id="downloadFiltered">Download CSV</button>
+      </div>
+
+      <canvas id="summaryChart" height="200"></canvas>
+
+      <input id="tableSearch" class="search" placeholder="Search rows...">
+
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>crop</th>
+            <th>date</th><th>time</th>
+            <th>detectConf</th>
+            <th>taxaLabel</th><th>taxaLevel</th><th>taxaConf</th>
+	    <th>fileName</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="imgModal" onclick="onModalBackgroundClick(event)">
+    <div id="modalInner">
+      <img id="fullImg" alt="full image">
+      <div id="bboxOverlay" style="display:none"></div>
+    </div>
+  </div>
+
+<script>
+/* Data */
+let rows = [];
+let selectedClass = null;
+let chart = null;
+let taxaSureFilter = "any";
+/* imageFiles maps normalizedKey -> File */
+const imageFiles = new Map();
+let currentModalObjectURL = null;
+
+/* -------- normalize helper: last two path parts -------- */
+function normalizePathKey(path){
+  if(!path) return path;
+  const parts = path.replace(/\\/g,"/").split("/");
+  return parts.slice(-2).join("/");
+}
+
+/* ---------------- IMAGE FOLDER LOADING ----------------- */
+document.getElementById("imgFolder").addEventListener("change", e => {
+  imageFiles.clear();
+  for (const f of e.target.files) {
+    // Build normalized key that matches CSV fileName style: keep last two components
+    const key = normalizePathKey(f.webkitRelativePath || f.name);
+    imageFiles.set(key, f);
+  }
+  alert(`Loaded ${imageFiles.size} images (normalized paths).`);
+});
+
+/* ---------------- CSV PARSE ---------------- */
+function parseCSV(text, sourceFile){
+  const lines = text.replace(/\r/g,'').trim().split(/\n/).filter(Boolean);
+  if(lines.length === 0) return [];
+  const headers = lines[0].split(',');
+  const parsed = lines.slice(1).map(line => {
+    // naive split - assumes CSV doesn't contain commas inside fields. Your files seem to be simple.
+    const parts = line.split(',');
+    const obj = {};
+    headers.forEach((h,i) => obj[h] = parts[i] !== undefined ? parts[i] : "");
+    obj.taxaConf = Number(obj.taxaConf);
+    obj.taxaSure = (obj.taxaSure === "True" || obj.taxaSure === "true" || obj.taxaSure === "1");
+    obj.sourceFile = sourceFile;
+    return obj;
+  });
+  return parsed.filter(r => taxaSureFilter === "any" || String(r.taxaSure) === taxaSureFilter);
+}
+
+/* ---------------- CLASS LIST ---------------- */
+function uniqueClasses(){
+  const map = new Map();
+  rows.forEach(r => {
+    const k = r.taxaLabel || "(unknown)";
+    if(!map.has(k)) map.set(k, []);
+    map.get(k).push(r);
+  });
+  return map;
+}
+
+function renderClassList(){
+  const div = document.getElementById('classList');
+  div.innerHTML = '';
+  const q = (document.getElementById('classFilter').value || '').toLowerCase();
+  const map = uniqueClasses();
+  const sorted = [...map.keys()].sort((a,b)=>a.localeCompare(b));
+  const all = document.createElement('div');
+  all.className = 'class-item';
+  all.textContent = `All taxa (${rows.length})`;
+  all.onclick = () => showClass(null);
+  div.appendChild(all);
+  sorted.forEach(cls => {
+    if(cls.toLowerCase().includes(q)){
+      const el = document.createElement('div');
+      el.className = 'class-item';
+      el.textContent = `${cls} (${map.get(cls).length})`;
+      el.onclick = () => showClass(cls);
+      div.appendChild(el);
+    }
+  });
+}
+
+/* ---------------- BUILD CROP CELL HTML ---------------- */
+function buildCropCellHTML(r){
+  const normalized = normalizePathKey(r.fileName);
+  if(!imageFiles.has(normalized)){
+    return `<td style="color:#f87171">not found</td>`;
+  }
+  // inline attributes for interactivity
+  return `<td>
+    <img class="crop-thumb" src="" 
+         data-key="${normalized}" 
+         data-x1="${r.x1}" data-y1="${r.y1}" data-x2="${r.x2}" data-y2="${r.y2}" 
+         alt="crop">
+  </td>`;
+}
+
+/* ---------------- RENDER TABLE ---------------- */
+function renderTable(rset){
+  const tbody = document.querySelector('#dataTable tbody');
+  tbody.innerHTML = '';
+  // Construct rows
+  rset.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      ${buildCropCellHTML(r)}
+      <td>${r.date ?? ''}</td>
+      <td>${r.time ?? ''}</td>
+      <td>${r.detectConf ?? ''}</td>
+      <td>${r.taxaLabel ?? ''}</td>
+      <td>${r.taxaLevel ?? ''}</td>
+      <td>${isFinite(r.taxaConf) ? r.taxaConf.toFixed(8) : ''}</td>
+      <td>${r.fileName ?? ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // After DOM insertion, create thumbnails
+  loadAllCrops();
+}
+
+/* ---------------- LOAD ALL CROPS ---------------- */
+function loadAllCrops(){
+  const thumbs = document.querySelectorAll('.crop-thumb');
+  thumbs.forEach(imgEl => {
+    const key = imgEl.dataset.key;
+    const f = imageFiles.get(key);
+    if(!f) { imgEl.alt = 'not found'; return; }
+
+    // Read the full image as dataURL then crop using canvas
+    const reader = new FileReader();
+    reader.onload = () => {
+      const full = new Image();
+      full.onload = () => {
+        const x1 = parseInt(imgEl.dataset.x1,10) || 0;
+        const y1 = parseInt(imgEl.dataset.y1,10) || 0;
+        const x2 = parseInt(imgEl.dataset.x2,10) || 0;
+        const y2 = parseInt(imgEl.dataset.y2,10) || 0;
+        const w = Math.max(1, x2 - x1);
+        const h = Math.max(1, y2 - y1);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        // Draw crop region; if coordinates exceed image bounds, canvas will be padded.
+        ctx.drawImage(full, x1, y1, w, h, 0, 0, w, h);
+        imgEl.src = canvas.toDataURL('image/jpeg');
+        // Click: open modal with the full image and bbox
+        imgEl.onclick = (ev) => { ev.stopPropagation(); openModalForKey(key, x1, y1, x2, y2, reader.result); };
+      };
+      full.onerror = () => { imgEl.alt = 'error'; };
+      full.src = reader.result;
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+/* ---------------- OPEN MODAL & POSITION BBOX (FIXED) ---------------- */
+function openModalForKey(key, x1, y1, x2, y2, dataURL){
+  // dataURL already loaded by reader in thumbnail step; if not, fallback to creating objectURL:
+  const modal = document.getElementById('imgModal');
+  const modalInner = document.getElementById('modalInner');
+  const fullImg = document.getElementById('fullImg');
+  const bbox = document.getElementById('bboxOverlay');
+
+  // revoke previous URL if any
+  if(currentModalObjectURL){ try{ URL.revokeObjectURL(currentModalObjectURL); }catch(e){} currentModalObjectURL = null; }
+
+  // Use provided dataURL if available; otherwise read file
+  if(dataURL){
+    fullImg.src = dataURL;
+  } else {
+    const f = imageFiles.get(key);
+    if(!f) return;
+    currentModalObjectURL = URL.createObjectURL(f);
+    fullImg.src = currentModalObjectURL;
+  }
+
+  // make modal visible
+  modal.style.display = 'flex';
+  bbox.style.display = 'none'; // hide until layout computed
+
+  // After image loads, compute overlay geometry precisely relative to the displayed image
+  const placeBox = () => {
+    if(!fullImg.naturalWidth || !fullImg.naturalHeight) return;
+    // displayed size
+    const dispW = fullImg.clientWidth;
+    const dispH = fullImg.clientHeight;
+    // scale factors (image pixels -> displayed pixels)
+    const scaleX = dispW / fullImg.naturalWidth;
+    const scaleY = dispH / fullImg.naturalHeight;
+
+    // overlay coordinates relative to image top-left inside modalInner
+    const left = x1 * scaleX;
+    const top = y1 * scaleY;
+    const width = (x2 - x1) * scaleX;
+    const height = (x2 - x1) * scaleX ? ( (x2 - x1) * scaleX ) : ((x2 - x1) * scaleX); // width calc above; keep height below
+    // Use scaleY for height (in case non-square scaling)
+    const heightActual = (x2 - x1) * (scaleY * ((y2 - y1)/(x2 - x1) || 1));
+    // Better: compute width and height using their respective scales
+    const boxW = (x2 - x1) * scaleX;
+    const boxH = (y2 - y1) * scaleY;
+
+    // Positioning: modalInner is positioned relative; overlay is absolute inside modalInner
+    bbox.style.left = `${left}px`;
+    bbox.style.top = `${top}px`;
+    bbox.style.width = `${boxW}px`;
+    bbox.style.height = `${boxH}px`;
+    bbox.style.display = 'block';
+  };
+
+  // Wait for image layout to settle; fire when loaded and also on the next animation frame
+  fullImg.onload = () => {
+    // use requestAnimationFrame to ensure layout (clientWidth/clientHeight) are available
+    requestAnimationFrame(() => placeBox());
+  };
+
+  // Also update on resize to keep overlay synced
+  const onResize = () => {
+    if(modal.style.display !== 'flex') return;
+    requestAnimationFrame(() => placeBox());
+  };
+  window.addEventListener('resize', onResize);
+
+  // store cleanup handler on modal element for removal when closed
+  modal._onResize = onResize;
+}
+
+/* Close modal only if background clicked or Esc pressed */
+function onModalBackgroundClick(ev){
+  if(ev.target.id === 'imgModal'){
+    closeModal();
+  }
+}
+function closeModal(){
+  const modal = document.getElementById('imgModal');
+  modal.style.display = 'none';
+  const bbox = document.getElementById('bboxOverlay');
+  bbox.style.display = 'none';
+  // cleanup resize listener
+  if(modal._onResize) { window.removeEventListener('resize', modal._onResize); modal._onResize = null; }
+  if(currentModalObjectURL){ try{ URL.revokeObjectURL(currentModalObjectURL); }catch(e){} currentModalObjectURL = null; }
+}
+window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+/* ---------------- CHART ---------------- */
+function updateChart(){
+  const map = uniqueClasses();
+  const labels = [...map.keys()].sort();
+  const data = labels.map(k => map.get(k).length);
+  const ctx = document.getElementById('summaryChart').getContext('2d');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'Detections', data }] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#e5e7eb'}}, y:{ticks:{color:'#e5e7eb'}} } }
+  });
+}
+
+/* ---------------- FILTER & SEARCH ---------------- */
+function showClass(cls){
+  selectedClass = cls;
+  document.getElementById('selectedTitle').textContent = cls ? `Taxon: ${cls}` : `Filtered Insect Detections`;
+  const filtered = cls ? rows.filter(r => r.taxaLabel === cls) : rows;
+  renderTable(filtered);
+}
+function searchTable(){
+  const q = (document.getElementById('tableSearch').value || '').toLowerCase();
+  let rset = selectedClass ? rows.filter(r => r.taxaLabel === selectedClass) : rows;
+  if(q){
+    rset = rset.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+  }
+  renderTable(rset);
+}
+
+/* --------------- DOWNLOAD CSV ---------------- */
+function downloadCSV(){
+  let rset = selectedClass ? rows.filter(r => r.taxaLabel === selectedClass) : rows;
+  if(!rset.length) return;
+  const header = Object.keys(rset[0]);
+  const lines = [header.join(',')].concat(
+    rset.map(r => header.map(h => (r[h] ?? '').toString()).join(','))
+  );
+  const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'filtered-CL.csv';
+  a.click();
+}
+
+/* ---------------- UPLOAD HANDLING ---------------- */
+document.getElementById('fileInput').addEventListener('change', e => {
+  const files = Array.from(e.target.files || []);
+  const clFiles = files.filter(f => f.name.includes("-CL.csv"));
+  const ignored = files.filter(f => !f.name.includes("-CL.csv"));
+  if(ignored.length) alert(`Ignored ${ignored.length} file(s) not ending with "-CL.csv".`);
+  clFiles.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const newRows = parseCSV(reader.result, file.name);
+      rows = rows.concat(newRows);
+      renderClassList();
+      showClass(null);
+      updateChart();
+    };
+    reader.readAsText(file);
+  });
+});
+
+/* ---------------- UI wiring ---------------- */
+document.getElementById('classFilter').addEventListener('input', renderClassList);
+document.getElementById('showAll').addEventListener('click', ()=>showClass(null));
+document.getElementById('tableSearch').addEventListener('input', searchTable);
+document.getElementById('downloadFiltered').addEventListener('click', downloadCSV);
+document.getElementById('sureFilter').addEventListener('change', e=>{
+  taxaSureFilter = e.target.value;
+  rows = [];
+  if(chart) chart.destroy();
+  document.getElementById('classList').innerHTML = '';
+  document.querySelector('#dataTable tbody').innerHTML = '';
+  alert('taxaSure filter updated → re-upload CL files');
+});
+
+/* ----------------- initial empty render ----------------- */
+renderClassList();
+</script>
+</body>
+</html>

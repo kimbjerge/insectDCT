@@ -51,9 +51,13 @@ class ParallelApp:
 
         ttk.Button(frame, text="Open Insect Viewer in Browser",
                    command=lambda: self.open_html("insect_viewer.html")).grid(row=2, column=0, padx=10, pady=20)
-
+        
+        ttk.Button(frame, text="Open Insect Crops Viewer in Browser",
+                   command=lambda: self.open_html("insect_crops_viewer.html")).grid(row=3, column=0, padx=10, pady=20)
+        
         ttk.Button(frame, text="Open Track Viewer in Browser",
                    command=lambda: self.open_html("track_viewer.html")).grid(row=2, column=1, padx=10, pady=20)
+        
     # -----------------------------------------------------------
     # Start a separate Python script
     # -----------------------------------------------------------
