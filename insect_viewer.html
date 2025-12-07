@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Track Explorer (TR CSV)</title>
+  <title>Track Explorer (CL CSV)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body{font-family:Inter,Arial,sans-serif;background:#0b1220;color:#e5e7eb;margin:0;padding:0}
-    .app{display:flex;flex-wrap:wrap;gap:20px;padding:20px;max-width:1400px;margin:auto}
+    .app{display:flex;flex-wrap:wrap;gap:20px;padding:20px;max-width:1600px;margin:auto}
     .sidebar{width:300px;background:#111827;border-radius:12px;padding:16px}
     .main{flex:1;min-width:300px;background:#111827;border-radius:12px;padding:16px}
     .class-item{padding:8px 10px;margin:4px 0;border-radius:8px;background:#1f2937;cursor:pointer}
     .class-item:hover{background:#374151}
     table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-    th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #1f2937}
+    th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #1f2937;vertical-align:middle}
     th{color:#9ca3af}
     .controls{margin-top:10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    input,button{padding:6px 8px;border-radius:6px;border:none}
+    input,button,select{padding:6px 8px;border-radius:6px;border:none}
     button{cursor:pointer;background:#2563eb;color:#fff}
     .search{width:100%;margin-bottom:10px}
     canvas{background:#1f2937;border-radius:8px;padding:8px}
@@ -31,23 +31,22 @@
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <h2>Classes (Taxon)</h2>
-    <input id="classFilter" class="search" placeholder="Search classes...">
+    <h2>Taxa</h2>
+    <input id="classFilter" class="search" placeholder="Search taxa...">
     <div id="classList"></div>
   </aside>
 
   <!-- Main -->
   <main class="main">
-    <h2 id="selectedTitle">Filtered Insect Tracks</h2>
+    <h2 id="selectedTitle">Filtered CL Detections</h2>
 
     <div class="controls">
       <input type="file" id="fileInput" accept=".csv" multiple>
 
-      <label for="minCounts">Min counts:</label>
-      <input type="number" id="minCounts" value="3" min="0" style="width:80px;">
-
-      <label for="minConf">Min confidence:</label>
-      <input type="number" id="minConf" value="50" min="0" max="100" style="width:80px;">
+      <label for="sureFilter">taxaSure:</label>
+      <select id="sureFilter">
+        <option value="any">Any</option>
+      </select>
 
       <button id="showAll">Show All</button>
       <button id="downloadFiltered">Download CSV</button>
@@ -60,9 +59,11 @@
     <table id="dataTable">
       <thead>
         <tr>
-          <th>id</th><th>startdate</th><th>starttime</th><th>endtime</th>
-          <th>duration</th><th>class</th><th>counts</th><th>confidence</th>
-          <th>size</th><th>distance</th><th>alternative</th><th>sourceFile</th>
+          <th>date</th><th>time</th>
+          <th>detectConf</th>
+          <th>taxaLabel</th><th>taxaLevel</th><th>taxaConf</th><th>taxaSure</th>
+	  <th>x1</th><th>y1</th><th>x2</th><th>y2</th>
+          <th>trapDir</th><th>fileName</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -74,8 +75,7 @@
 let rows = [];
 let selectedClass = null;
 let chart = null;
-let minCountThreshold = 3;
-let minConfThreshold = 50;
+let taxaSureFilter = "any";
 
 // Parse CSV
 function parseCSV(text, fileName){
@@ -86,23 +86,27 @@ function parseCSV(text, fileName){
     const parts = line.split(',');
     const obj = {};
     headers.forEach((h, i) => obj[h] = parts[i]);
-    obj.counts = Number(obj.counts);
-    obj.confidence = Number(obj.confidence);
+
+    obj.taxaConf = Number(obj.taxaConf);
+    obj.taxaSure = obj.taxaSure === "True";
+    // Convert taxaSure to boolean
+    //obj.taxaSure = obj.taxaSure.toLowerCase() === "true"; //KBE???
+
     obj.sourceFile = fileName;
+
     return obj;
   });
 
   return parsed.filter(r =>
-    r.counts >= minCountThreshold &&
-    r.confidence >= minConfThreshold
+    taxaSureFilter === "any" || String(r.taxaSure) === taxaSureFilter
   );
 }
 
 function uniqueClasses(){
   const map = new Map();
   rows.forEach(r => {
-    if(!map.has(r.class)) map.set(r.class, []);
-    map.get(r.class).push(r);
+    if(!map.has(r.taxaLabel)) map.set(r.taxaLabel, []);
+    map.get(r.taxaLabel).push(r);
   });
   return map;
 }
@@ -113,11 +117,12 @@ function renderClassList(){
   const q = document.getElementById('classFilter').value.toLowerCase();
 
   const map = uniqueClasses();
+  //const sorted = [...map.keys()].sort(); KBE???
   const sorted = [...map.keys()].sort((a,b)=>a.localeCompare(b));
 
   const all = document.createElement('div');
   all.className = 'class-item';
-  all.textContent = `All classes (${rows.length})`;
+  all.textContent = `All taxa (${rows.length})`;
   all.onclick = () => showClass(null);
   div.appendChild(all);
 
@@ -139,26 +144,27 @@ function renderTable(rset){
   rset.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${r.id}</td>
-      <td>${r.startdate}</td>
-      <td>${r.starttime}</td>
-      <td>${r.endtime}</td>
-      <td>${r.duration}</td>
-      <td>${r.class}</td>
-      <td>${r.counts}</td>
-      <td>${r.confidence}</td>
-      <td>${r.size}</td>
-      <td>${r.distance}</td>
-      <td>${r.alternative}</td>
-      <td>${r.sourceFile}</td>`;
+      <td>${r.date}</td>
+      <td>${r.time}</td>
+      <td>${r.detectConf}</td>
+      <td>${r.taxaLabel}</td>
+      <td>${r.taxaLevel}</td>
+      <td>${r.taxaConf}</td>
+      <td>${r.taxaSure}</td>
+      <td>${r.x1}</td>
+      <td>${r.y1}</td>
+      <td>${r.x2}</td>
+      <td>${r.y2}</td>
+      <td>${r.trapDir}</td>
+      <td>${r.fileName}</td>`;
     tbody.appendChild(tr);
   });
 }
 
 function updateChart(){
   const map = uniqueClasses();
-  const labels = [...map.keys()].sort((a,b)=>a.localeCompare(b));
-  const data = labels.map(k => map.get(k).reduce((a,b)=>a + b.counts, 0));
+  const labels = [...map.keys()].sort();
+  const data = labels.map(k => map.get(k).length);
 
   const ctx = document.getElementById('summaryChart').getContext('2d');
 
@@ -168,10 +174,7 @@ function updateChart(){
     type: 'bar',
     data: {
       labels,
-      datasets: [{
-        label: 'Total Counts',
-        data
-      }]
+      datasets: [{ label: 'Detections', data }]
     },
     options: {
       plugins:{legend:{display:false}},
@@ -186,19 +189,20 @@ function updateChart(){
 function showClass(cls){
   selectedClass = cls;
   document.getElementById('selectedTitle').textContent =
-    cls ? `Class: ${cls}` :
-    `Insect Tracks (≥ ${minCountThreshold} counts, ≥ ${minConfThreshold}% confidence)`;
+    cls ? `Taxon: ${cls}` :
+    `CL Detections (taxaSure=${taxaSureFilter})`;
 
-  const filtered = cls ? rows.filter(r => r.class === cls) : rows;
+  const filtered = cls ? rows.filter(r => r.taxaLabel === cls) : rows; 
+  //const filtered = rows.filter(r => r.taxaSure === true);  //KBE???
   renderTable(filtered);
 }
 
 function searchTable(){
   const q = document.getElementById('tableSearch').value.toLowerCase();
-  let rset = selectedClass ? rows.filter(r => r.class === selectedClass) : rows;
+  let rset = selectedClass ? rows.filter(r => r.taxaLabel === selectedClass) : rows;
 
   if(q){
-    rset = rset.filter(r => 
+    rset = rset.filter(r =>
       Object.values(r).some(v => String(v).toLowerCase().includes(q))
     );
   }
@@ -206,7 +210,7 @@ function searchTable(){
 }
 
 function downloadCSV(){
-  let rset = selectedClass ? rows.filter(r => r.class === selectedClass) : rows;
+  let rset = selectedClass ? rows.filter(r => r.taxaLabel === selectedClass) : rows;
   if(!rset.length) return;
 
   const header = Object.keys(rset[0]);
@@ -217,20 +221,20 @@ function downloadCSV(){
   const blob = new Blob([lines.join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'filtered.csv';
+  a.download = 'filtered_CL.csv';
   a.click();
 }
 
-function handleFileUpload(event){
+function handleUpload(event){
   const files = Array.from(event.target.files);
-  const trFiles = files.filter(f => f.name.includes("-TR.csv"));
-  const ignored = files.filter(f => !f.name.includes("-TR.csv"));
+  const clFiles = files.filter(f => f.name.includes("-CL.csv"));
+  const ignored = files.filter(f => !f.name.includes("-CL.csv"));
 
   if(ignored.length){
-    alert(`Ignored ${ignored.length} file(s) not ending with "-TR.csv".`);
+    alert(`Ignored ${ignored.length} file(s) not ending with "-CL.csv".`);
   }
 
-  trFiles.forEach(file=>{
+  clFiles.forEach(file=>{
     const reader = new FileReader();
     reader.onload = e => {
       const newRows = parseCSV(e.target.result, file.name);
@@ -243,32 +247,20 @@ function handleFileUpload(event){
   });
 }
 
-// Update filters
-document.getElementById('minCounts').addEventListener('change', e => {
-  minCountThreshold = Number(e.target.value);
-  rows = [];
-  if(chart) chart.destroy();
-  document.getElementById('classList').innerHTML = '';
-  document.querySelector('#dataTable tbody').innerHTML = '';
-  alert(`Min counts updated → re-upload TR files`);
-});
-
-document.getElementById('minConf').addEventListener('change', e => {
-  minConfThreshold = Number(e.target.value);
-  rows = [];
-  if(chart) chart.destroy();
-  document.getElementById('classList').innerHTML = '';
-  document.querySelector('#dataTable tbody').innerHTML = '';
-  alert(`Min confidence updated → re-upload TR files`);
-});
-
-// Listeners
-document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+document.getElementById('fileInput').addEventListener('change', handleUpload);
 document.getElementById('classFilter').addEventListener('input', renderClassList);
 document.getElementById('showAll').addEventListener('click', () => showClass(null));
 document.getElementById('tableSearch').addEventListener('input', searchTable);
-document.getElementById('downloadFiltered').addEventListener('click', downloadCSV);
 
+document.getElementById('sureFilter').addEventListener('change', e => {
+  taxaSureFilter = e.target.value;
+  rows = [];
+  if(chart) chart.destroy();
+  document.getElementById('classList').innerHTML = '';
+  document.querySelector('#dataTable tbody').innerHTML = '';
+  alert(`taxaSure filter updated → re-upload CL files`);
+});
 </script>
+
 </body>
 </html>
