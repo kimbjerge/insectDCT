@@ -77,8 +77,20 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 5. Activate the python environment.
 
    - Anaconda: $ conda activate yolo11
-  
-6. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
+
+6a. Run the "Smart AI Insect Program Launcher": $ python smartInsectGUI.py
+
+	This program has six programs for easy use of the AI pipeline:  <br />
+	- "Insect Detector and Classifier" -> pipeDetectAndClassifyInsectsGUI.py  <br />
+	- "Insect Tracker" -> pipeTrackInsectsGUI.py  <br />
+	- "Insect Crop Generator" -> createCropsGUI.py - create image crops of detected and classified insects  <br />
+	- "Insect Track Plotter" -> createTrackCropsGUI.py  - create plots of crops for tracked insects <br />
+	- "Open Insect Viewer in Browser" -> insect_viewer.html - view detections and classification of insect taxa (*-CL.csv files)  <br />
+	- "Open Track Viewer in Browser" -> track_viewer.html  - view tracked insect taxa (*-TR.csv files) <br />
+
+	The first four programs can be executed from the commandline as described in 6b.
+	
+6b. Run the Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
 
    Detector and classifier - works with both videos and images:
 
