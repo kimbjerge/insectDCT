@@ -334,7 +334,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.1.3\n" # Updated for models trained on datasetV6
+    version = "pipeTrackInsectsTaxon.py version: 1.1.4\n" # Updated for models trained on datasetV6
 
     print('Tracking insects based on detection files *-DL.csv')
     
@@ -400,7 +400,7 @@ if __name__ == '__main__':
             videoCap = None
             videoFile = ""
             if video_path != "":
-                videoFile = [file for file in videoFiles if trackName in file]
+                videoFile = [file for file in videoFiles if (trackName + '.') in file]
                 if len(videoFile) == 1:
                     videoFile = videoFile[0]
                 else:
