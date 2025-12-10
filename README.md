@@ -443,4 +443,12 @@ https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
    ![Alt text](ExTrackCrops.png)
 
    ![Alt text](ExTrackCrops2.png)
+
+### Tag version number ###
+
+All tags in this repository are named: DVx-CVy-SVz.z
+
+DVx is the detector version number eg. DV5 - YOLO11 detector model trained on dataset version 5   <br />
+CVx is the hierarchical classifier version number eg. DV6 - classifier model trained on taxon dataset version 6   <br />
+SVx is the source code version number eg. SV1.0 - Python and HTML source code version 1.0   <br />
    
