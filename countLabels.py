@@ -100,18 +100,27 @@ if __name__=='__main__':
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/train1201/'
     #image_dic = '/home/don/yolov5r/datasets/insects/labels/val1201/'
 
-    image_path = 'D:/insectsDCT_datasets/insects5Color/train/'
+    image_path = 'F:/insectsDCT_datasets/insects5Color/train/'
     image_dic = image_path + 'labels/'
-    boxW, boxH = countLabels(image_dic, "Train dataset: ")
+    boxW, boxH = countLabels(image_dic, "Train V5 dataset: ")
     
-    image_path = 'D:/insectsDCT_datasets/insects5Color/val/'
+    image_path = 'F:/insectsDCT_datasets/insects5Color/val/'
     image_dic = image_path + 'labels/'
-    boxW, boxH = countLabels(image_dic, "Validate dataset: ")
+    boxW, boxH = countLabels(image_dic, "Validate V5 dataset: ")
+    
+    image_path = 'F:/insectsDCT_datasets/insects6Color/trainACSHQ/'
+    image_dic = image_path + 'labels/'
+    boxW, boxH = countLabels(image_dic, "Train V6 dataset: ")
+    
+    image_path = 'F:/insectsDCT_datasets/insects6Color/valACSHQ/'
+    image_dic = image_path + 'labels/'
+    boxW, boxH = countLabels(image_dic, "Validate V6 dataset: ")
+    
     
     boxesWidth = []
     boxesHeight = []
     
-    image_path = 'D:/insectsDCT_datasets/detectTestDataset/'
+    image_path = 'F:/insectsDCT_datasets/detectTestDataset/'
     image_dic = image_path + 'testGreenH/'
     boxW, boxH = countLabels(image_dic, "Green house Logitech test: ")
     boxesWidth += boxW
