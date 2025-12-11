@@ -25,13 +25,13 @@ class App:
         # -------------------------------
         # Argument variables with defaults
         # -------------------------------
-        self.yoloWeights = tk.StringVar(value="./runs/detect/insects5Motion/weights/best.pt")
+        self.yoloWeights = tk.StringVar(value="./runs/detect/insects6Motion/weights/best.pt")
         self.modelType = tk.StringVar(value="ConvNextBase")
         self.dataset = tk.StringVar(value="V6")
         self.useExifTime = tk.BooleanVar(value=False)
         self.video = tk.StringVar(value="")
         self.images = tk.StringVar(value="./images/pi1_2025_02_21/")
-        self.confidence = tk.DoubleVar(value=0.401)
+        self.confidence = tk.DoubleVar(value=0.3)
         self.thresholdStd = tk.DoubleVar(value=0.0)
         self.device = tk.StringVar(value="cpu")
         self.videoMIE = tk.BooleanVar(value=False)
