@@ -24,9 +24,6 @@ In the third stage, for high temporal-resolution image sequences and video recor
 
 The design and implementation of insectDCT are based and build upon several recent peer-reviewed studies in the fields of deep learning, computer vision, and automated insect monitoring. The pipeline is under active development and is continuously extended with additional annotated datasets to further enhance detection accuracy, classification robustness, and generalization across ecological contexts.
 
-
-The design and implementation of insectDCT are informed by and build upon several recent peer-reviewed studies in the fields of deep learning, computer vision, and automated insect monitoring.
-
 ## The algorithms used are described in the papers: 
 
 Object detection with Motion-Informed Enhancement (MIE):
