@@ -1,0 +1,38 @@
+Name: UFZ, Orchard
+==================
+Simon Wogram <simon.wogram@ufz.de> (UFZ, Germany, PhD Student): 
+
+Small insects (small bees, Syrphidae and many others) with Sedum and artificial backgrounds (Orchard and roof project)
+Recordings with a Raspberry Pi 3 camera and a 2-second interval.
+
+Name: FINJA
+==================
+Finja Schaumann <finja.schaumann@ufz.de> (UFZ, Germany):
+
+Large Bumblebees enter and leave beehives.
+Recordings with a Raspberry Pi 3 camera and a 2-second interval.
+
+Name: OTAR
+==================
+Otar Sakhiashvili <otar.sakhiashvili.1@iliauni.edu.ge> (Caucasus Leibniz Institute, Georgia, PhD Student): 
+
+Especially butterflies visiting different flowering plants. Study on species and plant attraction.
+Recordings with a mobile phone.
+
+Name: PAU
+==================
+Pau Enric Serra Marin <pserra@imedea.uib-csic.es> (IMEDEA, CSIC-UIB, Spain, PhD Student):
+
+Insects visit many different flowering plants. 
+Video recordings with Raspberry Pi HQ camera.
+Paper: https://doi.org/10.1111/2041-210X.70165
+
+Name YOURI
+==================
+Youri Martin <youri.martin@list.lu> (LIST, Luxembourg, Senior R&T Engineer in Biodiversity):
+
+Insects, butterflies, and attractants (cubs with different chemicals) on artificial backgrounds. 
+Study on chemical attractions for different insects and butterflies.
+
+
+ 
