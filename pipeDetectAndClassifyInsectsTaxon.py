@@ -149,11 +149,17 @@ def getFrameTime(filePath, image_filename, useTimeExif):
     
     else:    
         nameSplit = image_filename.split('.')[0].split('_')
-        if len(nameSplit) == 2: # Format: YYYYMMDD_HHMMSS (OTAR)
-            dateTimeStr = nameSplit[0] + nameSplit[1] 
+        if len(nameSplit) == 2: 
+            # Format: YYYYMMDD_HHMMSS (OTAR)
+            #    dateTimeStr = nameSplit[0] + nameSplit[1] 
+            # Format: YYYY-MM-DD_HH-MM-SS-ssssss.jpg (WILLEM)
+            dateStr = nameSplit[0].split('-')
+            timeStr = nameSplit[1].split('-') 
+            dateTimeStr = dateStr[0] + dateStr[1] + dateStr[2] + timeStr[0] + timeStr[1] + timeStr[2]
         else:
             if len(nameSplit) < 7:
-                dateTimeStr = nameSplit[1] # Format:YYYYMMDDHHMMSS (MINIMON)
+                #dateTimeStr = nameSplit[1] # Format:YYYYMMDDHHMMSS (MINIMON)
+                dateTimeStr = nameSplit[0] # Format:YYYYMMDDHHMMSS (ELLA-O)
             else:
                 dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS (UFZ)
     
@@ -314,7 +320,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.3.3\n" # New classification models EfficientNetV2S and insects6Motion
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.3.4\n" # New classification models EfficientNetV2S and insects6Motion
     
     parser = argparse.ArgumentParser()
     
