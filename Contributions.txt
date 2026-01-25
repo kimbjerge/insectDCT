@@ -34,5 +34,10 @@ Youri Martin <youri.martin@list.lu> (LIST, Luxembourg, Senior R&T Engineer in Bi
 Insects, butterflies, and attractants (cubs with different chemicals) on artificial backgrounds. 
 Study on chemical attractions for different insects and butterflies.
 
+Name WILLEM
+=================
+Willem Goossens <willem.goossens@kuleuven.be> (sGLOBE lab - Division Forest, Nature and Landscape KU Leuven (University of Leuven) Belgium, PhD Student):
 
- 
+I am currently studying the role of alien plant species in pollination, with a particular focus on the potential benefits these species may provide to pollination networks that are increasingly stressed by global change. 
+
+One of our objectives is to quantify pollinator visitation to these plant communities. To this end, I am keen to incorporate camera systems that allow monitoring at a relatively large spatial scale, ideally entire communities (1 by 1 m), although smaller subsections (e.g. 0.5 by 0.5 m) could also be feasible
