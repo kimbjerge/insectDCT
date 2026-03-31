@@ -11,6 +11,7 @@
 	   "labelFileV3" : "./models_save/HierarchicalLabels3L_RES_V3_05092025.pkl",
 	   "labelFileV5" : "./models_save/HierarchicalLabels3L_RES_V5_05092025.pkl",
 	   "labelFileV6" : "./models_save/HierarchicalLabels3L_RES_V6.pkl",
+	   "labelFileV7" : "./models_save/HierarchicalLabels3L_RES_V7.pkl",
        "species": ["Coccinellidae", "Coleoptera", "Background", "Bombus", "Syrphidae", "Lepidoptera", "Araneae", "Formidicidae", "Diptera", "Hemiptera", 
                   "Isopoda", "Unspecified", "Hymenoptera", "Orthoptera", "Rhagnoycha fulva", "Satyrinae", "Aglais urticea", "Odonata", "Apis mellifera"],
        "imagedimension": 224,

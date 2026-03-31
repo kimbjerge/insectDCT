@@ -334,7 +334,7 @@ def print_totals(date, stat, resultdir):
 
 if __name__ == '__main__':
 
-    version = "pipeTrackInsectsTaxon.py version: 1.1.4\n" # Updated for models trained on datasetV6
+    version = "pipeTrackInsectsTaxon.py version: 1.4.0\n" # Updated for models trained on hierachical classsifer trained on dataset V7
 
     print('Tracking insects based on detection files *-DL.csv')
     
@@ -366,6 +366,8 @@ if __name__ == '__main__':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV5"])
     if args.dataset == 'V6':
         conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV6"])
+    if args.dataset == 'V7':
+        conf["classifier"]['species'], taxaHierarchy = createFlatSpeciesList(conf["classifier"]["labelFileV7"])
         
     print(version, args)
     with open(args.tracks+"/pipeTrackInsectsTaxon.txt", "a") as f:

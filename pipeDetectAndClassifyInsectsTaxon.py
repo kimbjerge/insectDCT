@@ -320,7 +320,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.3.4\n" # New classification models EfficientNetV2S and insects6Motion
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.4.0\n" # Supporting hierachical classifier trained on dataset V7
     
     parser = argparse.ArgumentParser()
     
@@ -333,6 +333,7 @@ if __name__=='__main__':
     #parser.add_argument('--modelType', default="EfficientNetV2S") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
     parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF), "V4" without GBIF data, 
                                                    # "V5" with more Orchard data and GBIF and lots of vegetation, "V6" with more data and reorganized hierarchy
+                                                   # "V7" with PAU data and Lepidoptera
     
     # Weights, labels and thresholds for ResNet50 (MODEL=RES), ConvNextBase (MODEL=CNB), EfficientNetV2S (MODEL=EFF2S) with dataset V6 
     parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_MODEL_V6.pth') # 128x128 crops
@@ -398,7 +399,8 @@ if __name__=='__main__':
         modelDetector = YOLO(args.yoloWeights)  # load trained model
     
     # Load the insect classifier model
-    modelClassifier = 0        
+    modelClassifier = 0   
+    imageCropSize = 128     
     if args.hierachical != '':
         if args.modelType == "ResNet50":
             hierarchicalWeights = args.hierachical.replace("_MODEL_", "_RES_")
@@ -420,10 +422,16 @@ if __name__=='__main__':
             hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
             hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
             hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset + oldVersionsDate)
+        if args.dataset in ['V7', 'V8', 'V9', 'V10']: # Newer version than 'V6' now uses 224x224 crop size
+            hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset)
+            hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset)
+            hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset)
+            imageCropSize = 224
+            print("Using using crop size of 224x224 pixels version", args.dataset)
             
         print("Loading hierarchical insect classifier model", hierarchicalWeights, args.modelType, args.dataset)
             
-        modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128, 
+        modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, imageCropSize, 
                                                        stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
         
     # Open the input video file if specified
