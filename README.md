@@ -76,6 +76,9 @@ https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive
 V6. Sixth model (HierarchicalClassifierV6) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
 https://drive.google.com/file/d/1V8uWDIjT1DHo3CyxRjOk6vZYkeBjKX_0/view?usp=drive_link
 
+V7. Sevent model (HierarchicalClassifierV7) was trained on the same images as V6, suplemented with more Lepidoptera species and insects images recorded with video and Pi HQ camera. <br />
+https://drive.google.com/file/d/15oGWBgp3S08k8VK0r2qzMC65uUBFvsPh/view?usp=sharing
+
 Download the weights, labels, and thresholds from the above links. (At least the latest version V6) 
 Save and unzip the file to the sub directory: insectsDCT/models_save
 
