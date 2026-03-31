@@ -16,7 +16,10 @@ graph_folder = './graph_folder/'
 #saved_folder = "./models_saved/saved_128_ConvNextV6_3_apoidae2L/"
 #saved_folder = "./models_saved/saved_128_ResNetV6/"
 #saved_folder = "./models_saved/saved_128_ConvNextV6/"
-saved_folder = "./models_saved/saved_128_EfficientNetV6/"
+#saved_folder = "./models_saved/saved_128_EfficientNetV6/"
+saved_folder = "./models_saved/saved_224_ResNetV7/"
+#saved_folder = "./models_saved/saved_224_ConvNextV7/"
+#saved_folder = "./models_saved/saved_224_EfficientNetV7/"
 
 thresholdSTD = 0
 
@@ -307,11 +310,11 @@ def printPerformanceMetrics(resultFile, thredsholdFile, clearUnsure=True):
     f1L2 =  []
     f1L3 =  []
     
-    thresholdIdx = 13 # Default used 3.5 (ResNet)
+    thresholdIdx = 15 # 13 Default used 2.5(V7) 3.5(V6) (ResNet)
     if "EfficientNet" in saved_folder:
-        thresholdIdx = 11 # Default used 4.5 (EfficientNet)
+        thresholdIdx = 14 # 11 Default used 3.0(V7) 4.5(V6) (EfficientNet)
     if "ConvNext" in saved_folder:
-        thresholdIdx = 9 # Default used 5.5 (ConvNext)
+        thresholdIdx = 11 # 9 Default used 4.5(V7) 5.5(V6) (ConvNext)
         
     thresholdSTDs = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1]
     for thresh in thresholdSTDs:
@@ -392,4 +395,5 @@ if __name__=='__main__':
     level3False = plotConfusionMatrix(resultFile, thresholds)
     checkList = checkHierarcy(resultFile)
     countWrongHierarchy = sum(map(lambda x : x == False, checkList))
-    print("Test dataset - number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False)
+    print("Test dataset - number of wrong predictions in hierarchy", countWrongHierarchy, level3False, 100*countWrongHierarchy/level3False) 
+ 

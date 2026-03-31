@@ -19,7 +19,10 @@ from hierarchical_loss import HierarchicalLossNetwork
 
 #saved_folder = "./models_saved/saved_128_ResNetV6/"
 #saved_folder = "./models_saved/saved_128_ConvNextV6/"
-saved_folder = "./models_saved/saved_128_EfficientNetV6/"
+#saved_folder = "./models_saved/saved_128_EfficientNetV6/"
+saved_folder = "./models_saved/saved_224_ConvNextV7/"
+#saved_folder = "./models_saved/saved_224_EfficientNetV7/"
+#saved_folder = "./models_saved/saved_224_ResNetV7/"
 
 graph_folder = "./graph_folder/"
 
@@ -27,11 +30,18 @@ graph_folder = "./graph_folder/"
 checkHierarchy = False
 checkedName = ""
 
-thresholdSTD = 3.5 # ResNet
+thresholdSTD = 3.5 # ResNet(V6)
 if "EfficientNet" in saved_folder:
-    thresholdSTD = 4.5 # EfficientNet   
+    thresholdSTD = 4.5 # EfficientNet(V6)   
 if "ConvNext" in saved_folder:
-    thresholdSTD = 5.5 # ConvNext
+    thresholdSTD = 5.5 # ConvNext(V6)
+
+if "V7" in saved_folder:
+    thresholdSTD = 2.5 # ResNet(V7)
+    if "EfficientNet" in saved_folder:
+        thresholdSTD = 3.0 # EfficientNet(V7)   
+    if "ConvNext" in saved_folder:
+        thresholdSTD = 4.5 # ConvNext(V7)
 
 label_file = saved_folder+"labelsAdv3L.pkl"
 # Load labels shared by several functions
