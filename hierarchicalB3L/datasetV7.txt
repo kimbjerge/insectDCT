@@ -1,0 +1,277 @@
+=============================================================================================
+Class directory hierarchy with 3 levels: order - family - genus/species
+-----------------------------------------------------------------------
+Aranaea
+Birds
+Coleoptera
+Coleoptera Cantharidae Rhagonycha fulva
+Coleoptera Coccinellidae Coccinella septempunctata
+Coleoptera Oedemeridae
+Dermaptera
+Diptera
+Diptera Bombyliidae
+Diptera Sarcophagidae
+Diptera Syrphidae
+Diptera Syrphidae Chrysotoxum
+Diptera Syrphidae Episyrphus balteatus
+Diptera Syrphidae Eristalis
+Diptera Syrphidae Eupeodes
+Diptera Syrphidae Eurimyia
+Diptera Syrphidae Helophilus
+Diptera Syrphidae Meliscaeva cinctella
+Diptera Syrphidae Myathropa florea
+Diptera Syrphidae Platycheirus
+Diptera Syrphidae Scaeva
+Diptera Syrphidae Scaeva pyrastri
+Diptera Syrphidae Sphaerophoria scripta-complex
+Diptera Syrphidae Syritta pipiens
+Diptera Syrphidae Syrphus
+Diptera Syrphidae Xanthogramma
+Hemiptera
+Herpetofauna
+Hymenoptera_bees
+Hymenoptera_bees Apidae
+Hymenoptera_bees Apidae Anthophora
+Hymenoptera_bees Apidae Apis mellifera
+Hymenoptera_bees Apidae Bombus
+Hymenoptera_bees Apidae Bombus hypnorum
+Hymenoptera_bees Apidae Bombus lapidarius
+Hymenoptera_bees Apidae Bombus pascuorum
+Hymenoptera_bees Apidae Bombus sylvarum
+Hymenoptera_bees Apidae Bombus terrestris
+Hymenoptera_bees Apidae Nomada
+Hymenoptera_bees Apidae Xylocopa
+Hymenoptera_bees Apoidea
+Hymenoptera_bees Apoidea Apoidea red_abdomen
+Hymenoptera_bees Apoidea Apoidea reddish
+Hymenoptera_bees Apoidea Apoidea small
+Hymenoptera_bees Apoidea Apoidea striped
+Hymenoptera_bees Megachilidae
+Hymenoptera_bees Megachilidae Anthidium oblongatum
+Hymenoptera_nobees Chrysididae
+Hymenoptera_nobees Crabronidae
+Hymenoptera_nobees Formidicidae
+Hymenoptera_nobees Ichneumonidae
+Hymenoptera_nobees Pompilidae
+Hymenoptera_nobees Vespidae
+Hymenoptera_nobees Vespidae Odynerus spinipes
+Hymenoptera_nobees Vespidae Vespula vulgaris
+Isopoda
+Larvae
+Lepidoptera
+Lepidoptera Hesperidae
+Lepidoptera Lycaenidae
+Lepidoptera Lycaenidae Lycaena phlaeas
+Lepidoptera Moths
+Lepidoptera Nymphalidae
+Lepidoptera Nymphalidae Aglais io
+Lepidoptera Nymphalidae Aglais urticae
+Lepidoptera Nymphalidae Aphantopus hyperantus
+Lepidoptera Nymphalidae Argynnis pandora
+Lepidoptera Nymphalidae Argynnis paphia
+Lepidoptera Nymphalidae Boloria
+Lepidoptera Nymphalidae Brenthis
+Lepidoptera Nymphalidae Coenonympha arcania
+Lepidoptera Nymphalidae Coenonympha pamphilus
+Lepidoptera Nymphalidae Erebia
+Lepidoptera Nymphalidae Euphydryas aurinia
+Lepidoptera Nymphalidae Fritillaries
+Lepidoptera Nymphalidae Issoria lathonia
+Lepidoptera Nymphalidae Lasiommata megera
+Lepidoptera Nymphalidae Maniola jurtina
+Lepidoptera Nymphalidae Melanargia
+Lepidoptera Nymphalidae Melanargia galathea
+Lepidoptera Nymphalidae Melitaea
+Lepidoptera Nymphalidae Vanessa atalanta
+Lepidoptera Nymphalidae Vanessa cardui
+Lepidoptera Pieridae
+Lepidoptera Pieridae Colias
+Lepidoptera Pieridae Gonepteryx rhamni
+Lepidoptera Pieridae Iphiclides podalirius
+Lepidoptera Pieridae Parnassius mnemosyne
+Lepidoptera Pieridae Pieris brassicae
+Lepidoptera_fw
+Lepidoptera_fw Nymphalidae_fw Aglais urticae_fw
+Lepidoptera_fw Nymphalidae_fw Maniola jurtina_fw
+Lepidoptera_fw Nymphalidae_fw Satyrinae_fw
+Milipedes
+Odonata
+Orthoptera
+Orthoptera Acrididae
+Orthoptera Acrididae Chorthippus
+Orthoptera Acrididae Omocestus viridulus
+Orthoptera Tettigoniidae Decticus verrucivorus
+Orthoptera Tettigoniidae Pholidoptera griseoaptera
+Slugs
+Snails
+Vegetation
+=============================================================================================
+Level 1               train validate 19
+Aranaea                1901    100
+Birds                   256     13
+Coleoptera            10850    571
+Dermaptera              417     22
+Diptera               19115   1006
+Hemiptera              1691     89
+Herpetofauna             91      4
+Hymenoptera_bees      30841   1624
+Hymenoptera_nobees     8692    457
+Isopoda                 836     44
+Larvae                  550     29
+Lepidoptera            6021    317
+Lepidoptera_fw         5029    265
+Milipedes               168      9
+Odonata                 482     25
+Orthoptera             3492    184
+Slugs                  1133     59
+Snails                 1602     85
+Vegetation             5593    294
+=============================================================================================
+Level 2               train validate 41
+Acrididae              2729    144
+Apidae                20049   1055
+Apoidea                7038    371
+Aranaea                1901    100
+Birds                   256     13
+Bombyliidae             455     24
+Cantharidae            1291     68
+Chrysididae             752     40
+Coccinellidae          6907    363
+Coleoptera             2575    136
+Crabronidae             847     44
+Dermaptera              417     22
+Diptera                3874    204
+Formidicidae           1250     66
+Hemiptera              1691     89
+Herpetofauna             91      4
+Hesperidae              556     30
+Hymenoptera_bees        851     45
+Ichneumonidae           633     33
+Isopoda                 836     44
+Larvae                  550     29
+Lepidoptera             156      8
+Lepidoptera_fw          257     14
+Lycaenidae              634     33
+Megachilidae           2903    153
+Milipedes               168      9
+Moths                   335     18
+Nymphalidae            3935    207
+Nymphalidae_fw         4772    251
+Odonata                 482     25
+Oedemeridae              77      4
+Orthoptera              245     13
+Pieridae                405     21
+Pompilidae              604     32
+Sarcophagidae          2405    127
+Slugs                  1133     59
+Snails                 1602     85
+Syrphidae             12381    651
+Tettigoniidae           518     27
+Vegetation             5593    294
+Vespidae               4606    242
+=============================================================================================
+Level 3                         train validate 104
+Acrididae                        1651     87
+Aglais io                         247     13
+Aglais urticae                   1851     97
+Aglais urticae_fw                 335     17
+Anthidium oblongatum              363     19
+Anthophora                        857     45
+Aphantopus hyperantus             135      7
+Apidae                            274     14
+Apis mellifera                  10937    576
+Apoidea                           630     33
+Apoidea red_abdomen               266     14
+Apoidea reddish                   332     18
+Apoidea small                    4172    220
+Apoidea striped                  1638     86
+Aranaea                          1901    100
+Argynnis pandora                   28      2
+Argynnis paphia                    45      2
+Birds                             256     13
+Boloria                            42      2
+Bombus                            413     22
+Bombus hypnorum                   198     10
+Bombus lapidarius                2320    122
+Bombus pascuorum                  250     14
+Bombus sylvarum                   341     18
+Bombus terrestris                3834    201
+Bombyliidae                       455     24
+Brenthis                           25      2
+Chorthippus                       933     49
+Chrysididae                       752     40
+Chrysotoxum                       301     16
+Coccinella septempunctata        6907    363
+Coenonympha arcania                18      1
+Coenonympha pamphilus             440     24
+Coleoptera                       2575    136
+Colias                             31      1
+Crabronidae                       847     44
+Decticus verrucivorus             183      9
+Dermaptera                        417     22
+Diptera                          3874    204
+Episyrphus balteatus             2596    136
+Erebia                             32      1
+Eristalis                         736     39
+Eupeodes                         4249    224
+Euphydryas aurinia                 33      2
+Eurimyia                          301     15
+Formidicidae                     1250     66
+Fritillaries                       44      2
+Gonepteryx rhamni                  25      2
+Helophilus                        468     25
+Hemiptera                        1691     89
+Herpetofauna                       91      4
+Hesperidae                        556     30
+Hymenoptera_bees                  851     45
+Ichneumonidae                     633     33
+Iphiclides podalirius              25      1
+Isopoda                           836     44
+Issoria lathonia                   47      3
+Larvae                            550     29
+Lasiommata megera                  26      1
+Lepidoptera                       156      8
+Lepidoptera_fw                    257     14
+Lycaena phlaeas                   263     14
+Lycaenidae                        371     19
+Maniola jurtina                   645     33
+Maniola jurtina_fw               3214    169
+Megachilidae                     2540    134
+Melanargia                         29      2
+Melanargia galathea                90      5
+Meliscaeva cinctella              221     12
+Melitaea                           35      2
+Milipedes                         168      9
+Moths                             335     18
+Myathropa florea                  306     16
+Nomada                            398     21
+Nymphalidae                        64      3
+Odonata                           482     25
+Odynerus spinipes                2405    126
+Oedemeridae                        77      4
+Omocestus viridulus               145      8
+Orthoptera                        245     13
+Parnassius mnemosyne               18      1
+Pholidoptera griseoaptera         335     18
+Pieridae                          277     15
+Pieris brassicae                   29      1
+Platycheirus                      386     20
+Pompilidae                        604     32
+Rhagonycha fulva                 1291     68
+Sarcophagidae                    2405    127
+Satyrinae_fw                     1223     65
+Scaeva                            264     14
+Scaeva pyrastri                   333     17
+Slugs                            1133     59
+Snails                           1602     85
+Sphaerophoria scripta-complex     790     42
+Syritta pipiens                   466     25
+Syrphidae                         479     25
+Syrphus                           305     16
+Vanessa atalanta                   31      1
+Vanessa cardui                     28      2
+Vegetation                       5593    294
+Vespidae                          711     38
+Vespula vulgaris                 1490     78
+Xanthogramma                      180      9
+Xylocopa                          227     12
