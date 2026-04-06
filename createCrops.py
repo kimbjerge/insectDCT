@@ -198,8 +198,8 @@ if __name__=='__main__':
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/NI/RT/') # Directory that contains images
     #parser.add_argument('--CSVfiles', default='D:/MINIMON/detections/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='D:/MINIMON/') # Directory that contains images
-    #parser.add_argument('--CSVfiles', default='D:/PAU/detections_L/') # Directory that contains CSV files
-    #parser.add_argument('--imagesPath', default='D:/PAU/videos/') # Directory that contains images
+    #parser.add_argument('--CSVfiles', default='E:/PAU2/detections/') # Directory that contains CSV files
+    #parser.add_argument('--imagesPath', default='E:/PAU2/videos/') # Directory that contains images
 
     #parser.add_argument('--CSVfiles', default='/PollNI/S2/') # Directory that contains CSV files
     #parser.add_argument('--imagesPath', default='O:/Tech_TTH-KBE/PollinatorWatch/FIN/S2/') # Directory that contains images
@@ -209,12 +209,12 @@ if __name__=='__main__':
     #parser.add_argument('--videoPath', default="D:/UFZ_BOS_STR/") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--videoPath', default="") # Directory that contains video, if empty then imagesPath is used
-    #parser.add_argument('--videoPath', default="D:/PAU/videos/") # Directory that contains video, if empty then imagesPath is used
+    #parser.add_argument('--videoPath', default="E:/PAU2/videos/") # Directory that contains video, if empty then imagesPath is used
     
     parser.add_argument('--cropsPath', default='./crops/') # Directory to save images crops
     #parser.add_argument('--cropsPath', default='/RTNI/crops_V6/') # Directory to save images crops
     #parser.add_argument('--cropsPath', default='J:/PollNI/crops/') # Directory to save images crops
-    #parser.add_argument('--cropsPath', default='D:/PAU/crops/') # Directory to save images crops
+    #parser.add_argument('--cropsPath', default='E:/PAU2/crops/') # Directory to save images crops
     
     parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF) or "V4" without GBIF data 
                                                    # or "V5" with GBIF and additional data, "V6" with more data and reorganized hierarchy
@@ -233,12 +233,16 @@ if __name__=='__main__':
     hierarchicalWeights = args.hierachical
     hierarchicalLabels = args.labels
     hierarchicalThresholds = args.thresholds
-    if args.dataset != 'V6': # Select model weights trained on dataset V3, V4, V5 of V6
+    if args.dataset in ['V3', 'V4', 'V5']: # Select model weights trained on dataset V3, V4, V5 of V6
         oldVersionsDate = "_05092025" # V3-V5 used date in file names
         hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
         hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
         hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset + oldVersionsDate)
-            
+    if args.dataset in ['V7', 'V8', 'V9', 'V10']: # Newer version than 'V6' now uses 224x224 crop size
+        hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset)
+        hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset)
+        hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset)           
+
     print("Loading hierarchical insect classifier model", hierarchicalWeights)
     hierarchicalClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, 128)
     
