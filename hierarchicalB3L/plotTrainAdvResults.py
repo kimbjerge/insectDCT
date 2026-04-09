@@ -20,9 +20,9 @@ from hierarchical_loss import HierarchicalLossNetwork
 #saved_folder = "./models_saved/saved_128_ResNetV6/"
 #saved_folder = "./models_saved/saved_128_ConvNextV6/"
 #saved_folder = "./models_saved/saved_128_EfficientNetV6/"
-saved_folder = "./models_saved/saved_224_ConvNextV7/"
+saved_folder = "./models_saved/saved_224_ResNetV7/"
 #saved_folder = "./models_saved/saved_224_EfficientNetV7/"
-#saved_folder = "./models_saved/saved_224_ResNetV7/"
+#saved_folder = "./models_saved/saved_224_ConvNextV7/"
 
 graph_folder = "./graph_folder/"
 

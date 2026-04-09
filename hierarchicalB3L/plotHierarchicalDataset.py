@@ -172,13 +172,22 @@ level3 = {
 """
 
 # Classification dataset V6
-image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV6/NI2',
-                   'E:/insectsDCT_datasets/classifier/datasetV6/NI',
-                   'E:/insectsDCT_datasets/classifier/datasetV6/Orchard',
-                   'E:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
-                   'E:/insectsDCT_datasets/classifier/datasetV6/GBIF'
+image_path_list = ['F:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/NI',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/GBIF'
                   ]
 
+# Classification dataset V7
+image_path_list = ['F:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/NI',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                   'F:/insectsDCT_datasets/classifier/datasetV6/GBIF',
+                   'F:/insectsDCT_datasets/classifier/datasetV7/LepiOtar',
+                   'F:/insectsDCT_datasets/classifier/datasetV7/ACSHQ'
+                  ]
 
 datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)
 path_names = datasetLoader.get_path_names()
@@ -205,19 +214,19 @@ fig.tight_layout(pad=2.0)
 level1values = sorted([sum(val) for val in list(level1.values())], reverse=True)
 print(sum(level1values))
 ax[0].plot(level1values, 'bo-', linewidth=1)
-ax[0].set_xlim([0, 85])
+ax[0].set_xlim([0, 110])
 ax[0].set_title("Level 1")
 ax[0].set_ylabel("images")
 level2values = sorted([sum(val) for val in list(level2.values())], reverse=True)
 print(sum(level2values))
 ax[1].plot(level2values, 'ro-', linewidth=1)
-ax[1].set_xlim([0, 85])
+ax[1].set_xlim([0, 110])
 ax[1].set_title("Level 2")
 ax[1].set_ylabel("images")
 level3values = sorted([sum(val) for val in list(level3.values())], reverse=True)
 print(sum(level3values))
 ax[2].plot(level3values, 'go-', linewidth=1)
-ax[2].set_xlim([0, 85])
+ax[2].set_xlim([0, 110])
 ax[2].set_title("Level 3")
 ax[2].set_ylabel("images")
 ax[2].set_xlabel("class index")

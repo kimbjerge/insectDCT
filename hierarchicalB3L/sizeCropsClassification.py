@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-useTestDataset = True
+useTestDataset = False
 
 
 #%% MAIN
@@ -46,12 +46,14 @@ if __name__=='__main__':
                            'E:/insectsDCT_datasets/classifier/dataset_test/Orchard'
                           ]
     else:
-        # Classification dataset V6 - new names and reorganization
-        image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV6/NI2',
-                           'E:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
-                           'E:/insectsDCT_datasets/classifier/datasetV6/NI',
-                           'E:/insectsDCT_datasets/classifier/datasetV6/Orchard',
-                           'E:/insectsDCT_datasets/classifier/datasetV6/GBIF'
+        # Classification dataset V7 - new names and reorganization
+        image_path_list = ['F:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                           'F:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                           'F:/insectsDCT_datasets/classifier/datasetV6/NI',
+                           'F:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                           'F:/insectsDCT_datasets/classifier/datasetV6/GBIF',
+                           'F:/insectsDCT_datasets/classifier/datasetV7/LepiOtar',
+                           'F:/insectsDCT_datasets/classifier/datasetV7/ACSHQ'
                           ]
         
     
@@ -141,27 +143,27 @@ if __name__=='__main__':
         plt.show()
     else:
         #plt.title("Insect pixel size (datasetV5 without GBIF)")
-        plt.title("Insect pixel size (CV6)")
+        plt.title("Insect pixel size (CV7)")
         plt.xlabel('Pixel size (max.[w|h])')
         plt.ylabel('Probability')
         #plt.xlim(0, 500)
         plt.xlim(0, 1000)
-        plt.savefig("./plots/classificationDatasetV6.png")
+        plt.savefig("./plots/classificationDatasetV7.png")
         plt.show()
         
         longTail = sorted(taxaCrops.values(), reverse=True)
         plt.plot(longTail)
-        plt.title("Class distribution (CV6)")
+        plt.title("Class distribution (CV7)")
         plt.xlabel('Class Id')
         plt.ylabel('Images')
-        plt.savefig("./plots/distributionDatasetV6.png")
+        plt.savefig("./plots/distributionDatasetV7.png")
         plt.show()
         
         plt.plot(longTail)
         plt.yscale('log')
-        plt.title("Class distribution (CV6)")
+        plt.title("Class distribution (CV7)")
         plt.xlabel('Class Id')
         plt.ylabel('Images')
-        plt.savefig("./plots/distributionLogDatasetV6.png")
+        plt.savefig("./plots/distributionLogDatasetV7.png")
         plt.show()
                                             
