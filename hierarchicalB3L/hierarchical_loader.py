@@ -243,7 +243,7 @@ if __name__=='__main__':
         string = ""
         for i in range(4):
             if i != 2:
-                string += nameSplit[i] + " &"
+                string += nameSplit[i] + " & "
             else:
                 string += nameSplit[i] + " "
         string += str(class_images[name])
