@@ -226,7 +226,12 @@ if __name__=='__main__':
                        '/home/don/data/ArthropodsTrain/GBIF'
                       ]
 
-
+    # Test dataset V6
+    image_path_list = ['/home/don/data/ArthropodsTest/RTNI',
+                       '/home/don/data/ArthropodsTest/Orchard',
+                       '/home/don/data/ArthropodsTest/NI2_MAMBO'
+                      ]
+    
     #datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)
     class_images = datasetLoader.get_class_images()
