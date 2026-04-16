@@ -22,26 +22,33 @@ class HierarchicalDatasetLoader():
         self.split_validate = int(100/split_validate)
         self.split_offset = split_offset
         self.data_path_list = image_path_list
-        self.path_names = self.create_labels_file_list()
+        self.path_names, self.class_images = self.create_labels_file_list()
         self.create_hierarchy_labels()
     
     
     def create_labels_file_list(self):
         
         path_names = {}
+        class_images = {}
         for file_path in self.data_path_list:
             for path_name in sorted(os.listdir(file_path)):
                 full_path_name = file_path + '/' + path_name
                 if not path_name in path_names.keys():                
                     path_names[path_name] = []
+                    class_images[path_name] = 0
                 path_names[path_name].append(full_path_name)
         
-        return path_names
+        return path_names, class_images
     
     
     def get_path_names(self):
         
         return self.path_names
+    
+    
+    def get_class_images(self):
+        
+        return self.class_images
     
     
     def create_hierarchy_labels(self):
@@ -113,6 +120,7 @@ class HierarchicalDatasetLoader():
                         """
                          
                         count += 1
+                        self.class_images[dirName] += 1
                         if count % self.split_validate == self.split_offset:
                             self.data_list_val.append(record) # Use image for validation
                             num_images = [0, 1] # Validate image
@@ -221,14 +229,26 @@ if __name__=='__main__':
 
     #datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)
-    path_names = datasetLoader.get_path_names()
+    class_images = datasetLoader.get_class_images()
     #print("=============================================================================================")
     #print(path_names)
     print("=============================================================================================")
     print("Class directory hierarchy with 3 levels: order - family - genus/species")
     print("-----------------------------------------------------------------------")
-    for name in sorted(path_names.keys()):
-        print(name)
+    for name in sorted(class_images.keys()):
+        #print(name, class_images[name])
+        nameSplit = name.split(' ')
+        while 4 >= len(nameSplit):
+            nameSplit.append("")
+        string = ""
+        for i in range(4):
+            if i != 2:
+                string += nameSplit[i] + " &"
+            else:
+                string += nameSplit[i] + " "
+        string += str(class_images[name])
+        print(string)
+                
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
     print("=============================================================================================")
