@@ -12,6 +12,8 @@ Example shown below of time-lapse tracking with two Bumblebees (<em>Bombus lapid
 
 ![Alt text](BumblebeeSedum.jpg)
 
+Video of insect tracking: https://www.youtube.com/watch?v=obxTmgERpO4
+
 insectDCT is an AI-based pipeline for detection, hierarchical classification, and tracking of insects in natural floral environments
 
 The insectDCT framework is a multi-stage artificial intelligence pipeline designed for automated monitoring of insects in complex natural and semi-natural floral environments. The pipeline consists of three main processing stages: detection and localization, hierarchical taxonomic classification, and spatiotemporal tracking.
