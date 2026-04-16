@@ -235,6 +235,7 @@ if __name__=='__main__':
     print("=============================================================================================")
     print("Class directory hierarchy with 3 levels: order - family - genus/species")
     print("-----------------------------------------------------------------------")
+    total = 0
     for name in sorted(class_images.keys()):
         #print(name, class_images[name])
         nameSplit = name.split(' ')
@@ -246,8 +247,10 @@ if __name__=='__main__':
                 string += nameSplit[i] + " & "
             else:
                 string += nameSplit[i] + " "
-        string += str(class_images[name]) + "\\\\"
+        string += str(class_images[name]) + " \\\\"
         print(string)
+        total += class_images[name]
+    print(f"Total & & & {total} \\\\")
                 
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
     data_set = datasetLoader.get_data_list(validate=False)
