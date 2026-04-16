@@ -246,7 +246,7 @@ if __name__=='__main__':
                 string += nameSplit[i] + " & "
             else:
                 string += nameSplit[i] + " "
-        string += str(class_images[name])
+        string += str(class_images[name]) + "\\\\"
         print(string)
                 
     hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3 = datasetLoader.get_hierarchy_labels()
