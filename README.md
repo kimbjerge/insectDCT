@@ -399,16 +399,17 @@ alternative is the second best estimate on the taxon class with at least two of 
 
 Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DD-TRS.csv):
 
-	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName
+	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName,frameId
 
 Example:
 
-	0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg
-	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg
-	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg
+	0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg,23
+	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg,24
+	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg,25
 
 taxaConf is the taxa confidence score same as confidence in the detection CSV file   <br />
-detectLine is the line number in the detection CSV file
+detectLine is the line number in the detection CSV file   <br />
+frameId is the frame number starting with 1 mostly relevant for video recordings
 
 
 ## Training insect detector and hierachical classification models ##
