@@ -50,6 +50,59 @@ else:
     
 labelNames = ['Insect'] # YOLO Only one label
 
+track_summary = {}
+
+# Function to update track_summary during processing
+def updateTrackSummary(track_id,
+                       frame_id,
+                       timestamp_date_str,
+                       timestamp_time_str,
+                       speciesName,
+                       probability,
+                       x1, y1, x2, y2,
+                       filename):
+
+    global track_summary
+
+    if track_id not in track_summary:
+
+        track_summary[track_id] = {
+            "startFrame": frame_id,
+            "endFrame": frame_id,
+            "startTime": timestamp_date_str + "_" + timestamp_time_str,
+            "endTime": timestamp_date_str + "_" + timestamp_time_str,
+            "frames": 0,
+            "speciesVotes": {},
+            "speciesConf": {},
+            "bestBox": [x1, y1, x2, y2],
+            "fileName": filename
+        }
+
+    tr = track_summary[track_id]
+
+    tr["endFrame"] = frame_id
+    tr["endTime"] = timestamp_date_str + "_" + timestamp_time_str
+    tr["frames"] += 1
+
+    if speciesName not in tr["speciesVotes"]:
+        tr["speciesVotes"][speciesName] = 0
+        tr["speciesConf"][speciesName] = 0.0
+
+    tr["speciesVotes"][speciesName] += 1
+    tr["speciesConf"][speciesName] += probability
+
+    # Store largest bbox
+    old_area = (
+        (tr["bestBox"][2] - tr["bestBox"][0]) *
+        (tr["bestBox"][3] - tr["bestBox"][1])
+    )
+
+    new_area = (x2 - x1) * (y2 - y1)
+
+    if new_area > old_area:
+        tr["bestBox"] = [x1, y1, x2, y2]
+        
+# Fuction to create hierachical classifier
 def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0', modelName="ResNet50"):
     
     with open(label_file, 'rb') as f:
@@ -288,7 +341,18 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                     line = str(frame_count) + ',' + str(track_id) + ',' + line + '\n'
                     csvfileInfo.write(line)
                     csvfileInfo.flush()
-                    
+                
+                updateTrackSummary(
+                    track_id,
+                    frame_count,
+                    timestamp_date_str,
+                    timestamp_time_str,
+                    speciesName,
+                    prob,
+                    x1, y1, x2, y2,
+                    saveFilename
+                )
+                
                 if saveMovie:
                     insectFound = True
                     frames_after = store_frames_after
@@ -576,10 +640,90 @@ if __name__=='__main__':
 
     # Release the video capture object and close the display window
     csvfile.close()
+   
     if saveMovie:
         movie_writer.release()
     if csvfileInfo is not int:
         csvfileInfo.close()
+    
+    # Create track summary file based on track_summary
+    trackFilename = csvFilename.replace("-CL.csv", "-TR.csv")
+    trackCsv = open(trackFilename, 'w', newline='\n')
+    trackWriter = csv.writer(trackCsv, delimiter=',')
+    
+    header = [
+        "trackId",
+        "startFrame",
+        "endFrame",
+        "frames",
+        "startTime",
+        "endTime",
+        "bestTaxa",
+        "bestConfidence",
+        "alternativeTaxa",
+        "alternativeConfidence",
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        "fileName"
+    ]
+    
+    trackCsv.write(",".join(header) + "\n")
+
+    # Processing all tracks to generate summary file "YYYMMDD-TR.csv"
+    for track_id, tr in track_summary.items():
+
+        species_scores = {}
+    
+        for species in tr["speciesVotes"]:
+    
+            votes = tr["speciesVotes"][species]
+            conf = tr["speciesConf"][species]
+    
+            score = conf * votes
+    
+            species_scores[species] = score
+    
+        sorted_species = sorted(
+            species_scores.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+    
+        bestTaxa = sorted_species[0][0]
+        bestScore = sorted_species[0][1]
+    
+        if len(sorted_species) > 1:
+            altTaxa = sorted_species[1][0]
+            altScore = sorted_species[1][1]
+        else:
+            altTaxa = ""
+            altScore = 0
+    
+        x1, y1, x2, y2 = tr["bestBox"]
+    
+        row = [
+            track_id,
+            tr["startFrame"],
+            tr["endFrame"],
+            tr["frames"],
+            tr["startTime"],
+            tr["endTime"],
+            bestTaxa,
+            round(bestScore, 3),
+            altTaxa,
+            round(altScore, 3),
+            x1,
+            y1,
+            x2,
+            y2,
+            tr["fileName"]
+        ]
+    
+        trackWriter.writerow(row)
+        
+    trackCsv.close()
         
     print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
     print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
