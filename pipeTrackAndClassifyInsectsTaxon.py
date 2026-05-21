@@ -647,7 +647,7 @@ if __name__=='__main__':
         csvfileInfo.close()
     
     # Create track summary file based on track_summary
-    trackFilename = csvFilename.replace("-CL.csv", "-TR.csv")
+    trackFilename = csvFilename.replace("-CL.csv", "-TS.csv")
     trackCsv = open(trackFilename, 'w', newline='\n')
     trackWriter = csv.writer(trackCsv, delimiter=',')
     
