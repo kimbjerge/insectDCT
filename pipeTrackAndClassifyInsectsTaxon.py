@@ -131,7 +131,7 @@ def updateTrackSummary(track_id,
 
 
 # Function to create track summary CSV file
-def createTrackSummaryFile(csvFilename):
+def createTrackSummaryFile(csvFilename, framesValidTrack=3):
 
     trackCsv = open(trackFilename, 'w', newline='\n')
     trackWriter = csv.writer(trackCsv, delimiter=',')
@@ -206,33 +206,35 @@ def createTrackSummaryFile(csvFilename):
         
         track_distance = tr["trackDistance"]
     
-        row = [
-            track_id,
-            tr["date"],
-            tr["startTime"],
-            tr["endTime"],
-            int(round(duration_sec, 0)),
-            bestTaxa,
-            tr["frames"],
-            round(bestScore, 3),
-            int(round(avg_box_size, 0)),
-            int(round(track_distance, 0)),        
-            altTaxa,
+        if tr['frames'] >= framesValidTrack: # At least 3 frames for track to be valid
         
-            round(altScore, 3),
-    
-            tr["startFrame"],
-            tr["endFrame"],
-
-            x1,
-            y1,
-            x2,
-            y2,
+            row = [
+                track_id,
+                tr["date"],
+                tr["startTime"],
+                tr["endTime"],
+                int(round(duration_sec, 0)),
+                bestTaxa,
+                tr["frames"],
+                round(bestScore, 3),
+                int(round(avg_box_size, 0)),
+                int(round(track_distance, 0)),        
+                altTaxa,
+            
+                round(altScore, 3),
         
-            tr["fileName"]
-        ]
+                tr["startFrame"],
+                tr["endFrame"],
     
-        trackWriter.writerow(row)
+                x1,
+                y1,
+                x2,
+                y2,
+            
+                tr["fileName"]
+            ]
+        
+            trackWriter.writerow(row)
         
     trackCsv.close()    
     
@@ -567,7 +569,8 @@ if __name__=='__main__':
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
     #parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
-    parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
+    #parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
+    parser.add_argument('--confidence', default='0.25', type=float) # test
     #parser.add_argument('--confidence', default='0.397', type=float) # insects6Color best F1-score 0.93
     #parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
