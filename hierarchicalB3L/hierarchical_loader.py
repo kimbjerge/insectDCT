@@ -231,6 +231,20 @@ if __name__=='__main__':
                        '/home/don/data/ArthropodsTrain/NI2_MAMBO',
                        '/home/don/data/ArthropodsTrain/GBIF'
                       ]
+    """
+    # Classification dataset V6
+    image_path_list = ['E:/insectsDCT_datasets/classifier/datasetV6/NI2',
+                       'E:/insectsDCT_datasets/classifier/datasetV6/NI',
+                       'E:/insectsDCT_datasets/classifier/datasetV6/Orchard',
+                       'E:/insectsDCT_datasets/classifier/datasetV6/NI2_MAMBO',
+                       'E:/insectsDCT_datasets/classifier/datasetV6/GBIF'
+                      ]
+    # Test dataset V6
+    image_path_list = ['E:/insectsDCT_datasets/classifier/dataset_test/RTNI',
+                       'E:/insectsDCT_datasets/classifier/dataset_test/Orchard',
+                       'E:/insectsDCT_datasets/classifier/dataset_test/NI2_MAMBO'
+                      ]
+    """
     
     #datasetLoader = HierarchicalDatasetLoader(image_path_list, 10)
     datasetLoader = HierarchicalDatasetLoader(image_path_list, 5)

@@ -1,0 +1,588 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 13 16:11:38 2025
+
+@author: Kim Bjerge
+"""
+
+import os
+import gc
+import cv2
+import csv
+import torch
+import argparse
+import datetime 
+import pickle
+import time
+
+#from common.cnn_classifier import CnnClassifier # Uncomment if flat classifier should be used
+from common.hierarchical_classifier import HierarchicalClassifier
+from common.motionEnhancement import MotionEnhancement
+
+torch.cuda.empty_cache()
+gc.collect()
+from ultralytics import YOLO
+
+from PIL import Image
+from PIL.ExifTags import TAGS
+
+results_dir = './tracks/'
+crops_dic_insect = './crops/'
+
+useMambo = False
+
+# MAMBO
+if useMambo:   
+    #imgWidth = 5120 # Grade Pro 16MP
+    #imgHeight = 2880
+    imgWidth = 3840 # Grade Pro 8MP
+    imgHeight = 2160
+    #imgWidth = 4224 # Wingscapes
+    #imgHeight = 2376
+else:
+# Jordan, Simon, Pau, MiniMon and CAAS
+    imgWidth = 1920 # Logitech and Pi3
+    imgHeight = 1080
+    #imgWidth = 2592  # Camera used by CAAS
+    #imgHeight = 1944
+    #imgWidht = 2560  # MiniMon camera
+    #imgHeight = 1920 
+    
+labelNames = ['Insect'] # YOLO Only one label
+
+def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0', modelName="ResNet50"):
+    
+    with open(label_file, 'rb') as f:
+        _, hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, _, _, _, _, _, _ = pickle.load(f)
+        print("Labels and hierarchy dependency loaded from ", label_file)
+        print("=============================================================================================")
+        print("L1 classes", labelsL1, len(labelsL1))
+        print("=============================================================================================")
+        print("L2 classes", labelsL2, len(labelsL2))
+        print("=============================================================================================")
+        print("L3 classes", labelsL3, len(labelsL3))
+        print("=============================================================================================")
+        print("L2 -> L1 dependency", hierarchyL1)
+        print("=============================================================================================")
+        print("L3 -> L2 dependency", hierarchyL2)
+        print("=============================================================================================")
+    
+    classifier = HierarchicalClassifier(hierarchyL1, hierarchyL2, labelsL1, labelsL2, labelsL3, img_size=img_size, stdThreshold=stdThreshold, device=device)
+    classifier.loadmodel(weights_file, threshold_file, modelName=modelName)
+    
+    return classifier
+    
+#%% Function to classify insects in 19 groups of taxa
+def classifyInsect(classifier, image, xc, yc, w, h, cropName, border=1, createCrops=False): # Border=10 for crops
+
+    height, width, channels = image.shape
+    
+    w = (w + border*2)
+    h = (h + border*2)
+    if h > w: 
+        wh2 = int(round(h/2))
+    else:
+        wh2 = int(round(w/2))
+    
+    x1 = xc-wh2
+    if x1 < 0:
+       x1 = 0
+    x2 = xc+wh2
+    if x2 >= width:
+        x2 = width-1
+    y1 = yc-wh2
+    if y1 < 0: 
+        y1 = 0
+    y2 = yc+wh2
+    if y2 >= height:
+        y2 = height-1
+        
+    imgCrop = image[y1:y2, x1:x2,  :].copy()
+    
+    if type(classifier) is HierarchicalClassifier:    
+        line, level, index, species, probability = classifier.makePrediction(imgCrop)
+    else: # Flat CnnClassifier
+        level = 0
+        index, species, probability = classifier.makePrediction(imgCrop)
+        line = species + ',' + str(level) + ',' + str(probability) 
+    
+    print(line)         
+    
+    if createCrops:
+        dirName = str(level) + '-' + species
+        if os.path.exists(crops_dic_insect + dirName) == False:
+            print("Create directory:", crops_dic_insect + dirName)
+            os.mkdir(crops_dic_insect + dirName)
+        imgNameCrop = cropName + '_' + str(xc) + '_' + str(yc) + '_' + str(w) + '_' + str(h) + '.jpg'
+        cv2.imwrite(crops_dic_insect + dirName + '/' + imgNameCrop, imgCrop)
+    
+    return line, level, index, species, probability
+
+#%% Return datetime based on image filename with the format: camera_YYYY_MM_DD_HH_MM_SS.jpg
+def getFrameTime(filePath, image_filename, useTimeExif): 
+
+    if useTimeExif:
+        # open the image
+        image = Image.open(filePath+image_filename)
+         
+        # extracting the exif metadata
+        exifdata = image.getexif()
+        
+        dateTimeStr = datetime.datetime.now().strftime('%Y%m%d%H%M%S') # Current time YYYYMMDDHHMMSS
+        
+        # looping through all the tags present in exifdata
+        for tagid in exifdata:
+            # getting the tag name instead of tag id
+            tagname = TAGS.get(tagid, tagid)
+            if tagname == "DateTime": # Check tag date time
+                # passing the tagid to get its respective value
+                value = exifdata.get(tagid)
+                # printing the final result
+                #print(f"{tagname:25}: {value}")
+                
+                # reformat time stamp to "YYYYMMDDHHMMSS"
+                timestamp = value.replace(':', '')
+                dateTimeStr = timestamp.replace(' ', '')
+           
+        # close the image
+        image.close()
+    
+    else:    
+        nameSplit = image_filename.split('.')[0].split('_')
+        if len(nameSplit) == 2: 
+            # Format: YYYYMMDD_HHMMSS (OTAR)
+            #    dateTimeStr = nameSplit[0] + nameSplit[1] 
+            # Format: YYYY-MM-DD_HH-MM-SS-ssssss.jpg (WILLEM)
+            dateStr = nameSplit[0].split('-')
+            timeStr = nameSplit[1].split('-') 
+            dateTimeStr = dateStr[0] + dateStr[1] + dateStr[2] + timeStr[0] + timeStr[1] + timeStr[2]
+        else:
+            if len(nameSplit) < 7:
+                #dateTimeStr = nameSplit[1] # Format:YYYYMMDDHHMMSS (MINIMON)
+                dateTimeStr = nameSplit[0] # Format:YYYYMMDDHHMMSS (ELLA-O)
+            else:
+                dateTimeStr = nameSplit[1] + nameSplit[2] + nameSplit[3] + nameSplit[4] + nameSplit[5] + nameSplit[6] # Format: YYYYMMDDHHMMSS (UFZ)
+    
+    image_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
+
+    return image_time, dateTimeStr
+
+numDetections = 0
+totalTimeDetections = 0
+numClassifications = 0
+totalTimeClassification = 0
+
+#%% Pipe line to process each frame using motion informed enhancement if useMotion=True
+def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, filename='', prevFilename=''):
+    # Global variables:  MIE, modelDetector, modelClassifier, movie_writer, csv_writer
+    global numDetections
+    global totalTimeDetections
+    global numClassifications
+    global totalTimeClassification
+       
+    # Use timestamp from current frame
+    timestamp_year_str = frame_time.strftime("%Y")
+    timestamp_date_str = frame_time.strftime("%Y%m%d")
+    timestamp_time_str = frame_time.strftime("%H%M%S")
+
+    if useMotion:
+        frame, imgPrev = MIE.motion_image(frame)
+        if frame_count > 0: 
+            frame_count = frame_count - 1 # Previous frame is the main image to be analyzed for motion
+
+    # Run YOLO inference on the frame
+    t1 = time.time()
+    results = modelDetector.track(frame, persist=True, 
+                                  tracker=args.tracker, conf=args.confidence, 
+                                  device=args.device, verbose=False) # Automatic scales to HD image size
+    t2 = time.time()
+    totalTimeDetections += t2-t1    
+    numDetections += 1
+    
+    if useMotion and args.videoMIE == False:
+        frame = imgPrev
+   
+    # View results
+    insectFound = False
+    insectsFound = 0
+    for r in results:
+    
+        boxes = r.boxes
+    
+        if boxes.id is None:
+            continue
+    
+        track_ids = boxes.id.int().cpu().tolist()
+    
+        xyxy_list = boxes.xyxy.cpu().numpy()
+        xywh_list = boxes.xywh.cpu().numpy()
+        cls_list = boxes.cls.cpu().numpy()
+        conf_list = boxes.conf.cpu().numpy()
+    
+        for i, track_id in enumerate(track_ids):
+    
+            xyxy = xyxy_list[i] # top-left-x, top-left-y, bottom-right-x, bottom-right-y
+            xywh = xywh_list[i] # center-x, center-y, width, height
+    
+            clas = int(cls_list[i])
+            conf = int(round(conf_list[i] * 100))
+
+            if xyxy.size > 0: # Save object found
+
+                #print(xyxy, clas, conf)
+                x1 = int(round(xyxy[0]))
+                y1 = int(round(xyxy[1]))
+                x2 = int(round(xyxy[2]))
+                y2 = int(round(xyxy[3]))
+                
+                if type(modelClassifier) is not int:
+                    t3 = time.time()
+                    line,  level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
+                                                                                        int(round(xywh[0])), 
+                                                                                        int(round(xywh[1])), 
+                                                                                        int(round(xywh[2])), 
+                                                                                        int(round(xywh[3])),
+                                                                                        str(frame_count))
+                    t4 = time.time()
+                    totalTimeClassification += t4-t3
+                    numClassifications += 1
+                    #prob = round(probability*10000)/100 # percentage with two decimals
+                    prob = probability*100 # percentage with all decimals
+                else:
+                    line = ''
+                    level = 0
+                    speciesIdx = -1
+                    speciesName = "Unidentified"
+                    prob = 0
+
+                taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
+                
+                if useMotion and prevFilename != '':
+                    saveFilename = prevFilename
+                else:
+                    saveFilename = filename
+
+                if args.CSVformat == "tracking": # Format used for tracing insects
+                    #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
+                    #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"
+                    trapIdL = [int(args.camera[i]) for i in range(len(args.camera)) if args.camera[i].isdigit()]
+                    trapId = 0
+                    if len(trapIdL) > 0: # Search for number in string with max. "999"
+                        trapId = trapIdL[0]
+                        if len(trapIdL) > 1:
+                            trapId = trapId*10 + trapIdL[1]
+                            if len(trapIdL) > 2:
+                                trapId = trapId*10 + trapIdL[2]
+                    input_variable = [frame_count, args.camera, trapId, timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, x1, y1, x2, y2, saveFilename]
+                else: # Format used for tracking moths
+                    #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
+                    input_variable = [frame_count, track_id, timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
+                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, taxaSure]
+                
+                print(input_variable)
+                csv_writer.writerow(input_variable)
+                csvfile.flush()
+                
+                if type(modelClassifier) is HierarchicalClassifier:
+                    #headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
+                    line = str(frame_count) + ',' + str(track_id) + ',' + line + '\n'
+                    csvfileInfo.write(line)
+                    csvfileInfo.flush()
+                    
+                if saveMovie:
+                    insectFound = True
+                    frames_after = store_frames_after
+                    color = (0,0,255) # Red
+                    if insectsFound % 3 == 1:
+                        color = (0,255,0) # Green
+                    if insectsFound % 3 == 2:
+                        color = (255,0,0) # Blue
+                    insectsFound += 1
+                    
+                    if type(modelClassifier) is int:
+                        insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
+                    else: # Species classifier used
+                        if taxaSure:
+                            if prob < 10.0:
+                                probDisp = round(prob*100)/100 # display probability (%) with two decimals
+                            else:
+                                probDisp = int(round(prob)) # round to integer if more than 10%
+                            insectName = "id:" + str(track_id) + ' ' + speciesName + ' (' + str(level) + '-' + str(probDisp) + ')'
+                        else:
+                            insectName = "id:" + str(track_id) + ' ' + speciesName
+                    y = int(round(y1-20))
+                    
+                    if useMambo:                                    
+                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
+                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
+                    else:
+                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
+                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
+    
+    dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
+    
+    if useMambo:
+        cv2.putText(frame, dateTimeStr, (40,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # (20,40) 1, 2 HD
+    else:
+        cv2.putText(frame, dateTimeStr, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # (20,40) 1, 2 HD
+              
+    if insectFound or frames_after > 0:
+        frames_after -= 1
+        image = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
+        movie_writer.write(image) # cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    prevFilename = filename
+    return prevFilename, frames_after 
+
+if __name__=='__main__':
+
+    version = "pipeTrackAndClassifyInsectsTaxon.py version: 1.0.0\n" # Supporting hierachical classifier trained on dataset V7
+    
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--yoloWeights', default='./runs/detect/insects6Motion/weights/best.pt') #Directory that contains motion models
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects6Motion11s/weights/best.pt') #Use optimzed YOLO11s model on RaspberryPi
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects6Color/weights/best.pt') #Directory that contains color models
+    parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
+
+    parser.add_argument('--modelType', default="ConvNextBase") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
+    #parser.add_argument('--modelType', default="EfficientNetV2S") # Support for ResNet50, ConvNextBase (CNB), EfficientNetV2S (EFF) only V6
+    parser.add_argument('--dataset', default="V6") # Support for dataset "V3" (Wingscapes, Logitech, Pi3, GBIF), "V4" without GBIF data, 
+                                                   # "V5" with more Orchard data and GBIF and lots of vegetation, "V6" with more data and reorganized hierarchy
+                                                   # "V7" with PAU data and Lepidoptera
+    
+    # Weights, labels and thresholds for ResNet50 (MODEL=RES), ConvNextBase (MODEL=CNB), EfficientNetV2S (MODEL=EFF2S) with dataset V6 
+    parser.add_argument('--hierachical', default='./models_save/HierarchicalClassifier_MODEL_V6.pth') # 128x128 crops
+    parser.add_argument('--labels', default='./models_save/HierarchicalLabels3L_MODEL_V6.pkl')
+    parser.add_argument('--thresholds', default='./models_save/HierarchicalThresholds3S_MODEL_V6.csv') # Use thresholds below = mean-x*std (X=3.5 RES, x=4.5 EFF2S, x=5.5 CNB)
+    
+    parser.add_argument('--thresholdStd', default='0.0', type=float) # Use threshold below = mean - thresholdStd*std (Default 0.0 uses thresholds csv file)
+    parser.add_argument('--project', default='') # Default empty else use MAMBO used for naming CSV files
+    
+    parser.add_argument('--useExifTime', default='', type=bool) # Default (False) use date time in filename or from exif file data (True)
+    parser.add_argument('--video', default='')
+    #parser.add_argument('--video', default='../PAU/video1_2024_02_19_15_24_42.mp4') # 30 fps -> 10 fps (stride 3) Jordan
+    #parser.add_argument('--video', default='./datasets/pi22025_04_06_23_11_00.mov') # 30 fps -> 10 fps (stride 3) Jordan
+    parser.add_argument('--images', default='./images/pi1_2025_02_21/')
+    #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
+    #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
+    #parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
+    parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
+    #parser.add_argument('--confidence', default='0.397', type=float) # insects6Color best F1-score 0.93
+    #parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
+    parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
+    parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
+    parser.add_argument('--frame_stride', default='1', type=int) # for video, not used for images
+    #parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
+    parser.add_argument('--scale', default='1.00', type=float) # Scale factor used for creating result video
+    parser.add_argument('--videoMIE', default='', type=bool) # Show video with Motion Informed Enhanced frames (True)
+    parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
+    parser.add_argument('--CSVformat', default='') # Store result file in format used by insectTracking
+    parser.add_argument('--resultsDir', default='./tracks') # Default directory to store result files (CSV and AVI) 
+    parser.add_argument('--tracker', default='botsort.yaml') # Yaml file for tracker bytetrack.yaml (video) or botsort.yaml (time-lapse)
+    #parser.add_argument('--persist', action='store_true') # Used for tracking 
+
+    args = parser.parse_args() 
+    
+    if args.resultsDir != "":
+        results_dir = args.resultsDir + '/'
+        print("Store results files (csv, avi) in", results_dir)
+    
+    frame_stride = args.frame_stride # Video recorded with 1 fps
+    
+    video_path = args.video
+    if video_path != '':
+        store_frames_after = 5
+        fps=1.0 # Play back frame rate (moviePredict)
+    else:
+        store_frames_after = 1
+        #fps=1/frame_stride
+        fps=0.5 # Play back frame rate (moviePredict)
+
+    prevFilename = ''
+    useMotion = False
+    if "Motion" in args.yoloWeights: # Use motion informed enhancement in detecting insects
+        useMotion = True
+        MIE = MotionEnhancement()
+    
+    # Load the YOLO11 insect detector model
+    if args.optimized == "ncnn":
+        yoloNCNN = args.yoloWeights.replace(".pt", "_ncnn_model")
+        if not os.path.exists(yoloNCNN):
+            modelDetector = YOLO(args.yoloWeights)
+            modelDetector.export(format="ncnn", half=False) # export model to optimized NCNN format (FP16)
+        modelDetector = YOLO(yoloNCNN) # load optimized NCNN model   
+    else:
+        modelDetector = YOLO(args.yoloWeights)  # load trained model
+    
+    # Load the insect classifier model
+    modelClassifier = 0   
+    imageCropSize = 128     
+    if args.hierachical != '':
+        if args.modelType == "ResNet50":
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_RES_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_RES_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_RES_")
+        if args.modelType == "ConvNextBase":
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_CNB_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_CNB_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_CNB_")
+        if args.modelType == "EfficientNetV2S": # Only trained on dataset V6
+            hierarchicalWeights = args.hierachical.replace("_MODEL_", "_EFF2S_")
+            hierarchicalLabels = args.labels.replace("_MODEL_", "_EFF2S_")
+            hierarchicalThresholds = args.thresholds.replace("_MODEL_", "_EFF2S_")        
+        if args.dataset in ['V3', 'V4', 'V5']: # Select model weights trained on dataset V3, V4 or V5
+            if args.modelType == "EfficientNetV2S":
+                print("Error since EfficientNetV2S not trained on dataset", args.dataset)
+                exit(1)
+            oldVersionsDate = "_05092025" # V3-V5 used date in file names
+            hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset + oldVersionsDate)
+            hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset + oldVersionsDate)
+            hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset + oldVersionsDate)
+        if args.dataset in ['V7', 'V8', 'V9', 'V10']: # Newer version than 'V6' now uses 224x224 crop size
+            hierarchicalWeights = hierarchicalWeights.replace('V6', args.dataset)
+            hierarchicalLabels = hierarchicalLabels.replace('V6', args.dataset)
+            hierarchicalThresholds = hierarchicalThresholds.replace('V6', args.dataset)
+            imageCropSize = 224
+            print("Using using crop size of 224x224 pixels version", args.dataset)
+            
+        print("Loading hierarchical insect classifier model", hierarchicalWeights, args.modelType, args.dataset)
+            
+        modelClassifier = createHierarchicalClassifier(hierarchicalWeights, hierarchicalLabels, hierarchicalThresholds, imageCropSize, 
+                                                       stdThreshold=args.thresholdStd, device=args.device, modelName=args.modelType)
+        
+    # Open the input video file if specified
+    if video_path != '': # Process video file
+        cap = cv2.VideoCapture(video_path)
+        cap_fps = cap.get(cv2.CAP_PROP_FPS)
+        if cap_fps == 0: 
+            cap_fps = 24 # Assume default 24 frames/second
+        time_interval = int(round((1/cap_fps * 1000) * frame_stride))
+        print("Video fps", cap_fps, " stride", frame_stride, " interval ms.", time_interval)
+        #videoSplit = args.video.split('_')
+        #dateTimeStr = "2025" + videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + "00" # Format: YYYYMMDDHHMMSS
+        imagesSubDir = args.video.split('/')[-1]
+        imagesSubDir = imagesSubDir.split('.')[0]
+        videoSplit = imagesSubDir.split('_') # Extract date time stamp from video name: eg: /UFZ_BOS_STR/C2_2022_07_21_09_46_22.h264
+        args.camera = videoSplit[0]
+        dateTimeStr = videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + videoSplit[5] + videoSplit[6] # Format: YYYYMMDDHHMMSS
+        start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
+        csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
+        csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+        if args.moviePredict != "": # Save results in a movie file 
+            args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file  
+    else: # Process time-lapse images in directory
+        imagesSubDir = args.images.split('/')[-2]
+       
+        if args.project == "MAMBO":    
+            # Overwrite parameters used for MAMBO images
+            useMambo = True
+            imgWidth = 4224 # Wingscapes MAMBO
+            imgHeight = 2376
+            args.scale = 0.45
+            
+            # Format CSV result file names for project MAMBO
+            imagesSubDir4 = args.images.split('/')[-4]
+            imagesSubDir3 = args.images.split('/')[-3] 
+            resultName = imagesSubDir4 + '-' + imagesSubDir3 + '-' + imagesSubDir
+            csvFilename = results_dir + resultName + '-CL.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + resultName +  '-HI.csv' # directory name HI Hierarchical classifications
+            args.camera = imagesSubDir4 + '/' + imagesSubDir3 
+            if args.moviePredict != "": # Save results in a movie file 
+                args.moviePredict = resultName + '.avi'  # use same name as csv file   
+        else: # Generic project
+            csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+            args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
+            if args.moviePredict != "": # Save results in a movie file 
+                args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
+    
+    # Create the CSV result file
+    print(csvFilename)
+    csvfile = open(csvFilename, 'w', newline = '\n')
+    if args.CSVformat == "tracking":
+        headerLine = "trackId,trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,x1,y1,x2,y2,fileName\n"    
+    else:
+        headerLine = "frameId,trackId,year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure\n"
+        # Header line for tracking moths - includes species classifier
+        #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,orderLabel,orderId,orderConf,aboveTH,key,speciesLabel,speciesId,speciesConf\n"
+    csvfile.write(headerLine)
+    csv_writer = csv.writer(csvfile, delimiter = ',')
+    
+    csvfileInfo = 0
+    if type(modelClassifier) is HierarchicalClassifier:
+        csvfileInfo = open(csvFilenameInfo, 'w', newline = '\n')
+        headerLine = "frameId,trackId,Label1,LabelId1,Logit1,Conf1,Above1,Label2,LabelId2,Logit2,Conf2,Above2,Label3,LabelId3,Logit3,Conf3,Above3,Checked\n"
+        csvfileInfo.write(headerLine)
+
+    saveMovie = False
+    if args.moviePredict != "": # Save results in a movie file
+        saveMovie = True
+        scale = args.scale # Scale factor used when movie with predictions created
+        dim = (int(imgWidth*scale), int(imgHeight*scale))
+        movie_writer = cv2.VideoWriter(results_dir + args.moviePredict, cv2.VideoWriter_fourcc(*'DIVX'), fps, dim)
+
+    print(version, args)
+    with open(args.resultsDir+"/pipeTrackAndClassifyInsectsTaxon.txt", "a") as f:
+        f.write(version)
+        if video_path != '':
+            f.write("Video: " + video_path + '\n')
+        else:
+            f.write("Images path: " + args.images + '\n')
+        f.write("Arguments: " + str(args) + '\n')
+        f.write("Processing time start: " + datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+        f.write("================================================================================================================\n")
+        f.close()
+    time.sleep(5)
+    
+    frame_count = 0
+    frames_after = 0
+    if video_path != '': 
+        tA = time.time()
+        # Processing video
+        frame_time = start_time # frame_time global variable
+        # Loop through the video frames
+        while cap.isOpened():
+            # Read a frame from the video
+            success, frame = cap.read()
+            if success: 
+                if (frame_count % frame_stride == 0):
+                    # Increment time based on fps = 1.0
+                    frame_time = frame_time + datetime.timedelta(milliseconds=time_interval)
+                    prevFilname, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, args.video.split('/')[-1], prevFilename)              
+                frame_count += 1
+            else:
+                # Break the loop if the end of the video is reached
+                break
+        cap.release()
+        tB = time.time()
+        totalTime = tB - tA
+    else: 
+        tA = time.time()
+        # Processing time-lapse images
+        for image_file in sorted(os.listdir(args.images)):
+            if image_file.endswith('.jpg') or image_file.endswith('.JPG'):
+                if useMotion and prevFilename != '':
+                    frame_time, dateTimeStr = getFrameTime(args.images, prevFilename.split('/')[-1], args.useExifTime)
+                else:
+                    frame_time, dateTimeStr = getFrameTime(args.images, image_file, args.useExifTime)
+                #if (frame_count % frame_stride == 0):  
+                print(image_file, dateTimeStr)
+                frame = cv2.imread(args.images + image_file)
+                prevFilename, frames_after = processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMovie, args, imagesSubDir + '/' + image_file, prevFilename)              
+                frame_count += 1
+        tB = time.time()
+        totalTime = tB - tA
+
+    # Release the video capture object and close the display window
+    csvfile.close()
+    if saveMovie:
+        movie_writer.release()
+    if csvfileInfo is not int:
+        csvfileInfo.close()
+        
+    print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
+    print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
+    print(f"{args.modelType} classification time average per detection {totalTimeClassification/numClassifications:.4f} sec.")
+    print("Finished detection and classification of insects in time-lapse image or video recordings");    
+    
