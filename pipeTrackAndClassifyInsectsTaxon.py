@@ -55,6 +55,7 @@ track_summary = {}
 # Function to update track_summary during processing
 def updateTrackSummary(track_id,
                        frame_id,
+                       current_datetime,
                        timestamp_date_str,
                        timestamp_time_str,
                        speciesName,
@@ -69,19 +70,34 @@ def updateTrackSummary(track_id,
         track_summary[track_id] = {
             "startFrame": frame_id,
             "endFrame": frame_id,
-            "startTime": timestamp_date_str + "_" + timestamp_time_str,
-            "endTime": timestamp_date_str + "_" + timestamp_time_str,
+            "date": timestamp_date_str,
+            "startTime": timestamp_time_str,
+            "endTime": timestamp_time_str,
+        
+            "startDatetime": current_datetime,
+            "endDatetime": current_datetime,
+        
             "frames": 0,
+        
             "speciesVotes": {},
             "speciesConf": {},
+        
             "bestBox": [x1, y1, x2, y2],
+        
+            "totalBoxArea": 0.0,
+        
+            "prevCenter": None,
+            "trackDistance": 0.0,
+        
             "fileName": filename
         }
 
     tr = track_summary[track_id]
 
+    tr["endDatetime"] = current_datetime
+
     tr["endFrame"] = frame_id
-    tr["endTime"] = timestamp_date_str + "_" + timestamp_time_str
+    tr["endTime"] = timestamp_time_str
     tr["frames"] += 1
 
     if speciesName not in tr["speciesVotes"]:
@@ -98,10 +114,129 @@ def updateTrackSummary(track_id,
     )
 
     new_area = (x2 - x1) * (y2 - y1)
+    tr["totalBoxArea"] += new_area
 
     if new_area > old_area:
         tr["bestBox"] = [x1, y1, x2, y2]
         
+    cx = (x1 + x2) / 2.0
+    cy = (y1 + y2) / 2.0
+    
+    if tr["prevCenter"] is not None:
+        px, py = tr["prevCenter"]
+        dist = ((cx - px)**2 + (cy - py)**2)**0.5
+        tr["trackDistance"] += dist
+
+    tr["prevCenter"] = (cx, cy)
+
+
+# Function to create track summary CSV file
+def createTrackSummaryFile(csvFilename):
+
+    trackCsv = open(trackFilename, 'w', newline='\n')
+    trackWriter = csv.writer(trackCsv, delimiter=',')
+    
+    header = [
+        "id",
+        "startdate",
+        "starttime",
+        "endtime",
+        "duration",
+        "class",
+        "counts",
+        "confidence",
+        "size",
+        "distance",    
+        "alternative",
+        
+        "altConfidence",
+
+        "startFrame",
+        "endFrame",
+
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        
+        "fileName"
+    ]
+    
+    trackCsv.write(",".join(header) + "\n")
+
+    # Processing all tracks to generate summary file "YYYMMDD-TS.csv"
+    for track_id, tr in track_summary.items():
+
+        species_scores = {}
+    
+        for species in tr["speciesVotes"]:
+    
+            votes = tr["speciesVotes"][species]
+            conf = tr["speciesConf"][species]
+    
+            score = conf * votes
+    
+            species_scores[species] = score
+    
+        sorted_species = sorted(
+            species_scores.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+    
+        bestTaxa = sorted_species[0][0]
+        bestScore = sorted_species[0][1]
+    
+        if len(sorted_species) > 1:
+            altTaxa = sorted_species[1][0]
+            altScore = sorted_species[1][1]
+        else:
+            altTaxa = ""
+            altScore = 0
+    
+        x1, y1, x2, y2 = tr["bestBox"]
+
+        duration_sec = (
+            tr["endDatetime"] - tr["startDatetime"]
+        ).total_seconds()
+        
+        avg_box_size = (
+            tr["totalBoxArea"] / max(tr["frames"], 1)
+        )
+        
+        track_distance = tr["trackDistance"]
+    
+        row = [
+            track_id,
+            tr["date"],
+            tr["startTime"],
+            tr["endTime"],
+            int(round(duration_sec, 0)),
+            bestTaxa,
+            tr["frames"],
+            round(bestScore, 3),
+            int(round(avg_box_size, 0)),
+            int(round(track_distance, 0)),        
+            altTaxa,
+        
+            round(altScore, 3),
+    
+            tr["startFrame"],
+            tr["endFrame"],
+
+            x1,
+            y1,
+            x2,
+            y2,
+        
+            tr["fileName"]
+        ]
+    
+        trackWriter.writerow(row)
+        
+    trackCsv.close()    
+    
+    
 # Fuction to create hierachical classifier
 def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_size=128, stdThreshold=2.0, device='cuda:0', modelName="ResNet50"):
     
@@ -345,6 +480,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 updateTrackSummary(
                     track_id,
                     frame_count,
+                    frame_time,
                     timestamp_date_str,
                     timestamp_time_str,
                     speciesName,
@@ -648,82 +784,7 @@ if __name__=='__main__':
     
     # Create track summary file based on track_summary
     trackFilename = csvFilename.replace("-CL.csv", "-TS.csv")
-    trackCsv = open(trackFilename, 'w', newline='\n')
-    trackWriter = csv.writer(trackCsv, delimiter=',')
-    
-    header = [
-        "trackId",
-        "startFrame",
-        "endFrame",
-        "frames",
-        "startTime",
-        "endTime",
-        "bestTaxa",
-        "bestConfidence",
-        "alternativeTaxa",
-        "alternativeConfidence",
-        "x1",
-        "y1",
-        "x2",
-        "y2",
-        "fileName"
-    ]
-    
-    trackCsv.write(",".join(header) + "\n")
-
-    # Processing all tracks to generate summary file "YYYMMDD-TR.csv"
-    for track_id, tr in track_summary.items():
-
-        species_scores = {}
-    
-        for species in tr["speciesVotes"]:
-    
-            votes = tr["speciesVotes"][species]
-            conf = tr["speciesConf"][species]
-    
-            score = conf * votes
-    
-            species_scores[species] = score
-    
-        sorted_species = sorted(
-            species_scores.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
-    
-        bestTaxa = sorted_species[0][0]
-        bestScore = sorted_species[0][1]
-    
-        if len(sorted_species) > 1:
-            altTaxa = sorted_species[1][0]
-            altScore = sorted_species[1][1]
-        else:
-            altTaxa = ""
-            altScore = 0
-    
-        x1, y1, x2, y2 = tr["bestBox"]
-    
-        row = [
-            track_id,
-            tr["startFrame"],
-            tr["endFrame"],
-            tr["frames"],
-            tr["startTime"],
-            tr["endTime"],
-            bestTaxa,
-            round(bestScore, 3),
-            altTaxa,
-            round(altScore, 3),
-            x1,
-            y1,
-            x2,
-            y2,
-            tr["fileName"]
-        ]
-    
-        trackWriter.writerow(row)
-        
-    trackCsv.close()
+    createTrackSummaryFile(trackFilename)
         
     print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
     print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
