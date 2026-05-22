@@ -213,7 +213,7 @@ def createTrackSummaryFile(csvFilename, framesValidTrack=3):
                 tr["date"],
                 tr["startTime"],
                 tr["endTime"],
-                int(round(duration_sec, 0)),
+                round(duration_sec, 2),
                 bestTaxa,
                 tr["frames"],
                 round(bestScore, 3),
