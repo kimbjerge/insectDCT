@@ -670,8 +670,8 @@ if __name__=='__main__':
         args.camera = videoSplit[0]
         dateTimeStr = videoSplit[1] + videoSplit[2] + videoSplit[3] + videoSplit[4] + videoSplit[5] + videoSplit[6] # Format: YYYYMMDDHHMMSS
         start_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
-        csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
-        csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+        csvFilename = results_dir + imagesSubDir + '-TC.csv' # directory name CL final classifications
+        csvFilenameInfo  = results_dir + imagesSubDir + '-TH.csv' # directory name HI Hierarchical classifications
         if args.moviePredict != "": # Save results in a movie file 
             args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file  
     else: # Process time-lapse images in directory
@@ -688,14 +688,14 @@ if __name__=='__main__':
             imagesSubDir4 = args.images.split('/')[-4]
             imagesSubDir3 = args.images.split('/')[-3] 
             resultName = imagesSubDir4 + '-' + imagesSubDir3 + '-' + imagesSubDir
-            csvFilename = results_dir + resultName + '-CL.csv' # directory name CL final classifications
-            csvFilenameInfo  = results_dir + resultName +  '-HI.csv' # directory name HI Hierarchical classifications
+            csvFilename = results_dir + resultName + '-TC.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + resultName +  '-TH.csv' # directory name HI Hierarchical classifications
             args.camera = imagesSubDir4 + '/' + imagesSubDir3 
             if args.moviePredict != "": # Save results in a movie file 
                 args.moviePredict = resultName + '.avi'  # use same name as csv file   
         else: # Generic project
-            csvFilename = results_dir + imagesSubDir + '-CL.csv' # directory name CL final classifications
-            csvFilenameInfo  = results_dir + imagesSubDir + '-HI.csv' # directory name HI Hierarchical classifications
+            csvFilename = results_dir + imagesSubDir + '-TC.csv' # directory name CL final classifications
+            csvFilenameInfo  = results_dir + imagesSubDir + '-TH.csv' # directory name HI Hierarchical classifications
             args.camera = imagesSubDir.split('_')[0] # first part is the name of the camera 
             if args.moviePredict != "": # Save results in a movie file 
                 args.moviePredict = imagesSubDir + '.avi'  # use same name as csv file   
@@ -786,7 +786,7 @@ if __name__=='__main__':
         csvfileInfo.close()
     
     # Create track summary file based on track_summary
-    trackFilename = csvFilename.replace("-CL.csv", "-TS.csv")
+    trackFilename = csvFilename.replace("-TC.csv", "-TS.csv")
     createTrackSummaryFile(trackFilename)
         
     print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
