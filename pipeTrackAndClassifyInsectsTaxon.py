@@ -790,7 +790,7 @@ if __name__=='__main__':
     createTrackSummaryFile(trackFilename)
         
     print(f"Total processing time {totalTime:.2f} sec. average per image {totalTime/numDetections:.4f} sec.")
-    print(f"YOLO11 processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
+    print(f"YOLO11 tracking processing time average per image {totalTimeDetections/numDetections:.4f} sec.")
     print(f"{args.modelType} classification time average per detection {totalTimeClassification/numClassifications:.4f} sec.")
-    print("Finished detection and classification of insects in time-lapse image or video recordings");    
+    print("Finished tracking and classification of insects in time-lapse image or video recordings");    
     
