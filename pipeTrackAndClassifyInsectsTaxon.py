@@ -569,11 +569,11 @@ if __name__=='__main__':
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
     #parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
-    #parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
-    parser.add_argument('--confidence', default='0.25', type=float) # test
+    parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
+    #parser.add_argument('--confidence', default='0.25', type=float) # test
     #parser.add_argument('--confidence', default='0.397', type=float) # insects6Color best F1-score 0.93
-    #parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
-    parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
+    parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
+    #parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
     parser.add_argument('--frame_stride', default='1', type=int) # for video, not used for images
     #parser.add_argument('--scale', default='0.45', type=float) # Scale factor used for creating result video
@@ -582,7 +582,7 @@ if __name__=='__main__':
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='') # Store result file in format used by insectTracking
     parser.add_argument('--resultsDir', default='./tracks') # Default directory to store result files (CSV and AVI) 
-    parser.add_argument('--tracker', default='botsort.yaml') # Yaml file for tracker bytetrack.yaml (video) or botsort.yaml (time-lapse)
+    parser.add_argument('--tracker', default='bytetrack.yaml') # Yaml file for tracker bytetrack.yaml (video) or botsort.yaml (time-lapse)
     #parser.add_argument('--persist', action='store_true') # Used for tracking 
 
     args = parser.parse_args() 
