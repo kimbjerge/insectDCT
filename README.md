@@ -159,12 +159,17 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
    - $ python pipeTrackInsectsTaxon.py  --checkTaxa True <br />
      	Performs tracking only using classification where classes are of the same taxon (order, family, genus or species).
+
+   Tracker as part of YOLO using BytTrack or BoT-SORT followed by Hierachical classification (Video only)
+	
+	- $ python pipeTrackAndClassifyInsectsTaxon.py  <br />
+     	Performs combined detection and tracking with YOLO followed by classification
    
    See code for additional parameters for the above python scripts:  <br />
    https://github.com/kimbjerge/insectsDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
    https://github.com/kimbjerge/insectsDCT/blob/main/pipeTrackInsectsTaxon.py
 
-8. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
+9. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
      Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
