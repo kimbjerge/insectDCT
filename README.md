@@ -1,4 +1,4 @@
-# insectDCT
+# InsectDCT
 
 This project contains Python code for processing time-lapse recorded images from insect camera traps. 
 It contains code to detect, classify, and track insects with various backgrounds of plants and flowers.
