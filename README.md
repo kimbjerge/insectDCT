@@ -1,4 +1,4 @@
-# insectDCT
+# InsectDCT
 
 This project contains Python code for processing time-lapse recorded images from insect camera traps. 
 It contains code to detect, classify, and track insects with various backgrounds of plants and flowers.
@@ -159,12 +159,17 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
    - $ python pipeTrackInsectsTaxon.py  --checkTaxa True <br />
      	Performs tracking only using classification where classes are of the same taxon (order, family, genus or species).
+
+   Tracker as part of YOLO using BytTrack or BoT-SORT followed by Hierachical classification (Video only)
+	
+	- $ python pipeTrackAndClassifyInsectsTaxon.py  <br />
+     	Performs combined detection and tracking with YOLO followed by classification
    
    See code for additional parameters for the above python scripts:  <br />
-   https://github.com/kimbjerge/insectsDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
-   https://github.com/kimbjerge/insectsDCT/blob/main/pipeTrackInsectsTaxon.py
+   https://github.com/kimbjerge/insectDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
+   https://github.com/kimbjerge/insectDCT/blob/main/pipeTrackInsectsTaxon.py
 
-8. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
+9. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
    
    - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
      Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
@@ -174,7 +179,7 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
 
 To use a simple flat classifier with few classes of taxons see description in: 
 
-https://github.com/kimbjerge/insectsDCT/tree/main/README-flat.md
+https://github.com/kimbjerge/insectDCT/tree/main/README-flat.md
 
 
 ### CSV files in detections directory ###
@@ -194,13 +199,13 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
 
 Hierarchical taxa of classes in the model HierarchicalClassifierV6:
 
-https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV6.txt
+https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt
 
-https://github.com/kimbjerge/insectsDCT/blob/main/hierarchicalB3L/datasetV7.txt (104 taxa at level 3)
+https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV7.txt (104 taxa at level 3)
 
 Classification metrics (precision, recall, F1-score) for each class and model (ResNet50 and ConvNext-Base) on the validation and test datasets can be found here:
 
-https://github.com/kimbjerge/insectsDCT/tree/main/metrics
+https://github.com/kimbjerge/insectDCT/tree/main/metrics
 
 Hierarchical taxa of classes in the model HierarchicalClassifierV6: 
 
@@ -450,7 +455,7 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 
 More information on the dataset for insect detection: 
   
-https://github.com/kimbjerge/insectsDCT/tree/main/README_detection_datasets.txt
+https://github.com/kimbjerge/insectDCT/tree/main/README_detection_datasets.txt
 
 ### Helper functions to select crops (see createCrops.py) for dataset to improve training of the hierarchical classifier ###
 
