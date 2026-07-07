@@ -75,7 +75,7 @@ https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=shari
 V5. Fifth model (HierarchicalClassifierV5_05092025) was trained on the same images as V3, supplemented with Pi Camera images of challenging species. <br />
 https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
 
-V6. Sixth model (HierarchicalClassifierV6) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
+V6. Sixth model (HierarchicalClassifierV6 - default) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
 https://drive.google.com/file/d/1V8uWDIjT1DHo3CyxRjOk6vZYkeBjKX_0/view?usp=drive_link
 
 V7. Seventh model (HierarchicalClassifierV7) was trained on the same images as V6, suplemented with more Lepidoptera species and insect images recorded with Pi HQ camera and short video clips. <br />
@@ -146,8 +146,8 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S  <br />
      	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
      
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V5  <br />
-     	Performs detection and classification using models trained on classification dataset V5 instead of V6 (Works only for modelType: ConvNextBase and ResNet50)
+   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V7  <br />
+     	Performs detection and classification using models trained on classification dataset V7 instead of V6 (Works only for modelType: ConvNextBase and ResNet50)
 
    Tracker to be used for recordings with framerates of 0.25 - 24 fps:
 	 
