@@ -192,7 +192,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
     # Run YOLO inference on the frame
     t1 = time.time()
-    results = modelDetector.predict(frame, batch=1, conf=args.confidence, device=args.device) # Automatic scales to HD image size
+    results = modelDetector.predict(frame, batch=1, conf=args.confidence, iou=args.iou, device=args.device) # Automatic scales to HD image size
     t2 = time.time()
     totalTimeDetections += t2-t1    
     numDetections += 1
@@ -320,7 +320,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.4.0\n" # Supporting hierachical classifier trained on dataset V7
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.5.0\n" # Supporting hierachical classifier trained on dataset V7
     
     parser = argparse.ArgumentParser()
     
@@ -363,6 +363,7 @@ if __name__=='__main__':
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
+    parser.add_argument('--iou', default='0.7', type=float) # YOLO threshold for Non-Maximum Suppression (NMS). Lower values result in fewer detections by eliminating overlapping boxes, useful for reducing duplicates.
 
     args = parser.parse_args() 
     
