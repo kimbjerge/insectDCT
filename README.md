@@ -184,11 +184,6 @@ Save and unzip the file to the sub directory: insectsDCT/models_save
    - $ python createTrackCrops.py --validConfTH 20  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
      Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
 
-To use a simple flat classifier with few classes of taxons see description in: 
-
-https://github.com/kimbjerge/insectDCT/tree/main/README-flat.md
-
-
 ### CSV files in detections directory ###
 
 Content of *-CL.csv files which contain lines for each detection (subdir3-subdir2-subdir1-CL.csv):
@@ -484,6 +479,6 @@ https://github.com/kimbjerge/insectDCT/tree/main/README_detection_datasets.txt
 All tags in this repository are named: DVx-CVy-SVz.z
 
 DVx is the detector version number eg. DV5 - YOLO11 detector model trained on dataset version 5   <br />
-CVx is the hierarchical classifier version number eg. DV6 - classifier model trained on taxon dataset version 6   <br />
-SVx is the source code version number eg. SV1.0 - Python and HTML source code version 1.0   <br />
+CVx is the hierarchical classifier version number eg. CV6 - classifier model trained on taxon dataset version 6   <br />
+SVx is the source code version number eg. SV1.5 - Python and HTML source code version 1.5   <br />
    
