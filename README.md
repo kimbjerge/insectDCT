@@ -21,9 +21,9 @@ Example shown below of time-lapse tracking with two Bumblebees (<em>Bombus lapid
 
 Video of insect tracking: https://www.youtube.com/watch?v=obxTmgERpO4
 
-insectDCT is an AI-based pipeline for detection, hierarchical classification, and tracking of insects in natural floral environments
+InsectDCT is an AI-based pipeline for detection, hierarchical classification, and tracking of insects in natural floral environments
 
-The insectDCT framework is a multi-stage artificial intelligence pipeline designed for automated monitoring of insects in complex natural and semi-natural floral environments. The pipeline consists of three main processing stages: detection and localization, hierarchical taxonomic classification, and spatiotemporal tracking.
+The InsectDCT framework is a multi-stage artificial intelligence pipeline designed for automated monitoring of insects in complex natural and semi-natural floral environments. The pipeline consists of three main processing stages: detection and localization, hierarchical taxonomic classification, and spatiotemporal tracking.
 
 In the first stage, insects are detected and localized in still images and video recordings using the You Only Look Once (YOLO11) object detection architecture. To improve detection performance under challenging environmental conditions, motion-enhanced image representations are employed. The detector is trained on a large dataset acquired using insect camera traps deployed across diverse plant species and floral habitats, capturing substantial variation in background complexity, illumination, and insect morphology.
 
@@ -31,7 +31,7 @@ The second stage performs hierarchical taxonomic classification of detected inse
 
 In the third stage, for high temporal-resolution image sequences and video recordings, a multi-object tracking module is applied to associate detections across time. This enables continuous tracking of individual insects and preserves taxonomic identity throughout their observed trajectories, facilitating behavioral and temporal analyses.
 
-The design and implementation of insectDCT are based and build upon several recent peer-reviewed studies in the fields of deep learning, computer vision, and automated insect monitoring. The pipeline is under active development and is continuously extended with additional annotated datasets to further enhance detection accuracy, classification robustness, and generalization across ecological contexts.
+The design and implementation of InsectDCT are based and build upon several recent peer-reviewed studies in the fields of deep learning, computer vision, and automated insect monitoring. The pipeline is under active development and is continuously extended with additional annotated datasets to further enhance detection accuracy, classification robustness, and generalization across ecological contexts.
 
 ## The algorithms used are described in the papers: 
 
