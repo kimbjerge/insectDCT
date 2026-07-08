@@ -6,7 +6,14 @@ It contains code to detect, classify, and track insects with various backgrounds
 
 Tracking should be used for high time-lapse recordings (0.33 - 1fps); otherwise, typical time-lapse intervals are 30 - 60 seconds.
 Full-sized images are resized to 1920x1080 pixels for detection with YOLO11.
-Insects detected with bounding boxes are cropped with rectangular windows and resized to 128x128 pixels for classification with CNN models.
+Insects detected with bounding boxes are cropped with rectangular windows and resized to 128x128 (CV6) or 224x224 (CV7) pixels for classification with CNN models.
+
+The complete pipeline and dataset is decribed in the paper:
+
+Kim Bjerge, Simon Wogram, Pau Enric Serra-Marin, Toke T. Høye,
+"InsectDCT: A generalised pipeline for detection, taxonomic classification, and tracking of insects in camera-trap recordings", 2026, bioRxiv
+
+Datasets for training and testing are published at: https://zenodo.org/records/21154490
 
 Example shown below of time-lapse tracking with two Bumblebees (<em>Bombus lapidarius</em>) visiting flowering Sedum plants. 
 
