@@ -14,7 +14,8 @@ Kim Bjerge, Simon Wogram, Pau Enric Serra-Marin, Toke T. Høye,  <br />
 "InsectDCT: A generalised pipeline for detection, taxonomic classification, and tracking of insects in camera-trap recordings",
 2026, bioRxiv, https://doi.org/10.64898/2026.07.07.736939
 
-### Datasets for training and testing are published at: https://zenodo.org/records/21154490
+### Datasets for training and testing are published at: 
+https://zenodo.org/records/21154490
 
 Example shown below of time-lapse tracking with two Bumblebees (<em>Bombus lapidarius</em>) visiting flowering Sedum plants. 
 
