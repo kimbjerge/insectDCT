@@ -25,7 +25,7 @@ frame_id_offset = 2 # frame_stride = 1 during detection
 # Identification of camera sites
 cameraId = "GA_"
 
-videoNames = [
+videoNamesTrain = [ # Training and validation
     "ACS-HQ111_2024_04_14_07_01_19.avi",
     "ACS-HQ200_2024_04_14_07_01_19.avi",
     # "ACS-HQ222_2024_04_14_07_01_19.AVI", 1920x1080
@@ -74,6 +74,29 @@ videoNames = [
     "cam4-wknt_2026_06_19_10_43_11.avi",
     "cam8-wknt_2026_06_19_11_44_54.avi",
     "cam8-wknt_2026_06_19_14_49_54.avi"
+    ]
+
+videoNames = [ # Test
+    "cam10-did_2026_07_05_15_23_41.avi",
+    "cam10-did_2026_07_05_15_58_39.avi",
+    "cam10-did_2026_07_11_15_30_10.avi",
+    "cam2-did_2026_07_05_14_30_23.avi",
+    "cam2-did_2026_07_11_15_25_19.avi",
+    "cam3-did_2026_07_05_11_42_04.avi",
+    "cam3-did_2026_07_05_13_43_08.avi",
+    "cam3-did_2026_07_05_15_27_10.avi",
+    "cam3-did_2026_07_05_15_45_00.avi",
+    "cam3-did_2026_07_11_15_14_45.avi",
+    "cam3-did_2026_07_11_16_41_00.avi",
+    "cam4-did_2026_07_05_14_29_28.avi",
+    "cam4-did_2026_07_11_15_02_34.avi",
+    "cam4-did_2026_07_11_15_36_37.avi",
+    "cam4-did_2026_07_11_17_09_19.avi",
+    "cam5-did_2026_07_05_11_49_04.avi",
+    "cam5-did_2026_07_05_13_28_08.avi",
+    "cam6-did_2026_07_11_16_26_16.avi",
+    "cam7-did_2026_07_11_14_57_44.avi",
+    "cam9-did_2026_07_05_11_28_20.avi",
     ]
 
 # UFZ image size, Pi model 3 camera HD resolution
@@ -194,15 +217,25 @@ if __name__=='__main__':
         
         # Below should write to trainGA2
         # Selecting videos with large insects and not detected
-        numInsects = 2100 # dataset
+        #numInsects = 2100 # dataset
+        #numUnsure = 300 # dataset
+        #numVegetation = 200 # dataset
+        #save_empty_frame_offset = 2
+        #splitPercentage = 20 # Percentage of image used for validation
+        #pathToSrcDataset = 'D:/OTAR2/detectionsJulyTrain/'
+        
+        # Below should write to testGA2
+        # Selecting videos with large insects and not detected
+        numInsects = 2000 # dataset
         numUnsure = 300 # dataset
-        numVegetation = 200 # dataset
-        save_empty_frame_offset = 2
-        splitPercentage = 20 # Percentage of image used for test
-        pathToSrcDataset = 'D:/OTAR2/detectionsJulyTrain/'
+        numVegetation = 5 # dataset
+        save_empty_frame_offset = 0
+        splitPercentage = 100 # Percentage of image used for test
+        pathToSrcDataset = 'D:/OTAR2/detectionsJulyTest/'
         
 
-    pathToRecordData = 'D:/OTAR2/videoJulyTrain/'
+    #pathToRecordData = 'D:/OTAR2/videoJulyTrain/'
+    pathToRecordData = 'D:/OTAR2/videoJulyTest/'
     
     pathToDestDatasetMIE = 'D:/OTAR2/trainGA2m/'
     pathToDestDataset = 'D:/OTAR2/trainGA2/'
