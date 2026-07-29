@@ -58,7 +58,7 @@ Tracking insects in low-framerate video recordings (<1fps):
 https://doi.org/10.1002/rse2.70007
 
 
-# This repository includes the essential Python code for the steps in the figure below. 
+# This repository includes the essential Python code for the steps in the figure below (V6). 
 
 ![Alt text](PipelineHierarchical.png)
 
