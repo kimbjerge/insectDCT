@@ -62,8 +62,6 @@ https://doi.org/10.1002/rse2.70007
 
 ![Alt text](PipelineHierarchical.png)
 
-Estimating flower cover is currently in development. 
-
 ## Python environment on Windows or Linux ##
 README-conda-env-yolo11.txt - Anaconda environment requirements
 
