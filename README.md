@@ -201,7 +201,7 @@ Content of *-CL.csv files which contain lines for each detection (subdir3-subdir
 
 Hierarchical taxa of classes in the model HierarchicalClassifierV6:
 
-https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt
+https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt (80 taxa at level 3 - published in paper)
 
 https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV7.txt (104 taxa at level 3)
 
