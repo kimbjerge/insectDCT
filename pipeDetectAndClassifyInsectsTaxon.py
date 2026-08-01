@@ -73,7 +73,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
     return classifier
     
 #%% Function to classify insects in 19 groups of taxa
-def classifyInsect(classifier, image, xc, yc, w, h, cropName, border=1, createCrops=False): # Border=10 for crops
+def classifyInsect(classifier, image, xc, yc, w, h, cropName, strongCheck=True, border=1, createCrops=False): # Border=10 for crops
 
     height, width, channels = image.shape
     
@@ -100,7 +100,7 @@ def classifyInsect(classifier, image, xc, yc, w, h, cropName, border=1, createCr
     imgCrop = image[y1:y2, x1:x2,  :].copy()
     
     if type(classifier) is HierarchicalClassifier:    
-        line, level, index, species, probability = classifier.makePrediction(imgCrop)
+        line, level, index, species, probability = classifier.makePrediction(imgCrop, strongCheck=strongCheck)
     else: # Flat CnnClassifier
         level = 0
         index, species, probability = classifier.makePrediction(imgCrop)
@@ -218,6 +218,9 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                 y1 = int(round(xyxy[0][1]))
                 x2 = int(round(xyxy[0][2]))
                 y2 = int(round(xyxy[0][3]))
+                strongCheck = False
+                if args.unsureCheck == "Strong":
+                    strongCheck = True
                 
                 if type(modelClassifier) is not int:
                     t3 = time.time()
@@ -226,7 +229,8 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
                                                                                         int(round(xywh[0][1])), 
                                                                                         int(round(xywh[0][2])), 
                                                                                         int(round(xywh[0][3])),
-                                                                                        str(frame_count))
+                                                                                        str(frame_count),
+                                                                                        strongCheck)
                     t4 = time.time()
                     totalTimeClassification += t4-t3
                     numClassifications += 1
@@ -320,7 +324,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.5.0\n" # Supporting hierachical classifier trained on dataset V7
+    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.6.0\n" # Supporting hierachical classifier trained on dataset V7
     
     parser = argparse.ArgumentParser()
     
@@ -364,6 +368,9 @@ if __name__=='__main__':
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
     parser.add_argument('--iou', default='0.7', type=float) # YOLO threshold for Non-Maximum Suppression (NMS). Lower values result in fewer detections by eliminating overlapping boxes, useful for reducing duplicates.
+    parser.add_argument('--unsureCheck', default='Weak') # Check taxonomic consistency if confidence is above threshold (Weak) or ignore threshold (Strong)
+                                                           # Strong results in more Unsure classification - default value
+                                                           # Weak allows insects to be classified to higher ranks when unsure a lower ranks with inconsistent taxonomic
 
     args = parser.parse_args() 
     

@@ -67,7 +67,7 @@ class HierarchicalClassifier:
                 checkList[idx] = False
                 #print(self.labelsL1[level1p[idx]], self.labelsL2[level2p[idx]], self.labelsL3[level3p[idx]])
         
-        return checkList
+        return checkList, checkL2
     
     def getLabels(self, level, labelName):
         
@@ -248,7 +248,7 @@ class HierarchicalClassifier:
             
         return lines
 
-    def makePrediction(self, imageCrop):
+    def makePrediction(self, imageCrop, strongCheck=True):
         """
         Classify single a image with the hierarchal model following outlier and hierachy checking
         """
@@ -276,7 +276,7 @@ class HierarchicalClassifier:
         predicted_score3 = level3class_pred[0][predicted_label3]
  
         # Checking that predictions are correct according to the hierachical taxonomic levels
-        checkList = self.checkHierarhcy(predicted_labels1, predicted_labels2, predicted_labels3)
+        checkTaxonomy, checkL2 = self.checkHierarhcy(predicted_labels1, predicted_labels2, predicted_labels3)
 
         # Labeling predictions unsure if ouput scores are below outlier thredsholds
         conf1, sure1 = self.checkAboveThreshold(1, predicted_score1, predicted_label1)
@@ -290,16 +290,18 @@ class HierarchicalClassifier:
         
         # Get label from sure levels
         if sure2 and sure3:
-            label_name = self.labelsL3[predicted_label3]
-            predicted_label = predicted_label3
-            confidence = conf3
-            level = 3
+            if checkTaxonomy[0]: # Taxonomy consistency L3 -> L2 -> L1 
+                label_name = self.labelsL3[predicted_label3]
+                predicted_label = predicted_label3
+                confidence = conf3
+                level = 3
         else:
             if sure1 and sure2:
-                label_name = self.labelsL2[predicted_label2]
-                predicted_label = predicted_label2
-                confidence = conf2
-                level = 2
+                if checkL2[0] or strongCheck: # Taxonomy consistency L2 -> L1
+                    label_name = self.labelsL2[predicted_label2]
+                    predicted_label = predicted_label2
+                    confidence = conf2
+                    level = 2
             else:
                 if sure1:
                     label_name = self.labelsL1[predicted_label1]
@@ -307,17 +309,18 @@ class HierarchicalClassifier:
                     confidence = conf1
                     level = 1
         
-        if checkList[0] == False: # Wrong hierarchy - then unsure prediction
-           predicted_label = -1 # Unsure label index, wrong hierarchy (-2)
-           label_name =  "Unsure" 
-           confidence = 0.0
-           level = 0
+        if strongCheck:
+            if checkTaxonomy[0] == False: # Wrong hierarchy - then unsure prediction
+               predicted_label = -1 # Unsure label index, wrong hierarchy (-2)
+               label_name =  "Unsure" 
+               confidence = 0.0
+               level = 0
 
         # Label1,LabelId1,Logit1,Conf1,Above1,Label2,LabelId2,Logit2,Conf2,Above2,Label3,LabelId3,Logit3,Conf3,Above3,Checked
         line1 = f"{self.labelsL1[predicted_label1]},{predicted_label1},{predicted_score1},{conf1},{sure1},"
         line2 = f"{self.labelsL2[predicted_label2]},{predicted_label2},{predicted_score2},{conf2},{sure2},"
         line3 = f"{self.labelsL3[predicted_label3]},{predicted_label3},{predicted_score3},{conf3},{sure3},"
-        line = line1 + line2 + line3 + str(checkList[0])
+        line = line1 + line2 + line3 + str(checkTaxonomy[0])
         
         return line, level, predicted_label, label_name, confidence 
     
