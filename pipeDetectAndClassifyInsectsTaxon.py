@@ -367,10 +367,10 @@ if __name__=='__main__':
     parser.add_argument('--moviePredict', default='movie') # Save movie with bounding boxes and classifications (Empty string no movie saved)
     parser.add_argument('--CSVformat', default='tracking') # Store result file in format used by insectTracking
     parser.add_argument('--resultsDir', default='./detections') # Default directory to store result files (CSV and AVI) 
-    parser.add_argument('--iou', default='0.7', type=float) # YOLO threshold for Non-Maximum Suppression (NMS). Lower values result in fewer detections by eliminating overlapping boxes, useful for reducing duplicates.
-    parser.add_argument('--unsureCheck', default='Strong') # Check taxonomic consistency if confidence is above threshold (Weak) or ignore threshold (Strong)
-                                                           # Strong results in more Unsure classification - default value
-                                                           # Weak allows insects to be classified to higher ranks when unsure at lower ranks with inconsistent taxonomic
+    parser.add_argument('--iou', default='0.3', type=float) # (0.7 YOLO default) YOLO threshold for Non-Maximum Suppression (NMS). Lower values result in fewer detections by eliminating overlapping boxes, useful for reducing duplicates.
+    parser.add_argument('--unsureCheck', default='Weak')   # Check taxonomic consistency if confidence is above threshold (Weak) or ignore threshold (Strong)
+                                                           # "Strong" results in more Unsure classification 
+                                                           # "Weak" allows insects to be classified to higher ranks when unsure at lower ranks with inconsistent taxonomic
 
     args = parser.parse_args() 
     
