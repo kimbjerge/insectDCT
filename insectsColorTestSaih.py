@@ -26,10 +26,10 @@ from sklearn.metrics import precision_recall_fscore_support
 MODEL_PATH = "/home/don/insectsDCT/runs/detect/insects7Color/weights/best.pt"
 
 # Directory containing the test images
-IMAGE_DIR = Path("/home/don/insectsDCT/insectsTest/testOdin/images")
+IMAGE_DIR = Path("/home/don/insectsDCT/datasets/insectsTest/testOdin/images")
 
 # Directory containing YOLO ground-truth labels
-LABEL_DIR = Path("/home/don/insectsDCT/insectsTest/testOdin/labels")
+LABEL_DIR = Path("/home/don/insectsDCT/datasets/insectsTest/testOdin/labels")
 
 # Results
 TEST_NAME = "insects7Color_SAHI"
