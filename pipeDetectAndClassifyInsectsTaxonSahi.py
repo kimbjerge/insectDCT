@@ -15,6 +15,9 @@ import datetime
 import pickle
 import time
 
+from sahi import AutoDetectionModel
+from sahi.predict import get_sliced_prediction
+
 #from common.cnn_classifier import CnnClassifier # Uncomment if flat classifier should be used
 from common.hierarchical_classifier import HierarchicalClassifier
 from common.motionEnhancement import MotionEnhancement
@@ -192,7 +195,35 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
     # Run YOLO inference on the frame
     t1 = time.time()
-    results = modelDetector.predict(frame, batch=1, conf=args.confidence, iou=args.iou, device=args.device) # Automatic scales to HD image size
+    
+    if args.useSahi:    
+        # Use SAHI for large images
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = get_sliced_prediction(
+            frame_rgb,
+            modelDetector,
+        
+            # Size of each tile YOLO model training size
+            slice_height=1080,
+            slice_width=1920,
+        
+            # 20% overlap between tiles
+            overlap_height_ratio=0.20,
+            overlap_width_ratio=0.20,
+        
+            # Number of tiles processed together
+            batch_size=1,
+        
+            # SAHI will merge overlapping detections
+            postprocess_type="GREEDYNMM",
+            postprocess_match_metric="IOS",
+            postprocess_match_threshold=0.5,
+        
+            verbose=0,
+        )
+    else:
+        results = modelDetector.predict(frame, batch=1, conf=args.confidence, iou=args.iou, device=args.device) # Automatic scales to HD image size
+    
     t2 = time.time()
     totalTimeDetections += t2-t1    
     numDetections += 1
@@ -203,110 +234,167 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
     # View results
     insectFound = False
     insectsFound = 0
-    for r in results:
-        boxes = r.boxes.cpu()
-        boxes = boxes.numpy()
-        for box in boxes:
-            xyxy = box.xyxy # top-left-x, top-left-y, bottom-right-x, bottom-right-y
-            # Wrong xywh = boxes.xywh  # center-x, center-y, width, height KBE????
-            xywh = box.xywh  # center-x, center-y, width, height
-            if xyxy.size > 0: # Save object found
-                #print(xyxy, box.cls, box.conf)
-                clas = int(box.cls[0])
-                conf = int(round(box.conf[0]*100))
-                x1 = int(round(xyxy[0][0]))
-                y1 = int(round(xyxy[0][1]))
-                x2 = int(round(xyxy[0][2]))
-                y2 = int(round(xyxy[0][3]))
-                strongCheck = False
-                if args.unsureCheck == "Strong":
-                    strongCheck = True
-                
-                if type(modelClassifier) is not int:
-                    t3 = time.time()
-                    line,  level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
-                                                                                        int(round(xywh[0][0])), 
-                                                                                        int(round(xywh[0][1])), 
-                                                                                        int(round(xywh[0][2])), 
-                                                                                        int(round(xywh[0][3])),
-                                                                                        str(frame_count),
-                                                                                        strongCheck)
-                    t4 = time.time()
-                    totalTimeClassification += t4-t3
-                    numClassifications += 1
-                    #prob = round(probability*10000)/100 # percentage with two decimals
-                    prob = probability*100 # percentage with all decimals
-                else:
-                    line = ''
-                    level = 0
-                    speciesIdx = -1
-                    speciesName = "Unidentified"
-                    prob = 0
-
-                taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
-                
-                if useMotion and prevFilename != '':
-                    saveFilename = prevFilename
-                else:
-                    saveFilename = filename
-
-                if args.CSVformat == "tracking": # Format used for tracing insects
-                    #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
-                    #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"
-                    trapIdL = [int(args.camera[i]) for i in range(len(args.camera)) if args.camera[i].isdigit()]
-                    trapId = 0
-                    if len(trapIdL) > 0: # Search for number in string with max. "999"
-                        trapId = trapIdL[0]
-                        if len(trapIdL) > 1:
-                            trapId = trapId*10 + trapIdL[1]
-                            if len(trapIdL) > 2:
-                                trapId = trapId*10 + trapIdL[2]
-                    input_variable = [args.camera, trapId, timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
-                else: # Format used for tracking moths
-                    #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
-                    input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
-                                      conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, taxaSure, frame_count]
-                
-                print(input_variable)
-                csv_writer.writerow(input_variable)
-                csvfile.flush()
-                
-                if type(modelClassifier) is HierarchicalClassifier:
-                    #headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
-                    line += ',' + str(frame_count) + '\n'
-                    csvfileInfo.write(line)
-                    csvfileInfo.flush()
-                    
-                if saveMovie:
-                    insectFound = True
-                    frames_after = store_frames_after
-                    color = (0,0,255) # Red
-                    if insectsFound % 3 == 1:
-                        color = (0,255,0) # Green
-                    if insectsFound % 3 == 2:
-                        color = (255,0,0) # Blue
-                    insectsFound += 1
-                    
-                    if type(modelClassifier) is int:
-                        insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
-                    else: # Species classifier used
-                        if taxaSure:
-                            if prob < 10.0:
-                                probDisp = round(prob*100)/100 # display probability (%) with two decimals
-                            else:
-                                probDisp = int(round(prob)) # round to integer if more than 10%
-                            insectName = speciesName + ' (' + str(level) + '-' + str(probDisp) + ')'
-                        else:
-                            insectName = speciesName
-                    y = int(round(y1-20))
-                    
-                    if useMambo:                                    
-                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
-                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
-                    else:
-                        cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
-                        cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
+    detections = []
     
+    if args.useSahi: # Use SAHI tiling for detection in large images
+    
+        for prediction in results.object_prediction_list:
+           
+            # Bounding box in ORIGINAL full-size image coordinates
+            xyxy = prediction.bbox.to_xyxy()
+            xywh = prediction.bbox.to_xywh()
+            xywh[0] = xywh[0] + xywh[2]/2 # Convert to center xc
+            xywh[1] = xywh[1] + xywh[3]/2 # Convert to center yc
+            
+            # Class
+            clas = int(prediction.category.id)
+            
+            # Confidence
+            conf = int(round(prediction.score.value * 100))
+            
+            # Bounding box
+            x1 = int(round(xyxy[0]))
+            y1 = int(round(xyxy[1]))
+            x2 = int(round(xyxy[2]))
+            y2 = int(round(xyxy[3]))
+
+            detections.append({
+                "class": clas,
+                "confidence": conf,
+                "xywh": xywh,
+                "x1": x1,
+                "y1": y1,
+                "x2": x2,
+                "y2": y2
+            })
+ 
+    else: # Don't use SAHI tiling for detection
+    
+        for r in results:
+            boxes = r.boxes.cpu()
+            boxes = boxes.numpy()
+            for box in boxes:
+                xyxy = box.xyxy # top-left-x, top-left-y, bottom-right-x, bottom-right-y
+                xywh = box.xywh  # center-x, center-y, width, height
+    
+                if xyxy.size > 0: # Save object found
+                    #print(xyxy, box.cls, box.conf)
+                    clas = int(box.cls[0])
+                    conf = int(round(box.conf[0]*100))
+                    x1 = int(round(xyxy[0][0]))
+                    y1 = int(round(xyxy[0][1]))
+                    x2 = int(round(xyxy[0][2]))
+                    y2 = int(round(xyxy[0][3]))
+                    detections.append({
+                        "class": clas,
+                        "confidence": conf,
+                        "xywh": xywh[0],
+                        "x1": x1,
+                        "y1": y1,
+                        "x2": x2,
+                        "y2": y2
+                    })
+                
+
+    for detect in detections:
+        
+        clas = detect['class']
+        conf = detect['confidence']
+        xywh = detect['xywh']
+        x1 = detect['x1']
+        y1 = detect['y1']
+        x2 = detect['x2']
+        y2 = detect['y2']       
+         
+        strongCheck = False
+        if args.unsureCheck == "Strong":
+            strongCheck = True
+        
+        if type(modelClassifier) is not int:
+            t3 = time.time()
+            line,  level, speciesIdx, speciesName, probability = classifyInsect(modelClassifier, frame,
+                                                                                int(round(xywh[0])), 
+                                                                                int(round(xywh[1])), 
+                                                                                int(round(xywh[2])), 
+                                                                                int(round(xywh[3])),
+                                                                                str(frame_count),
+                                                                                strongCheck)
+            t4 = time.time()
+            totalTimeClassification += t4-t3
+            numClassifications += 1
+            #prob = round(probability*10000)/100 # percentage with two decimals
+            prob = probability*100 # percentage with all decimals
+        else:
+            line = ''
+            level = 0
+            speciesIdx = -1
+            speciesName = "Unidentified"
+            prob = 0
+        
+        taxaSure = not (speciesIdx < 0) # Below threshold or wrong hierarchy
+        
+        if useMotion and prevFilename != '':
+            saveFilename = prevFilename
+        else:
+            saveFilename = filename
+        
+        if args.CSVformat == "tracking": # Format used for tracing insects
+            #headerLine = "system,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName\n" (Old format)
+            #headerLine = "trap,trapId,date,time,taxaConf,taxaLabel,taxaId,taxaLevel,frameId,x1,y1,x2,y2,fileName\n"
+            trapIdL = [int(args.camera[i]) for i in range(len(args.camera)) if args.camera[i].isdigit()]
+            trapId = 0
+            if len(trapIdL) > 0: # Search for number in string with max. "999"
+                trapId = trapIdL[0]
+                if len(trapIdL) > 1:
+                    trapId = trapId*10 + trapIdL[1]
+                    if len(trapIdL) > 2:
+                        trapId = trapId*10 + trapIdL[2]
+            input_variable = [args.camera, trapId, timestamp_date_str, timestamp_time_str, prob, speciesName, speciesIdx+1, level, frame_count, x1, y1, x2, y2, saveFilename]
+        else: # Format used for tracking moths
+            #headerLine = "year,trap,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId\n"
+            input_variable = [timestamp_year_str, args.camera, timestamp_date_str, timestamp_time_str, 
+                              conf, clas, x1, y1, x2, y2, saveFilename, speciesName, speciesIdx+1, level, prob, taxaSure, frame_count]
+        
+        print(input_variable)
+        csv_writer.writerow(input_variable)
+        csvfile.flush()
+        
+        if type(modelClassifier) is HierarchicalClassifier:
+            #headerLine = "Label1,LabelId1,Conf1,Above1,Label2,LabelId2,Conf2,Above2,Label3,LabelId3,Conf3,Above3,Checked,frameId\n"
+            line += ',' + str(frame_count) + '\n'
+            csvfileInfo.write(line)
+            csvfileInfo.flush()
+            
+        if saveMovie:
+            insectFound = True
+            frames_after = store_frames_after
+            color = (0,0,255) # Red
+            if insectsFound % 3 == 1:
+                color = (0,255,0) # Green
+            if insectsFound % 3 == 2:
+                color = (255,0,0) # Blue
+            insectsFound += 1
+            
+            if type(modelClassifier) is int:
+                insectName = labelNames[clas-1] + ' (' + str(conf)+ ')'
+            else: # Species classifier used
+                if taxaSure:
+                    if prob < 10.0:
+                        probDisp = round(prob*100)/100 # display probability (%) with two decimals
+                    else:
+                        probDisp = int(round(prob)) # round to integer if more than 10%
+                    insectName = speciesName + ' (' + str(level) + '-' + str(probDisp) + ')'
+                else:
+                    insectName = speciesName
+            y = int(round(y1-20))
+            
+            if useMambo:                                    
+                cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 8) # 4 HD
+                cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 6, cv2.LINE_AA) # 1, 2 HD
+            else:
+                cv2.putText(frame, insectName, (x1,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) # 1, 2 HD                
+                cv2.rectangle(frame,(x1,y1-10),(x2,y2), color, 4) # 4 HD
+
     dateTimeStr =  timestamp_date_str + ' ' + timestamp_time_str
     
     if useMambo:
@@ -324,7 +412,7 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeDetectAndClassifyInsectsTaxon.py version: 1.6.1\n" # Supporting hierachical classifier trained on dataset V7
+    version = "pipeDetectAndClassifyInsectsTaxonSahi.py version: 1.7.1\n" # Supporting hierachical classifier trained on dataset V7
     
     parser = argparse.ArgumentParser()
     
@@ -371,6 +459,7 @@ if __name__=='__main__':
     parser.add_argument('--unsureCheck', default='Weak')   # Check taxonomic consistency if confidence is above threshold (Weak) or ignore threshold (Strong)
                                                            # "Strong" results in more Unsure classification 
                                                            # "Weak" allows insects to be classified to higher ranks when unsure at lower ranks with inconsistent taxonomic
+    parser.add_argument('--useSahi', default='', type=bool) # Default False and not using SAHI for tiling large images
 
     args = parser.parse_args() 
     
@@ -403,8 +492,16 @@ if __name__=='__main__':
             modelDetector = YOLO(args.yoloWeights)
             modelDetector.export(format="ncnn", half=False) # export model to optimized NCNN format (FP16)
         modelDetector = YOLO(yoloNCNN) # load optimized NCNN model   
-    else:
-        modelDetector = YOLO(args.yoloWeights)  # load trained model
+    else:  # load trained model
+        if args.useSahi:
+            modelDetector = AutoDetectionModel.from_pretrained(
+                                model_type="ultralytics",
+                                model_path=args.yoloWeights,
+                                confidence_threshold=args.confidence,
+                                device=args.device,
+                            )
+        else:
+            modelDetector = YOLO(args.yoloWeights)
     
     # Load the insect classifier model
     modelClassifier = 0   
@@ -571,7 +668,7 @@ if __name__=='__main__':
         movie_writer.release()
     if csvfileInfo is not int:
         csvfileInfo.close()
-        
+
     if numDetections == 0 or numClassifications == 0:
         print(f"Total processing time {totalTime:.2f} sec. - no detections found")
     else:        
