@@ -32,7 +32,7 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
         detections_df = data_df.loc[data_df['trapDir'] == row['trapDir']]
         detections_df = detections_df.loc[detections_df['fileName'] == row['fileName']]
         
-        imageFilePath =  pathToRecordedFiles + row['partner'] + row['trapDir'] + '/' + row['fileName'].split('/')[0] + '/'
+        imageFilePath = row['partner'] + row['trapDir'] + '/' + row['fileName'].split('/')[0] + '/'
         
         imageFileName = row['fileName'].split('/')[1]
         labelFileName = imageFileName.replace('.JPG', '.txt')
