@@ -13,6 +13,7 @@ import cv2
 import shutil
 import pandas 
 import pandas as pd
+from PIL import Image
 from common.motionEnhancement import MotionEnhancement
 
 # Narsarsuaq, Abisko,  image size (Wingscapes)
@@ -52,6 +53,10 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
                 pathToDestMIE = pathToDestDatasetMIE
                 print("Train image", cameraId+labelFileName)
             
+        pathToImageFile = pathToRecordedFiles+imageFilePath+imageFileName
+        with Image.open(pathToImageFile) as img:
+            IMG_WIDTH, IMG_HEIGHT = img.size
+
         labelFile = open(pathToDest+cameraId+labelFileName, "w")
         print(pathToDest+cameraId+labelFileName)
         for i, detection in detections_df.iterrows():
@@ -65,7 +70,6 @@ def createLabelsAndImages(selDataset, data_df, pathToRecordedFiles, pathToDestDa
             labelFile.write(line + "\n")
         labelFile.close()
         
-        pathToImageFile = pathToRecordedFiles+imageFilePath+imageFileName
         shutil.copyfile(pathToImageFile, pathToDest+cameraId+imageFileName)
         
         imageFile = row['fileName'].split('/')[1]
