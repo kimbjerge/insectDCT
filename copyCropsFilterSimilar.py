@@ -32,7 +32,7 @@ import argparse
 # ---------------------------------------------------------
 
 DEFAULT_THRESHOLD = 15
-DEFAULT_SIMILAR_IMAGES = 2
+DEFAULT_SIMILAR_IMAGES = 1
 
 
 # ---------------------------------------------------------
