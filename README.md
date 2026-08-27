@@ -425,7 +425,7 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 
 ### Code for inspiration to create datasets with motion (MIE) images: ###
 
-  - createAccurateDataset.py, Create_MotionNI-dataset.py
+  - tools/createAccurateDataset.py, tools/Create_MotionNI-dataset.py
 
 ### Subdirectories with python helper classes ###
 
@@ -450,10 +450,11 @@ Datasets for detector and classifier is not part of this Github repository. (Wil
 ### Helper functions to create datasets for the insect detector model ###
 
  - countLabels.py - counts the labels on the datasets for YOLO detector for images with and without annotations
- - Create-MotionNI-dataset.py - example for how to create motion enhanced images (MIE)
- - Create-PollNI-dataset.py - selects and create dataset for detection based on images from project Pollinator Watch (Logitech camera)
- - Create-Orchard-dataset.py - selects and create dataset for detection based on image from project Orchard (Pi model 3 camera)
- - createAccurateDataset.py - dataset from paper: "Accurate detections and identification .." https://doi.org/10.1371/journal.pstr.0000051 
+ - tools/Create-MotionNI-dataset.py - example for how to create motion enhanced images (MIE)
+ - tools/Create-PollNI-dataset.py - selects and create dataset for detection based on images from project Pollinator Watch (Logitech camera)
+ - tools/Create-Orchard-dataset.py - selects and create dataset for detection based on image from project Orchard (Pi model 3 camera)
+ - tools/Create-*.py - selects and create dataset for detection based on images and videos from various projects
+ - tools/createAccurateDataset.py - dataset from paper: "Accurate detections and identification .." https://doi.org/10.1371/journal.pstr.0000051 
 
 More information on the dataset for insect detection: 
   
