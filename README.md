@@ -205,7 +205,7 @@ https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt (
 
 https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV7.txt (104 taxa at level 3)
 
-Detection and classification metrics (precision, recall, F1-score) for insect detection and each class and model (ResNet50 and ConvNext-Base) on the validation and test datasets can be found here:
+Detection and classification metrics (precision, recall, F1-score) for insect detection and each class and model (YOLO11, ResNet50, EfficientNetV2 and ConvNext-Base) on the validation and test datasets can be found here:
 
 https://github.com/kimbjerge/insectDCT/tree/main/metrics
 
