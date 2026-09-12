@@ -538,11 +538,14 @@ def processFrame(frame, frame_time, frame_count, frames_after, useMotion, saveMo
 
 if __name__=='__main__':
 
-    version = "pipeTrackAndClassifyInsectsTaxon.py version: 1.0.0\n" # Supporting hierachical classifier trained on dataset V7
+    version = "pipeTrackAndClassifyInsectsTaxon.py version: 1.2.0\n" # Supporting hierachical classifier trained on classifier dataset V7 and detector dataset V8 
     
     parser = argparse.ArgumentParser()
-    
-    parser.add_argument('--yoloWeights', default='./runs/detect/insects6Motion/weights/best.pt') #Directory that contains motion models
+ 
+    parser.add_argument('--yoloWeights', default='./runs/detect/insects8Motion/weights/best.pt') #Directory that contains motion models (+Tundra:Abisko, Narsarsuaq, Toolik and +Georgien)
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects8Color/weights/best.pt') #Directory that contains motion models (+Tundra, +Georgien, +Agriculture)
+   
+    #parser.add_argument('--yoloWeights', default='./runs/detect/insects6Motion/weights/best.pt') #Directory that contains motion models
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects6Motion11s/weights/best.pt') #Use optimzed YOLO11s model on RaspberryPi
     #parser.add_argument('--yoloWeights', default='./runs/detect/insects6Color/weights/best.pt') #Directory that contains color models
     parser.add_argument('--optimized', default='') # Optimized for embedded processing (ncnn)
@@ -569,9 +572,10 @@ if __name__=='__main__':
     #parser.add_argument('--confidence', default='0.374', type=float) # insect3Color best F1-score 0.93
     #parser.add_argument('--confidence', default='0.448', type=float) # insect5Color best F1-score 0.92
     #parser.add_argument('--confidence', default='0.401', type=float) # insect3Motion and insects5Motion best F1-score 0.93
-    parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
-    #parser.add_argument('--confidence', default='0.25', type=float) # test
+    #parser.add_argument('--confidence', default='0.387', type=float) # insects6Motion best F1-score 0.93
     #parser.add_argument('--confidence', default='0.397', type=float) # insects6Color best F1-score 0.93
+    parser.add_argument('--confidence', default='0.369', type=float) # insects8Motion best F1-score 0.92
+    #parser.add_argument('--confidence', default='0.407', type=float) # insects8Color best F1-score 0.92
     parser.add_argument('--device', default='cuda:0') # used for GPU or CPU processing (cuda:X or cpu) 
     #parser.add_argument('--device', default='cpu') # used for GPU or CPU processing (cuda:X or cpu) 
     parser.add_argument('--camera', default='pi1') # Overwritten by camera specified in image filename for time-lapse images
