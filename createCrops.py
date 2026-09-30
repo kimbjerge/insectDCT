@@ -38,7 +38,7 @@ def createHierarchicalClassifier(weights_file, label_file, threshold_file, img_s
     return classifier
 
 
-def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCap, cropDirName, dstPath, csvName, border=1):
+def saveCrop(line, x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCap, cropDirName, dstPath, csvName, border=1):
     
     success = True
     image = []
@@ -102,7 +102,7 @@ def saveCrop(x1, y1, x2, y2, prevImage, frame_count, frameId, imagePath, videoCa
     if os.path.exists(dstPath + cropDirName) == False:
         print("Create directory:", dstPath + cropDirName)
         os.mkdir(dstPath + cropDirName)
-    imgNameCrop = csvName +'-' + str(frameId) + '-' + x1_str + '-' + y1_str + '.jpg'
+    imgNameCrop = csvName +'-' + str(line) + '-' + str(frameId) + '-' + x1_str + '-' + y1_str + '.jpg'
     
     #if cropDirName != "Vegetation" and cropDirName != "Unsure":
     print(dstPath + cropDirName + '/' + imgNameCrop)
@@ -170,7 +170,7 @@ def createCrops(csvName, imgPath, videoPath, dstPath, dataset, hierarchicalClass
         else:
             print("Uses video recording", videoFile, "FrameId", obj['frameId'])
 
-        frame_count, image, success = saveCrop(x1, y1, x2, y2, image, frame_count, obj['frameId'], imagePath, videoCap, cropDirName, dstPath, csvName)       
+        frame_count, image, success = saveCrop(i+1, x1, y1, x2, y2, image, frame_count, obj['frameId'], imagePath, videoCap, cropDirName, dstPath, csvName)       
         
         if success == False: 
             return
