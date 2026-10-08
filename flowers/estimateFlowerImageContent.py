@@ -657,7 +657,7 @@ def main():
         image_paths
     ):
         
-        if (i % args.skip == 0): # Analyse every skip images (Skip == 1) every
+        if (i+1 % args.skip == 0): # Analyse every skip images (Skip == 1) every
 
             print(
                 f"[{i + 1}/{len(image_paths)}] "
@@ -735,8 +735,15 @@ def main():
 
         fieldnames = results[0].keys()
 
+        if '.csv' in args.output:
+            outputFile = args.output
+        else:
+            inputSplit = args.input.split('/')
+            fileName = inputSplit[-3] + '-' + inputSplit[-2] + '.csv'
+            outputFile = args.output + '-' + fileName
+            
         with open(
-            args.output,
+            outputFile,
             "w",
             newline="",
             encoding="utf-8"
@@ -753,7 +760,7 @@ def main():
     print()
     print("Finished.")
     print(
-        f"Output CSV: {args.output}"
+        f"Output CSV: {outputFile}"
     )
     print(
         f"Mask images: {args.mask_output}"
