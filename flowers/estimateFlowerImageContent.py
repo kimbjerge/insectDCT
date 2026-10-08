@@ -583,7 +583,7 @@ def main():
 
     parser.add_argument(
         "--prompt",
-        default="flower",
+        default="Find flower or flowers",
         help="SAM 3 text prompt"
     )
 
