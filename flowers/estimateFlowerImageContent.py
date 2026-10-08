@@ -8,11 +8,14 @@ Created on Sun Sep 20 12:23:58 2026
 import os
 import csv
 import argparse
+import datetime 
 from pathlib import Path
 
 import cv2
 import numpy as np
 import torch
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 from ultralytics.models.sam import SAM3SemanticPredictor
 
@@ -22,6 +25,39 @@ IMAGE_EXTENSIONS = {
     ".tif", ".tiff", ".webp"
 }
 
+
+#%% Return datetime based on file exifdata
+def getFrameTime(image_filename): 
+
+    # open the image
+    image = Image.open(image_filename)
+     
+    # extracting the exif metadata
+    exifdata = image.getexif()
+    
+    dateTimeStr = datetime.datetime.now().strftime('%Y%m%d%H%M%S') # Current time YYYYMMDDHHMMSS
+    
+    # looping through all the tags present in exifdata
+    for tagid in exifdata:
+        # getting the tag name instead of tag id
+        tagname = TAGS.get(tagid, tagid)
+        if tagname == "DateTime": # Check tag date time
+            # passing the tagid to get its respective value
+            value = exifdata.get(tagid)
+            # printing the final result
+            #print(f"{tagname:25}: {value}")
+            
+            # reformat time stamp to "YYYYMMDDHHMMSS"
+            timestamp = value.replace(':', '')
+            dateTimeStr = timestamp.replace(' ', '')
+       
+    # close the image
+    image.close()
+    
+    image_time = datetime.datetime.strptime(dateTimeStr, "%Y%m%d%H%M%S")
+
+    return image_time, dateTimeStr
+        
 
 def find_images(input_dir):
     """Find all images recursively."""
@@ -278,7 +314,12 @@ def analyse_image(
 
     Returns one dictionary containing image-level statistics.
     """
-
+    
+    frame_time, dateTimeStr = getFrameTime(str(image_path))
+    timestamp_year_str = frame_time.strftime("%Y")
+    timestamp_date_str = frame_time.strftime("%Y%m%d")
+    timestamp_time_str = frame_time.strftime("%H%M%S")
+    
     # ---------------------------------------------------------
     # Read image
     # ---------------------------------------------------------
@@ -323,6 +364,10 @@ def analyse_image(
             )
 
         return {
+            "year": timestamp_year_str,
+            "date": timestamp_date_str,
+            "time": timestamp_time_str,
+
             "image": str(image_path),
             "filename": image_path.name,
             "width": width,
@@ -452,6 +497,11 @@ def analyse_image(
     # Return results
     # ---------------------------------------------------------
     return {
+
+        "year": timestamp_year_str,
+        "date": timestamp_date_str,
+        "time": timestamp_time_str,
+            
         "image": str(image_path),
         "filename": image_path.name,
 
@@ -498,7 +548,8 @@ def main():
 
     parser.add_argument(
         "--input",
-        required=True,
+        #required=True,
+        default="./flowerImages",        
         help="Directory containing images"
     )
 
@@ -510,11 +561,18 @@ def main():
 
     parser.add_argument(
         "--mask-output",
-        default="flower_masks",
+        default="./flowerMasks",
         help=(
             "Directory where SAM 3 mask "
             "visualizations are saved"
         )
+    )
+
+    parser.add_argument(
+        "--skip",
+        type=int,
+        default=60,
+        help="Skip number of images" # When sampled each 1 minute then analyse an image each hour
     )
 
     parser.add_argument(
@@ -612,7 +670,7 @@ def main():
 
         mask_output_path = (
             Path(args.mask_output)
-            / relative_path.parent
+            #/ relative_path.parent
             / f"{relative_path.stem}_masks.png"
         )
 
@@ -634,6 +692,11 @@ def main():
             )
 
             results.append({
+                
+                "year": None,
+                "date": None,
+                "time": None,
+                
                 "image": str(image_path),
                 "filename": image_path.name,
 
