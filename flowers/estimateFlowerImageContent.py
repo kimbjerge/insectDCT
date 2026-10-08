@@ -369,7 +369,7 @@ def analyse_image(
             "time": timestamp_time_str,
 
             "image": str(image_path),
-            "filename": image_path.name,
+            #"filename": image_path.name,
             "width": width,
             "height": height,
             "image_pixel_area": image_pixel_area,
@@ -380,7 +380,7 @@ def analyse_image(
             "flower_percentage": 0.0,
 
             "mean_flower_area": 0.0,
-            "median_flower_area": 0.0,
+            #"median_flower_area": 0.0,
             "smallest_flower_area": 0,
             "largest_flower_area": 0,
 
@@ -503,7 +503,7 @@ def analyse_image(
         "time": timestamp_time_str,
             
         "image": str(image_path),
-        "filename": image_path.name,
+        #"filename": image_path.name,
 
         "width": width,
         "height": height,
@@ -518,9 +518,9 @@ def analyse_image(
             np.mean(individual_areas)
         ),
 
-        "median_flower_area": float(
-            np.median(individual_areas)
-        ),
+        #"median_flower_area": float(
+        #    np.median(individual_areas)
+        #),
 
         "smallest_flower_area": int(
             np.min(individual_areas)
@@ -703,7 +703,7 @@ def main():
                     "time": None,
                     
                     "image": str(image_path),
-                    "filename": image_path.name,
+                    #"filename": image_path.name,
     
                     "width": None,
                     "height": None,
@@ -715,7 +715,7 @@ def main():
                     "flower_percentage": None,
     
                     "mean_flower_area": None,
-                    "median_flower_area": None,
+                    #"median_flower_area": None,
                     "smallest_flower_area": None,
                     "largest_flower_area": None,
     
