@@ -571,8 +571,8 @@ def main():
     parser.add_argument(
         "--skip",
         type=int,
-        default=60,
-        help="Skip number of images" # When sampled each 1 minute then analyse an image each hour
+        default=1, # 60
+        help="Skip number of images" # When sampled each 1 minute then analyse an image each hour (skip=60)
     )
 
     parser.add_argument(
@@ -653,75 +653,77 @@ def main():
     for i, image_path in enumerate(
         image_paths
     ):
-
-        print(
-            f"[{i + 1}/{len(image_paths)}] "
-            f"{image_path}"
-        )
-
-        # -----------------------------------------------------
-        # Create corresponding mask-output path
-        #
-        # Preserve the input directory structure.
-        # -----------------------------------------------------
-        relative_path = image_path.relative_to(
-            Path(args.input)
-        )
-
-        mask_output_path = (
-            Path(args.mask_output)
-            #/ relative_path.parent
-            / f"{relative_path.stem}_masks.png"
-        )
-
-        try:
-
-            result = analyse_image(
-                image_path,
-                predictor,
-                prompt=args.prompt,
-                mask_output_path=mask_output_path
-            )
-
-            results.append(result)
-
-        except Exception as e:
+        
+        if (i % args.skip == 0): # Analyse every skip images (Skip == 1) every
 
             print(
-                f"ERROR: {image_path}: {e}"
+                f"[{i + 1}/{len(image_paths)}] "
+                f"{image_path}"
             )
-
-            results.append({
-                
-                "year": None,
-                "date": None,
-                "time": None,
-                
-                "image": str(image_path),
-                "filename": image_path.name,
-
-                "width": None,
-                "height": None,
-                "image_pixel_area": None,
-
-                "number_of_flowers": None,
-
-                "flower_pixel_area": None,
-                "flower_percentage": None,
-
-                "mean_flower_area": None,
-                "median_flower_area": None,
-                "smallest_flower_area": None,
-                "largest_flower_area": None,
-
-                "mean_confidence": None,
-                "min_confidence": None,
-                "max_confidence": None,
-
-                "mask_image": str(
-                    mask_output_path
-                ),
-            })
+    
+            # -----------------------------------------------------
+            # Create corresponding mask-output path
+            #
+            # Preserve the input directory structure.
+            # -----------------------------------------------------
+            relative_path = image_path.relative_to(
+                Path(args.input)
+            )
+    
+            mask_output_path = (
+                Path(args.mask_output)
+                #/ relative_path.parent
+                / f"{relative_path.stem}_masks.png"
+            )
+    
+            try:
+    
+                result = analyse_image(
+                    image_path,
+                    predictor,
+                    prompt=args.prompt,
+                    mask_output_path=mask_output_path
+                )
+    
+                results.append(result)
+    
+            except Exception as e:
+    
+                print(
+                    f"ERROR: {image_path}: {e}"
+                )
+    
+                results.append({
+                    
+                    "year": None,
+                    "date": None,
+                    "time": None,
+                    
+                    "image": str(image_path),
+                    "filename": image_path.name,
+    
+                    "width": None,
+                    "height": None,
+                    "image_pixel_area": None,
+    
+                    "number_of_flowers": None,
+    
+                    "flower_pixel_area": None,
+                    "flower_percentage": None,
+    
+                    "mean_flower_area": None,
+                    "median_flower_area": None,
+                    "smallest_flower_area": None,
+                    "largest_flower_area": None,
+    
+                    "mean_confidence": None,
+                    "min_confidence": None,
+                    "max_confidence": None,
+    
+                    "mask_image": str(
+                        mask_output_path
+                    ),
+                })
 
     # ---------------------------------------------------------
     # Write CSV
