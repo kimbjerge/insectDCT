@@ -583,14 +583,14 @@ def main():
 
     parser.add_argument(
         "--prompt",
-        default="Find flower or flowers",
+        default="flower",
         help="SAM 3 text prompt"
     )
 
     parser.add_argument(
         "--conf",
         type=float,
-        default=0.25,
+        default=0.3,
         help="SAM 3 confidence threshold"
     )
 
