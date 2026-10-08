@@ -656,8 +656,8 @@ def main():
     for i, image_path in enumerate(
         image_paths
     ):
-        
-        if (i+1 % args.skip == 0): # Analyse every skip images (Skip == 1) every
+        count = i + 1
+        if (count % args.skip == 0): # Analyse every skip images (Skip == 1) every
 
             print(
                 f"[{i + 1}/{len(image_paths)}] "
@@ -731,6 +731,7 @@ def main():
     # ---------------------------------------------------------
     # Write CSV
     # ---------------------------------------------------------
+    outputFile = "No output"
     if results:
 
         fieldnames = results[0].keys()
