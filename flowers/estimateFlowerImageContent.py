@@ -385,8 +385,8 @@ def analyse_image(
             "largest_flower_area": 0,
 
             "mean_confidence": 0.0,
-            "min_confidence": 0.0,
-            "max_confidence": 0.0,
+            #"min_confidence": 0.0,
+            #"max_confidence": 0.0,
 
             "mask_image": (
                 str(mask_output_path)
@@ -531,8 +531,8 @@ def analyse_image(
         ),
 
         "mean_confidence": mean_confidence,
-        "min_confidence": min_confidence,
-        "max_confidence": max_confidence,
+        #"min_confidence": min_confidence,
+        #"max_confidence": max_confidence,
 
         "mask_image": (
             str(mask_output_path)
@@ -628,6 +628,9 @@ def main():
         "quantize": args.quantize,
         "device": device,
         "verbose": False,
+        "save": False,
+        "save_txt": False,
+        "save_crop": False
     }
 
     predictor = SAM3SemanticPredictor(
@@ -717,8 +720,8 @@ def main():
                     "largest_flower_area": None,
     
                     "mean_confidence": None,
-                    "min_confidence": None,
-                    "max_confidence": None,
+                    #"min_confidence": None,
+                    #"max_confidence": None,
     
                     "mask_image": str(
                         mask_output_path
