@@ -548,8 +548,8 @@ def main():
 
     parser.add_argument(
         "--input",
-        #required=True,
-        default="./flowerImages",        
+        required=True,
+        #default="./flowerImages",        
         help="Directory containing images"
     )
 
@@ -673,11 +673,15 @@ def main():
                 Path(args.input)
             )
     
-            mask_output_path = (
-                Path(args.mask_output)
-                #/ relative_path.parent
-                / f"{relative_path.stem}_masks.png"
-            )
+    
+            if args.mask_output == "":
+                mask_output_path = None
+            else:
+                mask_output_path = (
+                    Path(args.mask_output)
+                    #/ relative_path.parent
+                    / f"{relative_path.stem}_masks.png"
+                )
     
             try:
     
