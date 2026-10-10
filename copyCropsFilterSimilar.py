@@ -1,212 +1,294 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Aug 27 15:15:02 2026
+Created on 2026-10-10.
 
-@author: Kim Bjerge (ChatGPT)
+@author: Otar Sakhiashvili (Claude)
 
-Yes. Below is a script that:
-
-Recursively finds all *.jpg files.
-Processes each source subdirectory independently.
-Uses imagehash.phash() to compare images.
-Uses a similarity threshold of 15.
-Keeps only different images by default.
-Allows you to keep 1–4 images from each group of similar images.
-Preserves the original subdirectory structure in the output directory.
-Copies the selected images rather than moving them.
-Prints progress and a summary.
-
-python copyCropsFilterSimilar.py "D:/crops" "D:/crops_filtered" --threshold 15 --keep 2
+Below is a script that finds all images in a directory and its subdirectories.
+To run the script, the path to the target folder must be specified.
+The script creates a new folder next to the scanned folder, with the same name
+plus the "_filtered" suffix. The images that are kept are copied into it with the
+same subfolder structure, leaving the original folder untouched.
+The default similarity threshold is 15, but the user can change it when prompted
+in the terminal. In most cases 18 works well, so it is recommended.
+The script performs a dry run first, showing how many images would be removed at
+each threshold from 0 to 20, and then asks the user to choose a threshold for the
+cleanup and how many copies of each similar group should be kept.
 
 """
 
-from pathlib import Path
+
+
+import os
 import shutil
+
+import numpy as np
 import imagehash
 from PIL import Image
-import argparse
 
 
-# ---------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
-DEFAULT_THRESHOLD = 15
-DEFAULT_SIMILAR_IMAGES = 1
+# Which image is kept out of each group of similar images.
+KEEPER_RULES = {
+    "resolution":    lambda m: (-(m['width'] * m['height']), -m['size'], m['path']),  # most pixels
+    "largest":       lambda m: (-m['size'], m['path']),                               # biggest file
+    "smallest":      lambda m: (m['size'], m['path']),                                # smallest file
+}
+
+# Number of set bits for every byte value (used for fast Hamming distance)
+POPCOUNT = np.array([bin(i).count("1") for i in range(256)], dtype=np.uint8)
 
 
-# ---------------------------------------------------------
-# Calculate perceptual hash
-# ---------------------------------------------------------
+def get_image_info(filepath, hash_size):
 
-def calculate_hash(image_file):
     try:
-        with Image.open(image_file) as img:
-            return imagehash.phash(img)
-
-    except Exception as e:
-        print(f"ERROR reading {image_file}: {e}")
+        stat = os.stat(filepath)
+        with Image.open(filepath) as img:
+            width, height = img.size
+            img_hash = imagehash.dhash(img, hash_size=hash_size)
+        return {
+            'path': filepath,
+            'bits': np.packbits(img_hash.hash.flatten()),  # compact form for fast comparison
+            'width': width,
+            'height': height,
+            'size': stat.st_size,
+        }
+    except Exception:
         return None
 
 
-# ---------------------------------------------------------
-# Select images
-# ---------------------------------------------------------
-
-def select_images(image_files, threshold, keep_similar):
+def group_similar_images(images, similarity_threshold, keeper_rule, scope="global"):
     """
-    Select images so that only different images are kept.
-
-    threshold:
-        Maximum phash distance for images to be considered similar.
-
-    keep_similar:
-        Number of similar images to keep from each similarity group.
+    scope="global"     -> every image is compared with every other image, across all folders.
+    scope="per_folder" -> images are only compared with images in the SAME folder
+                          (their immediate parent directory), so a duplicate in another
+                          folder can never cause an image to be removed.
     """
+    if scope == "global":
+        return _group_pool(images, similarity_threshold, keeper_rule)
+    if scope == "per_folder":
+        by_folder = {}
+        for img in images:
+            by_folder.setdefault(os.path.dirname(img['path']), []).append(img)
+        groups = []
+        for folder in sorted(by_folder):
+            groups.extend(_group_pool(by_folder[folder], similarity_threshold, keeper_rule))
+        return groups
+    raise ValueError(f"Unknown scope '{scope}' (use 'global' or 'per_folder')")
 
-    selected = []
-    selected_hashes = []
 
-    for image_file in image_files:
+def _group_pool(images, similarity_threshold, keeper_rule):
+    """
+    Keeper-first grouping of one pool of images.
+    Images are sorted so the best copy (per keeper_rule) comes first. Each image
+    not yet in a group becomes the group's keeper and claims every remaining image
+    within `similarity_threshold` bits of IT. Results no longer depend on the
+    order in which os.walk happens to find files, and the best image is always
+    the group's representative.
+    Returns only groups with more than one image, each ordered best -> worst as
+    a list of (image, distance_from_keeper).
+    """
+    images = sorted(images, key=KEEPER_RULES[keeper_rule])
+    packed = np.stack([img['bits'] for img in images])  # shape (n, hash_bytes)
+    assigned = np.zeros(len(images), dtype=bool)
+    groups = []
 
-        img_hash = calculate_hash(image_file)
-
-        if img_hash is None:
+    for i in range(len(images)):
+        if assigned[i]:
             continue
+        assigned[i] = True
+        remaining = np.where(~assigned)[0]
+        group = [(images[i], 0)]
 
-        # Find how many already selected images are similar
-        similar_count = 0
+        if remaining.size:
+            distances = POPCOUNT[np.bitwise_xor(packed[remaining], packed[i])].sum(axis=1)
+            close = distances <= similarity_threshold
+            for j, d in zip(remaining[close], distances[close]):
+                group.append((images[j], int(d)))
+            assigned[remaining[close]] = True
 
-        for selected_hash in selected_hashes:
+        groups.append(group)  # already ordered best -> worst
 
-            distance = img_hash - selected_hash
-
-            if distance <= threshold:
-                similar_count += 1
-
-        # Keep image if it is sufficiently different
-        # or if we have not yet reached the requested number
-        # of similar images.
-        if similar_count < keep_similar:
-
-            selected.append(image_file)
-            selected_hashes.append(img_hash)
-
-    return selected
+    return [g for g in groups if len(g) > 1]
 
 
-# ---------------------------------------------------------
-# Main processing
-# ---------------------------------------------------------
+def run_threshold_sweep(images, keeper_rule, hash_size, thresholds, scope="global"):
 
-def main():
+    total = len(images)
+    total_bits = hash_size * hash_size
+    scale = total_bits / 64.0  # the threshold list is defined for an 8x8 (64-bit) hash
+    bit_thresholds = sorted({int(round(t * scale)) for t in thresholds})
 
-    parser = argparse.ArgumentParser(
-        description="Copy different JPG images using perceptual image hashing."
-    )
+    print(f"\n=== THRESHOLD SWEEP (dry run, nothing is deleted, scope: {scope}) ===")
+    print(f"{'threshold':>9} {'match %':>8} {'groups':>8} {'removed':>9} {'removed %':>10} {'remaining':>10}")
 
-    parser.add_argument(
-        "input_dir",
-        help="Input directory containing subdirectories with JPG images"
-    )
-
-    parser.add_argument(
-        "output_dir",
-        help="Output directory"
-    )
-
-    parser.add_argument(
-        "--threshold",
-        type=int,
-        default=DEFAULT_THRESHOLD,
-        help="pHash similarity threshold (default: 15)"
-    )
-
-    parser.add_argument(
-        "--keep",
-        type=int,
-        choices=[1, 2, 3, 4],
-        default=DEFAULT_SIMILAR_IMAGES,
-        help="Number of similar images to keep (1-4, default: 1)"
-    )
-
-    args = parser.parse_args()
-
-    input_dir = Path(args.input_dir)
-    output_dir = Path(args.output_dir)
-
-    if not input_dir.exists():
-        print(f"ERROR: Input directory does not exist: {input_dir}")
-        return
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Find all JPG files recursively
-    jpg_files = list(input_dir.rglob("*.jpg"))
-
-    print(f"Input directory : {input_dir}")
-    print(f"Output directory: {output_dir}")
-    print(f"Threshold       : {args.threshold}")
-    print(f"Keep similar    : {args.keep}")
-    print(f"Total JPG files : {len(jpg_files)}")
+    for t in bit_thresholds:
+        groups = group_similar_images(images, t, keeper_rule, scope)
+        removed = sum(len(g) - 1 for g in groups)
+        match_pct = 100.0 * (1 - t / total_bits)
+        print(f"{t:>9} {match_pct:>7.1f}% {len(groups):>8} {removed:>9} "
+              f"{100.0 * removed / total:>9.1f}% {total - removed:>10}")
     print()
 
-    # Group files by their parent directory
-    directories = {}
 
-    for image_file in jpg_files:
-        directories.setdefault(image_file.parent, []).append(image_file)
+def make_output_dir(root_dir, suffix="_filtered"):
+    root = os.path.abspath(root_dir.rstrip("\\/"))
+    parent = os.path.dirname(root)
+    return os.path.join(parent, os.path.basename(root) + suffix)
 
-    total_selected = 0
-    total_skipped = 0
 
-    # Process each directory independently
-    for directory, files in sorted(directories.items()):
+def copy_kept_images(all_images, paths_to_drop, root_dir, output_dir):
+    root = os.path.abspath(root_dir)
+    copied = 0
+    failed = 0
+    for img in all_images:
+        if img['path'] in paths_to_drop:
+            continue
+        rel = os.path.relpath(img['path'], root)
+        destination = os.path.join(output_dir, rel)
+        try:
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            shutil.copy2(img['path'], destination)
+            copied += 1
+        except Exception as e:
+            failed += 1
+            print(f"Failed to copy {img['path']}: {e}")
+    return copied, failed
 
-        print("----------------------------------------")
-        print(f"Directory: {directory}")
-        print(f"Images   : {len(files)}")
 
-        # Sort to make the selection reproducible
-        files = sorted(files)
+def analyze_image_folder(root_dir, similarity_threshold=5, keeper_rule="resolution",
+                         hash_size=8, scope="global", sweep_thresholds=(0, 2, 5, 8, 10, 15, 16, 17, 18, 19, 20),
+                         output_suffix="_filtered"):
+    images = []
+    total_images = 0
 
-        selected = select_images(
-            files,
-            threshold=args.threshold,
-            keep_similar=args.keep
-        )
+    print(f"Scanning directory: {os.path.abspath(root_dir)}\n" + "-" * 50)
 
-        # Create corresponding output directory
-        relative_dir = directory.relative_to(input_dir)
-        destination_dir = output_dir / relative_dir
+    for dirpath, _, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if os.path.splitext(filename)[1].lower() in IMAGE_EXTENSIONS:
+                total_images += 1
+                info = get_image_info(os.path.join(dirpath, filename), hash_size)
+                if info is not None:
+                    images.append(info)
 
-        destination_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Scan complete. Total images processed: {total_images} "
+          f"({total_images - len(images)} unreadable)\n")
 
-        # Copy selected images
-        for image_file in selected:
+    if not images:
+        return
 
-            destination_file = destination_dir / image_file.name
+    # --- optional threshold sweep -------------------------------------------
+    if sweep_thresholds:
+        choice = input("Run a threshold sweep first (dry run, deletes nothing)? (yes/no): ").strip().lower()
+        if choice in ['yes', 'y']:
+            run_threshold_sweep(images, keeper_rule, hash_size, sweep_thresholds, scope)
+            raw = input(f"Threshold to use for the real cleanup "
+                        f"[Enter = {similarity_threshold}, or type 'q' to quit]: ").strip().lower()
+            if raw == 'q':
+                print("Quit. No files were modified.")
+                return
+            if raw:
+                try:
+                    similarity_threshold = int(raw)
+                except ValueError:
+                    print(f"Not a number, using {similarity_threshold}.")
 
-            shutil.copy2(image_file, destination_file)
+    duplicate_groups = group_similar_images(images, similarity_threshold, keeper_rule, scope)
 
-        skipped = len(files) - len(selected)
+    max_bits = hash_size * hash_size
+    print(f"=== VISUAL DUPLICATES (Threshold: {similarity_threshold} of {max_bits} bits, "
+          f"keeper rule: {keeper_rule}, scope: {scope}) ===")
 
-        total_selected += len(selected)
-        total_skipped += skipped
+    if not duplicate_groups:
+        print("No visual duplicates found.\n")
+        duplicate_groups = []
 
-        print(f"Selected : {len(selected)}")
-        print(f"Skipped  : {skipped}")
+    total_dup_files = sum(len(group) for group in duplicate_groups)
+    print(f"Found {len(duplicate_groups)} group(s) of similar images spanning {total_dup_files} total files.\n")
 
-    # Final summary
+    output_dir = make_output_dir(root_dir, output_suffix)
+
+    print("=== OUTPUT ===")
+    print(f"Nothing in the scanned folder is deleted. The images that are kept will be")
+    print(f"copied, with the original folder structure, to:\n  {output_dir}\n")
+
+    copy_choice = input("Continue? (yes/no): ").strip().lower()
+    if copy_choice not in ['yes', 'y']:
+        print("Cancelled. Nothing was copied.")
+        return
+
+    while True:
+        try:
+            keep_count = int(input("How many copies of each similar group should be kept? (Usually 1): ").strip())
+            if keep_count < 1:
+                print("Please enter 1 or more.")
+                continue
+            break
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+
+    # Images that will NOT be copied: everything past the first `keep_count` in each group.
+    paths_to_drop = {item['path'] for group in duplicate_groups
+                     for item, _ in group[keep_count:]}
+
+    to_copy = len(images) - len(paths_to_drop)
+    print(f"\nKeeping the best {keep_count} per group (by '{keeper_rule}').")
+    print(f"Images to copy   : {to_copy}")
+    print(f"Images left out  : {len(paths_to_drop)}\n")
+
+    if os.path.exists(output_dir) and os.listdir(output_dir):
+        overwrite = input(f"'{output_dir}' already exists and is not empty. Add to it anyway? (yes/no): ").strip().lower()
+        if overwrite not in ['yes', 'y']:
+            print("Cancelled. Nothing was copied.")
+            return
+
+    copied, failed = copy_kept_images(images, paths_to_drop, root_dir, output_dir)
+
     print()
     print("========================================")
     print("SUMMARY")
     print("========================================")
-    print(f"Total input images : {len(jpg_files)}")
-    print(f"Images copied      : {total_selected}")
-    print(f"Images skipped     : {total_skipped}")
+    print(f"Total images scanned : {len(images)}")
+    print(f"Images copied        : {copied}")
+    print(f"Images left out      : {len(paths_to_drop)}")
+    if failed:
+        print(f"Copy failures        : {failed}")
+    print(f"Output directory     : {output_dir}")
+    print(f"Source folder        : unchanged")
     print("========================================")
 
 
+# --- HOW TO RUN ---
+# insert the path to your target folder.
 if __name__ == "__main__":
-    main()
+    target_directory = r"D:\folder\path\to\your\images"
+
+    # Default is 15, but you can change it when prompted in the terminal.
+    SIMILARITY_THRESHOLD = 15
+
+    # Which image survives in each group: resolution, largest, smallest
+    KEEPER_RULE = "resolution"
+
+    HASH_SIZE = 8
+
+    # "global"     : compare images across ALL folders (finds duplicates spread over folders)
+    # "per_folder" : only compare images inside the same folder (safest when folders are
+
+    SCOPE = "per_folder"
+
+
+    OUTPUT_SUFFIX = "_filtered"
+
+    SWEEP_THRESHOLDS = (0, 2, 5, 8, 10, 15, 16, 17, 18, 19, 20)
+
+    if os.path.exists(target_directory):
+        analyze_image_folder(target_directory,
+                             similarity_threshold=SIMILARITY_THRESHOLD,
+                             keeper_rule=KEEPER_RULE,
+                             hash_size=HASH_SIZE,
+                             scope=SCOPE,
+                             sweep_thresholds=SWEEP_THRESHOLDS,
+                             output_suffix=OUTPUT_SUFFIX)
+    else:
+        print(f"Error: Directory '{target_directory}' does not exist. Please update the path.")
