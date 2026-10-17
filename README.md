@@ -6,7 +6,7 @@
 
 The pipeline combines three main stages:
 
-1. **Detection and localization** — detects arthropods with YOLO11. Motion-Informed Enhancement (MIE) can help improve detection in challenging backgrounds.
+1. **Detection and localization** — detects arthropods with YOLO11. Motion-Informed Enhancement (MIE) can help improve detection in challenging backgrounds with small insects.
 2. **Hierarchical taxonomic classification** — classifies detected animals across taxonomic levels, from broad groups to family, genus, or species, including anomaly detection of uncertain detections. The backbone of the classifier can be selected as ConvNeXt-Base, EfficientNetV2S, or ResNet50.
 3. **Tracking** — associates detections across frames in high-temporal-resolution recordings to follow individual insects over time.
 
