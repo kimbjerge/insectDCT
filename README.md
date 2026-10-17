@@ -1,485 +1,496 @@
 # InsectDCT
 
-This project contains Python code for processing time-lapse recorded images from insect camera traps. 
-It contains code to detect, classify, and track insects with various backgrounds of plants and flowers.
-(Detection, classification, and tracking, where floral cover estimation will be added later.)
+**InsectDCT** is a Python-based pipeline for detecting, hierarchically classifying, and tracking insects in time-lapse camera-trap images and video recordings. It is designed for natural and semi-natural floral environments, where vegetation, changing illumination, and complex backgrounds make automated monitoring challenging.
 
-Tracking should be used for high time-lapse recordings (0.33 - 1fps); otherwise, typical time-lapse intervals are 30 - 60 seconds.
-Full-sized images are resized to 1920x1080 pixels for detection with YOLO11.
-Insects detected with bounding boxes are cropped with rectangular windows and resized to 128x128 (CV6) or 224x224 (CV7) pixels for classification with CNN models.
+The pipeline combines three main stages:
 
-### The complete pipeline and dataset are decribed in the paper:
+1. **Detection and localization** — detects arthropods with YOLO11. Motion-Informed Enhancement (MIE) can help improve detection in challenging backgrounds.
+2. **Hierarchical taxonomic classification** — classifies detected animals across taxonomic levels, from broad groups to family, genus, or species where supported by the model.
+3. **Tracking** — associates detections across frames in high-temporal-resolution recordings to follow individual insects over time.
 
-Kim Bjerge, Simon Wogram, Pau Enric Serra-Marin, Toke T. Høye,  <br />
-"InsectDCT: A generalised pipeline for detection, taxonomic classification, and tracking of insects in camera-trap recordings",
-2026, bioRxiv, https://doi.org/10.64898/2026.07.07.736939
+The repository includes inference scripts, graphical interfaces, browser-based viewers, crop-generation utilities, model-training helpers, and tools for inspecting detection and tracking results.
 
-### Datasets (V6) for training and testing are published at: 
-https://zenodo.org/records/21154490
+## Contents
 
-Example shown below of time-lapse tracking with two Bumblebees (<em>Bombus lapidarius</em>) visiting flowering Sedum plants. 
+- [Publication and datasets](#publication-and-datasets)
+- [Example](#example)
+- [Requirements and environments](#requirements-and-environments)
+- [Model weights and labels](#model-weights-and-labels)
+- [Getting started](#getting-started)
+- [Command-line usage](#command-line-usage)
+- [Output files](#output-files)
+- [Taxonomic labels](#taxonomic-labels)
+- [Training and development tools](#training-and-development-tools)
+- [Repository version tags](#repository-version-tags)
+- [Related publications](#related-publications)
 
-![Alt text](BumblebeeSedum.jpg)
+## Publication and datasets
 
-Video of insect tracking: https://www.youtube.com/watch?v=obxTmgERpO4
+The complete pipeline and dataset are described in:
 
-InsectDCT is an AI-based pipeline for detection, hierarchical classification, and tracking of insects in natural floral environments
+Kim Bjerge, Simon Wogram, Pau Enric Serra-Marin, and Toke T. Høye, “InsectDCT: A generalised pipeline for detection, taxonomic classification, and tracking of insects in camera-trap recordings” (2026, bioRxiv).
 
-The InsectDCT framework is a multi-stage artificial intelligence pipeline designed for automated monitoring of insects in complex natural and semi-natural floral environments. The pipeline consists of three main processing stages: detection and localization, hierarchical taxonomic classification, and spatiotemporal tracking.
+- **Preprint:** https://doi.org/10.64898/2026.07.07.736939
+- **V6 training and test datasets:** https://zenodo.org/records/21154490
 
-In the first stage, insects are detected and localized in still images and video recordings using the You Only Look Once (YOLO11) object detection architecture. To improve detection performance under challenging environmental conditions, motion-enhanced image representations are employed. The detector is trained on a large dataset acquired using insect camera traps deployed across diverse plant species and floral habitats, capturing substantial variation in background complexity, illumination, and insect morphology.
+## Example
 
-The second stage performs hierarchical taxonomic classification of detected insects into more than 80 taxa, covering multiple taxonomic ranks including order, family, and genus/species. This hierarchical approach enables robust classification across varying levels of visual granularity and supports fine-grained ecological analysis.
+The example below shows two *Bombus lapidarius* bumblebees visiting flowering *Sedum* plants. Tracking is most useful for high-temporal-resolution recordings (approximately 0.33–1 frames per second). For more widely spaced time-lapse images, intervals of around 30–60 seconds are typical.
 
-In the third stage, for high temporal-resolution image sequences and video recordings, a multi-object tracking module is applied to associate detections across time. This enables continuous tracking of individual insects and preserves taxonomic identity throughout their observed trajectories, facilitating behavioral and temporal analyses.
+![Two Bombus lapidarius bumblebees visiting flowering Sedum plants](BumblebeeSedum.jpg)
 
-The design and implementation of InsectDCT are based and build upon several recent peer-reviewed studies in the fields of deep learning, computer vision, and automated insect monitoring. The pipeline is under active development and is continuously extended with additional annotated datasets to further enhance detection accuracy, classification robustness, and generalization across ecological contexts.
+[Watch the insect-tracking video on YouTube](https://www.youtube.com/watch?v=obxTmgERpO4).
 
-## The algorithms used are described in the papers: 
+For detection, full-resolution images are resized to 1920 × 1080 pixels before processing with YOLO11. Detected insects are cropped using rectangular bounding boxes and resized to 128 × 128 pixels for CV6 or 224 × 224 pixels for CV7 classification models.
 
-Object detection with Motion-Informed Enhancement (MIE):
+## Requirements and environments
 
-"Object Detection of Small Insects in Time-Lapse Camera Recordings".  <br />
-https://www.mdpi.com/1424-8220/23/16/7242
+Choose the environment setup that matches your platform:
 
-Estimating flower cover with color and semantic segmentation and classification of 19 taxonomic groups of arthropods:
+- **Windows or Linux:** `README-conda-env-yolo11.txt` describes the Anaconda environment requirements.
+- **Raspberry Pi 4/5:** `raspberryPiEnv.sh` creates and installs the Python virtual environment.
 
-"A deep learning pipeline for time-lapse camera monitoring of floral environments and insect populations".  <br />
-https://doi.org/10.1016/j.ecoinf.2024.102861 
+## Model weights and labels (Hierarchical classifier)
 
-Hierarchical classification of arthropods in three levels of taxonomic ranks:
+The model weights, labels, and thresholds are distributed separately from the source code. Download the required files from the links below and extract them into `models_save/` (the original instructions refer to `insectsDCT/models_save/`; use the corresponding path in your local checkout).
 
-"Hierarchical classification of insects with multitask learning and anomaly detection".  <br />
-https://doi.org/10.1016/j.ecoinf.2023.102278
+The models were trained on images collected using Wingscapes Bird cameras, Logitech webcams, and Raspberry Pi cameras. Backgrounds include *Sedum*, red clover, sea rocket, common mallow, and various grasses.
 
-Tracking insects in low-framerate video recordings (<1fps):
+- **V3 — `HierarchicalClassifierV3_05092025`:** trained on the camera images described above and supplemented with GBIF data.  
+  https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive_link
+- **V4 — `HierarchicalClassifierV4_05092025`:** trained on the same images as V3, but without GBIF data.  
+  https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
+- **V5 — `HierarchicalClassifierV5_05092025`:** based on V3, supplemented with Raspberry Pi camera images of challenging species.  
+  https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
+- **V6 — `HierarchicalClassifierV6` (paper version/default):** based on V5, with reduced vegetation representation, a reorganized dataset, and additional images of challenging species.  
+  https://drive.google.com/file/d/1V8uWDIjT1DHo3CyxRjOk6vZYkeBjKX_0/view?usp=drive_link
+- **V7 — `HierarchicalClassifierV7`:** based on V6 and supplemented with additional Lepidoptera species, Raspberry Pi HQ camera images, and short video clips.  
+  https://drive.google.com/file/d/15oGWBgp3S08k8VK0r2qzMC65uUBFvsPh/view?usp=sharing
 
-"Towards edge processing of images from insect camera traps".  <br />
-https://doi.org/10.1002/rse2.70007
+Pi HQ video recordings are also discussed in the paper by Serra-Marin et al.: https://doi.org/10.1111/2041-210X.70165.
 
+## Getting started
 
-# This repository includes the essential Python code for the steps in the figure below (V6). 
+1. Clone or download this repository, preserving its directory structure.
+2. Download the model weights, labels, and thresholds from the links above, then extract them into `models_save/`.
+3. Install the dependencies using `README-conda-env-yolo11.txt` (Anaconda) or, on Raspberry Pi 4/5, follow the instructions in `raspberryPiEnv.sh`.
+4. Activate the Anaconda environment, if applicable:
 
-![Alt text](PipelineHierarchical.png)
+   ```bash
+   conda activate yolo11
+   ```
 
-## Python environment on Windows or Linux ##
-README-conda-env-yolo11.txt - Anaconda environment requirements
+5. Launch the graphical interface:
 
-## Python environment on Raspberry Pi 4/5 ##
-raspberryPiEnv.sh - script to create and install virtual environment on Raspberry Pi
+   ```bash
+   python smartInsectGUI.py
+   ```
 
-### Hierarchical model weights and labels ###
+### Programs available in the launcher
 
-The modes below are trained on datasets collected with Wingscape's Bird cameras, Logitech Webcams, and Pi Cameras. 
-Background images contain vegetation of Sedum, Red clover, Sea rocket, Common mallow, and different grasses.
+The **Smart AI Insect Program Launcher** provides access to eight tools:
 
-V3. Third model (HierarchicalClassifierV3_05092025) trained on images recorded with cameras and backgrounds mentioned above and supplemented with GBIF data  <br />
-https://drive.google.com/file/d/1zA22fWHYrmV-PKOHmddPX2OmHwxvxDb7/view?usp=drive_link
+| Tool | Script or file | Purpose |
+|---|---|---|
+| Insect Detector and Classifier | `pipeDetectAndClassifyInsectsGUI.py` | Runs YOLO detection and hierarchical classification. |
+| Insect Tracker | `pipeTrackInsectsGUI.py` | Tracks detections from `*-CL.csv` files. |
+| Insect Crop Generator | `createCropsGUI.py` | Generates image crops from classified detections. |
+| Insect Track Generator | `createTrackCropsGUI.py` | Creates plots of tracked insects from `*-TRS.csv` files. |
+| Open Insect Viewer in Browser | `insect_viewer.html` | Views detected insects and their taxonomic classifications. |
+| Open Track Viewer in Browser | `track_viewer.html` | Views tracked insects from `*-TR.csv` files. |
+| Open Insect Crops Viewer in Browser | `insect_crops_viewer.html` | Views image crops from classified detections. |
+| Open Track Crops Viewer in Browser | `track_crops_viewer.html` | Views image crops associated with tracks and taxa. |
 
-V4. Forth model (HierarchicalClassifierV4_05092025) trained on same images as in V3 but without GBIF data  <br />
-https://drive.google.com/file/d/1ca2XaNygAE3UUUMkZtGWvmoy20AuaTHl/view?usp=sharing
+The first four tools can also be run from the command line.
 
-V5. Fifth model (HierarchicalClassifierV5_05092025) was trained on the same images as V3, supplemented with Pi Camera images of challenging species. <br />
-https://drive.google.com/file/d/1VFzGcx1WDyL91ATu4CVR7HUR_nwjpZum/view?usp=drive_link
+## Command-line usage
 
-V6. Sixth model (HierarchicalClassifierV6 - default paper published) was trained on the same images as V5, with less vegetation, reorganized, supplemented with additional images of challenging species. <br />
-https://drive.google.com/file/d/1V8uWDIjT1DHo3CyxRjOk6vZYkeBjKX_0/view?usp=drive_link
+Sample images are available in `./images`. The examples below show common options; consult each script's source code for additional parameters.
 
-V7. Seventh model (HierarchicalClassifierV7) was trained on the same images as V6, suplemented with more Lepidoptera species and insect images recorded with Pi HQ camera and short video clips. <br />
-https://drive.google.com/file/d/15oGWBgp3S08k8VK0r2qzMC65uUBFvsPh/view?usp=sharing
+### Detect and classify insects
 
-Pi HQ video recordings with insects from paper by Serra-Marin et al. https://doi.org/10.1111/2041-210X.70165
+The detector/classifier script supports both images and videos.
 
-Download the weights, labels, and thresholds from the above links. (At least the latest version V6) 
-Save and unzip the file to the sub directory: insectsDCT/models_save
+```bash
+# Run using the default device/model settings
+python pipeDetectAndClassifyInsectsTaxon.py
 
-### Getting started ###
+# Run on the CPU
+python pipeDetectAndClassifyInsectsTaxon.py --device cpu
 
-1. Download the repository and install it with the same directory structure.
+# Process images in a specified directory
+python pipeDetectAndClassifyInsectsTaxon.py --images "./project/images/"
 
-2. Download weights, labels and thresholds for the hierachical classifier and unzip to: models_save/
-   
-4. Install the environment requirements see: README-conda-env-yolo11.txt (Anaconda)
+# Set the directory for result files
+python pipeDetectAndClassifyInsectsTaxon.py --resultsDir "./project/detections/"
 
-5. Activate the python environment.
-
-   - Anaconda: $ conda activate yolo11
-
-6. Run the "Smart AI Insect Program Launcher": $ python smartInsectGUI.py
-
-	This GUI can launch eight different programs for easy use of the AI pipeline:  <br />
-	- "Insect Detector and Classifier" -> pipeDetectAndClassifyInsectsGUI.py  <br />
-		- interface for YOLO detector and hierachical classifier <br />
-	- "Insect Tracker" -> pipeTrackInsectsGUI.py <br />
-		- interface for insect tracker based on *-CL.csv outputs from detector and classifier <br />
-	- "Insect Crop Generator" -> createCropsGUI.py <br />
-		- create image crops of detected and classified insects (*-CL.csv files) <br />
-	- "Insect Track Generator" -> createTrackCropsGUI.py <br />
-		- create plots of crops for tracked insects (*-TRS.csv files) <br />
-	- "Open Insect Viewer in Browser" -> insect_viewer.html  <br />
-		- view detections and classification of insect taxa (*-CL.csv files)  <br />
-	- "Open Track Viewer in Browser" -> track_viewer.html <br />
-		- view tracked insect taxa (*-TR.csv files) <br />
-	- "Open Insect Crops Viewer in Browser" -> insect_crops_viewer.html  <br />
-		- view insect image crops of taxa (*-CL.csv files)  <br />
-	- "Open Track Crops Viewer in Browser" -> track_crops_viewer.html <br />
-		- view insect image crops in track and taxa (*-TRS.csv file) <br />
-
-	The first four programs can be executed from the commandline as described in 7 and 8.
-
-7. Commandline Python code to generate the CSV files for detection and tracking. (Sample images used - are found in: ./images)
-
-   Detector and classifier - works with both videos and images:
-
-   - $ python pipeDetectAndClassifyInsectsTaxon.py  <br />
-     	Performs detection and classification with ConvNextBase on CUDA:0
-
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu  <br />
-	    Performs detection and classification with ConvNextBase on CPU
-
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --images "./project/images/"  <br />
-     	Specify path to folder location of images (.jpg) to be processed.
-
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --resultsDir "./project/detecions/"  <br />
-     	Specify path to folder location for destination to store results (.csv and .avi files).
-    
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --device cpu --optimized ncnn <br />
-	Performs detection and classification with optimized YOLO NCNN model on CPU <br />
-        On Raspberry Pi use YOLO11s model by changing parameter --yoloWeights see source code
-     
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --useExifTime True  <br />
-     	Uses the exif file information to get data and time from images instead of file name with format: CAM1_YYYY_MM_DD_HH_MM_SS.jpg or CAM1_YYYYMMDDHHMMSS_...jpg
-
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S  <br />
-     	Performs detection and classification using the small model of EfficientNet V.2 (faster model, lesser accurate than ConvNextBase)
-     
-   - $ python pipeDetectAndClassifyInsectsTaxon.py --dataset V7  <br />
-     	Performs detection and classification using models trained on classification dataset V7 instead of V6
-
-   Tracker to be used for recordings with framerates of 0.25 - 24 fps:
-	 
-   - $ python pipeTrackInsectsTaxon.py  <br />
-     	Performs tracking based on the CSV output files (./detections/*-CL.csv)
-
-   - $ python pipeTrackInsectsTaxon.py --images "./project/images/" --detections "./project/detections" --tracks "./project/tracks" <br />
-     	Specify the path for source images (.jpg), detections (.csv) and resulting track files (.csv, .json and .avi) 
-
-   - $ python pipeTrackInsectsTaxon.py  --checkTaxa True <br />
-     	Performs tracking only using classification where classes are of the same taxon (order, family, genus or species).
-
-   Tracker as part of YOLO using BytTrack or BoT-SORT followed by Hierachical classification (Video only)
-	
-	- $ python pipeTrackAndClassifyInsectsTaxon.py  <br />
-     	Performs combined detection and tracking with YOLO followed by classification
-   
-   See code for additional parameters for the above python scripts:  <br />
-   https://github.com/kimbjerge/insectDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py   <br />
-   https://github.com/kimbjerge/insectDCT/blob/main/pipeTrackInsectsTaxon.py
-
-9. Commandline Python code to generate images of insect crops based on taxa classification and tracking described in 7.
-   
-   - $ python createCrops.py --CSVfiles "./detections/" --imagesPath "./images/" --cropsPath "./crops/"  <br />
-     Creates cropped images of detected and classified insects sorted to directories based on *-CL.csv files
-       
-   - $ python createTrackCrops.py --validConfTH 20  --tracks "./tracks" --images "./images" --resultsDir "./trackCrops" <br /> 
-     Creates plots of tracks with cropped images of classified insects sorted to directories based on *-TRS.csv files
-
-### CSV files in detections directory ###
-
-Content of *-CL.csv files which contain lines for each detection (subdir3-subdir2-subdir1-CL.csv):
-
-	year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId
-
-- trapDir is the directory of the source files subdir3/subdir2  <br />
-- detectConf is the confidence score of the YOLO11 arthropod detector  <br />
-- detectId is always 0 and is the class id determined by YOLO11  <br />
-- x1,y1,x2,y2 is the coordinates in the images for the upper left corner and lower right corner of the bounding box surrounding the detected arthropod  <br />
-- filename is the name of the image file with the format subdir1/name.JPG  <br />
-- taxaLabel is the order, family, genus or species name of the arthropod found by the hierarchical classifier see names below (taxaLevel 1-3)
- 
-- taxaId and taxaLevel will be updated with the following classification codes
-
-Hierarchical taxa of classes in the model HierarchicalClassifierV6:
-
-https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt (80 taxa at level 3 - published in paper)
-
-https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV7.txt (104 taxa at level 3)
-
-Detection and classification metrics (precision, recall, F1-score) for insect detection and each class and model (YOLO11, ResNet50, EfficientNetV2 and ConvNext-Base) on the validation and test datasets can be found here:
-
-https://github.com/kimbjerge/insectDCT/tree/main/metrics
-
-Hierarchical taxa of classes in the model HierarchicalClassifierV6: 
-
-taxaLevel 1: (19 groups of taxa primary Order)
-
-    1 Aranaea 
-    2 Birds 
-    3 Coleoptera 
-    4 Dermaptera
-    5 Diptera  
-    6 Hemiptera
-    7 Herpetofauna 
-    8 Hymenoptera_bees
-    9 Hymenoptera_nobees  
-    10 Isopoda 
-    11 Larvae 
-    12 Lepidoptera 
-    13 Lepidoptera_fw 
-    14 Milipedes 
-    15 Odonata 
-    16 Orthoptera 
-    17 Slugs 
-    18 Snails 
-    19 Vegetation 
-
-
-taxaLevel 2: (39 groups of taxa primary Family - some of the below labels do also contain level 1 names)
-
-    1 Acrididae  
-    2 Apidae 
-    3 Apoidae
-    4 Aranaea 
-    5 Birds 
-    6 Bombyliidae
-    7 Cantharidae
-    8 Chrysididae 
-    9 Coccinellidae 
-    10 Coleoptera 
-    11 Crabronidae
-    12 Dermaptera 
-    13 Diptera 
-    14 Formidicidae  
-    15 Hemiptera
-    16 Herpetofauna 
-    17 Hesperidae 
-    18 Ichneumonidae 
-    19 Isopoda 
-    20 Larvae
-    21 Lepidoptera 
-    22 Lepidoptera_fw  
-    23 Lycenidae 
-    24 Megachilidae 
-    25 Milipedes 
-    26 Moths 
-    27 Nymphalidae 
-    28 Nymphalidae_fw 
-    29 Odonata
-    30 Orthoptera 
-    31 Pieridae 
-    32 Pompilidae 
-    33 Sarcophagidae 
-    34 Slugs 
-    35 Snails 
-    36 Syrphidae 
-    37 Tettigoniidae 
-    38 Vegetation 
-    39 Vespidae 
-
-
-taxaLevel 3: (80 groups of taxa primary Genus or Species - some of the below labels do also contain level 1+2 names)
-
-     1 Acrididae 
-     2 Aglais io 
-     3 Aglais urticae 
-     4 Aglais urticae_fw 
-     5 Anthidium oblongatum
-     6 Aphantopus hyperantus
-     7 Apis mellifera 
-     8 Apoidea
-     9 Apoidea red_abdomen
-     10 Apoidea reddish
-     11 Apoidea small
-     12 Apoidea striped
-     13 Aranaea 
-     14 Birds 
-     15 Bombus 
-     16 Bombus hypnorum 
-     17 Bombus lapidarius 
-     18 Bombus pascuorum
-     19 Bombus sylvarum 
-     20 Bombus terrestris 
-     21 Bombyliidae
-     22 Chorthippus
-     23 Chrysididae 
-     24 Chrysotoxum 
-     25 Coccinella septempunctata 
-     26 Coenonympha pamphilus 
-     27 Coleoptera 
-     28 Crabronidae 
-     29 Decticus verrucivorus 
-     30 Dermaptera
-     31 Diptera 
-     32 Episyrphus balteatus 
-     33 Eristalis 
-     34 Eupeodes 
-     35 Eurimyia 
-     36 Formidicidae 
-     37 Helophilus 
-     38 Hemiptera
-     39 Herpetofauna 
-     40 Hesperidae
-     41 Ichneumonidae
-     42 Isopoda
-     43 Larvae 
-     44 Lepidoptera 
-     45 Lepidoptera_fw  
-     46 Lycaena phlaeas 
-     47 Lycenidae 
-     48 Maniola jurtina 
-     49 Maniola jurtina_fw 
-     50 Megachilidae 
-     51 Melanargia galathea
-     52 Meliscaeva cinctella 
-     53 Milipedes 
-     54 Moths 
-     55 Myathropa florea 
-     56 Nomada 
-     57 Nymphalidae
-     58 Odonata 
-     59 Odynerus spinipes
-     60 Omocestus viridulus 
-     61 Orthoptera 
-     62 Pholidoptera griseoaptera 
-     63 Pieridae 
-     64 Platycheirus 
-     65 Pompilidae 
-     66 Rhagonycha fulva 
-     67 Sarcophagidae
-     68 Satyrinae_fw 
-     69 Scaeva 
-     70 Scaeva pyrastri 
-     71 Slugs 
-     72 Snails 
-     73 Sphaerophoria scripta-complex 
-     74 Syritta pipiens 
-     75 Syrphidae 
-     76 Syrphus 
-     77 Vegetation
-     78 Vespidae 
-     79 Vespula vulgaris
-     80 Xanthogramma 
-                
-
-- taxaConf is the confidence score from the classifier (0-100%)  <br />
-- taxaSure is True if the confidence score is within the distribution of the training data and the classification is valid  <br />
-- frameId is a number used to find the corresponding entry in the *-HI.csv file with more detailed information of the hierarchical classifier  <br />
-
-Example of *-CL.csv content:
-
-	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141529,48,0,2018,212,2112,270,101_WSCT/WSCT0441.JPG,Unsure,0,0,0,False,441
-	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141629,43,0,1262,1123,1355,1224,101_WSCT/WSCT0442.JPG,Syrphidae,37,2,6,True,442
-	2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,142529,62,0,778,1650,893,1716,101_WSCT/WSCT0451.JPG,Sphaerophoria scripta-complex,73,3,45,True,451 
-
-Content of *-HI.csv files which contain hierarchical taxonomic information for each detection (subdir3-subdir2-subdir1-CL.csv):
-
-	Label1,LabelId1,Logit1,Conf1,Above1,Label2,Logit2,LabelId2,Conf2,Above2,Label3,Logit2,LabelId3,Conf3,Above3,Checked,frameId
-
-LabelX, LabelIdX, LogitX is ConfX is the name, id, logits, confidence score on the taxonomic levels 1, 2 and 3.  <br />
-AboveX is True if the confidence scores is within the distribution of the training data. <br />
-Checked is True if the classification is correct according to the dependences in the taxonomic hierarchy.
-
-Example of content with same frameId as in example above (*-CL.csv content):
-
-	Hymenoptera_bees,7,10.368386268615723,0.17764412872969426,True,Apoidea,2,12.671218872070312,0.26314053164088247,True,Apoidea small,10,13.290820121765137,0.056937230205690026,True,True,23
-	Hymenoptera_bees,7,10.621867179870605,0.23793470980477627,True,Megachilidae,23,8.891632080078125,7.889724331655447e-10,False,Apoidea striped,11,8.226250648498535,9.556289827149367e-14,False,False,24
-	Hymenoptera_bees,7,11.440793991088867,0.4880629168943492,True,Apidae,1,9.150934219360352,0.0004416117697434911,True,Apis mellifera,6,9.045608520507812,3.784884581385603e-10,False,True,25
-
- ### CSV and JSON files in tracks directory ###
-
-Content of *.csv files which contain lines for each track (piX_YYYY_MM_DD-TR.csv):
-
-	id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance,alternative
-
-Where class is the name of the taxonId at level 1-3 and id is the track number
+# Use the optimized NCNN option on the CPU
+python pipeDetectAndClassifyInsectsTaxon.py --device cpu --optimized ncnn
+
+# Read timestamps from EXIF metadata rather than filenames
+python pipeDetectAndClassifyInsectsTaxon.py --useExifTime True
+
+# Use EfficientNetV2S for classification
+python pipeDetectAndClassifyInsectsTaxon.py --modelType EfficientNetV2S
+
+# Use the V7 classification dataset/model
+python pipeDetectAndClassifyInsectsTaxon.py --dataset V7
+```
+
+By default, the script performs detection and classification using ConvNeXt-Base on `CUDA:0`. The `--device cpu` option runs on the CPU. `EfficientNetV2S` is a smaller, faster classification model, with lower accuracy than ConvNeXt-Base according to the project documentation. For Raspberry Pi, the original README recommends using a YOLO11s model by changing the `--yoloWeights` parameter in the source code when using the NCNN option.
+
+When `--useExifTime True` is enabled, image timestamps are read from EXIF metadata instead of the filename. Supported filename patterns include `CAM1_YYYY_MM_DD_HH_MM_SS.jpg` and `CAM1_YYYYMMDDHHMMSS_...jpg`.
+
+### Track insects across frames
+
+The tracker uses detection/classification CSV output (`*-CL.csv`) and is intended for recordings with frame rates from 0.25 to 24 fps.
+
+```bash
+# Track detections from the default directories
+python pipeTrackInsectsTaxon.py
+
+# Specify source images, detection files, and output directory
+python pipeTrackInsectsTaxon.py \
+  --images "./project/images/" \
+  --detections "./project/detections" \
+  --tracks "./project/tracks"
+
+# Restrict tracking to detections with compatible taxonomic classifications
+python pipeTrackInsectsTaxon.py --checkTaxa True
+```
+
+For video-only workflows, YOLO can perform detection and tracking using ByteTrack or BoT-SORT, followed by hierarchical classification:
+
+```bash
+python pipeTrackAndClassifyInsectsTaxon.py
+```
+
+See the scripts for additional options:
+
+- https://github.com/kimbjerge/insectDCT/blob/main/pipeDetectAndClassifyInsectsTaxon.py
+- https://github.com/kimbjerge/insectDCT/blob/main/pipeTrackInsectsTaxon.py
+
+### Generate insect crops and track plots
+
+```bash
+# Create crops from classified detections
+python createCrops.py \
+  --CSVfiles "./detections/" \
+  --imagesPath "./images/" \
+  --cropsPath "./crops/"
+
+# Create plots of tracked insects and their image crops
+python createTrackCrops.py \
+  --validConfTH 20 \
+  --tracks "./tracks" \
+  --images "./images" \
+  --resultsDir "./trackCrops"
+```
+
+`createCrops.py` sorts cropped images into directories based on the `*-CL.csv` files. `createTrackCrops.py` creates plots of tracked insects using the `*-TRS.csv` files.
+
+## Output files
+
+### Detection and classification CSV: `*-CL.csv`
+
+Each row represents a detection. The file typically contains the following columns:
+
+```text
+year,trapDir,date,time,detectConf,detectId,x1,y1,x2,y2,fileName,taxaLabel,taxaId,taxaLevel,taxaConf,taxaSure,frameId
+```
+
+- `trapDir`: source directory path (described in the original format as `subdir3/subdir2`).
+- `detectConf`: confidence score from the YOLO11 arthropod detector.
+- `detectId`: detector class ID; the original documentation states this is always `0`.
+- `x1,y1,x2,y2`: upper-left and lower-right coordinates of the detected arthropod's bounding box.
+- `fileName`: image path/name, for example `subdir1/name.JPG`.
+- `taxaLabel`: predicted taxonomic label at the order, family, genus, or species level.
+- `taxaId` and `taxaLevel`: numeric taxon identifier and hierarchy level.
+- `taxaConf`: classifier confidence score (0–100%).
+- `taxaSure`: `True` when the confidence is within the training-data distribution and the classification is considered valid.
+- `frameId`: frame identifier used to match the detection with detailed information in the corresponding `*-HI.csv` file.
+
+Example rows:
+
+```csv
+2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141529,48,0,2018,212,2112,270,101_WSCT/WSCT0441.JPG,Unsure,0,0,0,False,441
+2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,141629,43,0,1262,1123,1355,1224,101_WSCT/WSCT0442.JPG,Syrphidae,37,2,6,True,442
+2024,FR02_Bagnas/Cam.A.2024.07.02,20240407,142529,62,0,778,1650,893,1716,101_WSCT/WSCT0451.JPG,Sphaerophoria scripta-complex,73,3,45,True,451
+```
+
+### Hierarchical classification CSV: `*-HI.csv`
+
+This file stores detailed hierarchical classifier information for each detection.
+
+```text
+Label1,LabelId1,Logit1,Conf1,Above1,Label2,Logit2,LabelId2,Conf2,Above2,Label3,Logit3,LabelId3,Conf3,Above3,Checked,frameId
+```
+
+For each level (`1`, `2`, and `3`), the label, label ID, logit, confidence score, and `Above` flag describe the classifier output. `AboveX` is `True` when the confidence score is within the training-data distribution. `Checked` indicates whether the predicted labels are consistent with the taxonomic hierarchy.
+
+### Track summary CSV: `*-TR.csv`
+
+Each row represents a track.
+
+```text
+id,startdate,starttime,endtime,duration,class,counts,confidence,size,distance,alternative
+```
+
+- `id`: track identifier.
+- `class`: taxonomic label assigned to the track.
+- `counts`: number of detections in the track (at least two detections are required).
+- `confidence`: number of detections predicted as the track's class relative to all detections in that track, as described in the original documentation.
+- `size`: average pixel size of the tracked insect.
+- `distance`: distance travelled in pixels.
+- `alternative`: second-best taxon estimate, when at least two detections support the alternative class.
 
 Example:
 
-	0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171,Apoidae 
-	1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364,Unsure
+```csv
+0,20250221,11:57:31,11:58:23,52,Megachile,18,36.8,3199,3171,Apoidae
+1,20250221,11:58:07,11:58:31,24,Megachile,12,53.9,2686,1364,Unsure
+```
 
-counts is the number of detections in a track (at least two detections to make a track)  <br />
-confidence is the number of times the class was predicted relative to all detections in the track   <br />
-size is the average pixel size of the tracked insect   <br />
-distance is the distance in pixels the insect was tracked   <br />
-alternative is the second best estimate on the taxon class with at least two of the same taxa in the track <br />
+### Track detection CSV: `*-TRS.csv`
 
-Content of *.csv files which contain lines for each detection in each track (piX_YYYY_MM_DD-TRS.csv):
+Each row represents a detection belonging to a track.
 
-	id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName,frameId
+```text
+id,date,time,taxaConf,taxaLabel,xc,yc,x1,y1,width,height,detectLine,fileName,frameId
+```
+
+- `taxaConf`: taxonomic confidence score.
+- `detectLine`: corresponding row/line number in the detection CSV.
+- `frameId`: frame number, starting at 1; particularly relevant for video recordings.
 
 Example:
 
-	0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg,23
-	0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg,24
-	0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg,25
+```csv
+0,20250221,115731,0.0,Unsure,1331,632,1307,600,49,64,1,pi2_2025_02_21_11_57_31.jpg,23
+0,20250221,115732,21.13,Megachile,1310,674,1285,640,50,68,2,pi2_2025_02_21_11_57_32.jpg,24
+0,20250221,115734,0.72,Andrena,1278,700,1252,682,52,37,3,pi2_2025_02_21_11_57_34.jpg,25
+```
 
-taxaConf is the taxa confidence score same as confidence in the detection CSV file   <br />
-detectLine is the line number in the detection CSV file   <br />
-frameId is the frame number starting with 1 mostly relevant for video recordings
+## Taxonomic labels
 
+The V6 hierarchical classifier contains 80 labels at level 3. V7 contains 104 level-3 labels.
 
-## Training insect detector and hierachical classification models ##
+- V6 labels: https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV6.txt
+- V7 labels: https://github.com/kimbjerge/insectDCT/blob/main/hierarchicalB3L/datasetV7.txt
+- Detection and classification metrics (precision, recall, and F1 score) for the validation and test datasets: https://github.com/kimbjerge/insectDCT/tree/main/metrics
 
-Datasets for detector and classifier is not part of this Github repository. (Will be published later)
+The V6 taxonomic labels are listed below as documented in the original README. Some labels at lower levels repeat broader groups or include custom categories.
 
-### Code for inspiration to create datasets with motion (MIE) images: ###
+### Level 1 — 19 groups
 
-  - tools/createAccurateDataset.py, tools/Create_MotionNI-dataset.py
+```text
+1 Aranaea
+2 Birds
+3 Coleoptera
+4 Dermaptera
+5 Diptera
+6 Hemiptera
+7 Herpetofauna
+8 Hymenoptera_bees
+9 Hymenoptera_nobees
+10 Isopoda
+11 Larvae
+12 Lepidoptera
+13 Lepidoptera_fw
+14 Milipedes
+15 Odonata
+16 Orthoptera
+17 Slugs
+18 Snails
+19 Vegetation
+```
 
-### Subdirectories with python helper classes ###
+### Level 2 — 39 groups
 
-  - common - contains Python code used by pipeDetectAndClassifyInsectsTaxon.py  <br />
-  - idac - contains python code used by pipeTrackInsectsTaxon.py
+```text
+1 Acrididae
+2 Apidae
+3 Apoidae
+4 Aranaea
+5 Birds
+6 Bombyliidae
+7 Cantharidae
+8 Chrysididae
+9 Coccinellidae
+10 Coleoptera
+11 Crabronidae
+12 Dermaptera
+13 Diptera
+14 Formidicidae
+15 Hemiptera
+16 Herpetofauna
+17 Hesperidae
+18 Ichneumonidae
+19 Isopoda
+20 Larvae
+21 Lepidoptera
+22 Lepidoptera_fw
+23 Lycenidae
+24 Megachilidae
+25 Milipedes
+26 Moths
+27 Nymphalidae
+28 Nymphalidae_fw
+29 Odonata
+30 Orthoptera
+31 Pieridae
+32 Pompilidae
+33 Sarcophagidae
+34 Slugs
+35 Snails
+36 Syrphidae
+37 Tettigoniidae
+38 Vegetation
+39 Vespidae
+```
 
-### Training and validating models (YOLO11) on color or motion images: ###
+### Level 3 — 80 groups
 
- - insectsColorTrain.py, insectsColorVal.py  <br />
- - insectsMotionTrain.py
+```text
+1 Acrididae
+2 Aglais io
+3 Aglais urticae
+4 Aglais urticae_fw
+5 Anthidium oblongatum
+6 Aphantopus hyperantus
+7 Apis mellifera
+8 Apoidea
+9 Apoidea red_abdomen
+10 Apoidea reddish
+11 Apoidea small
+12 Apoidea striped
+13 Aranaea
+14 Birds
+15 Bombus
+16 Bombus hypnorum
+17 Bombus lapidarius
+18 Bombus pascuorum
+19 Bombus sylvarum
+20 Bombus terrestris
+21 Bombyliidae
+22 Chorthippus
+23 Chrysididae
+24 Chrysotoxum
+25 Coccinella septempunctata
+26 Coenonympha pamphilus
+27 Coleoptera
+28 Crabronidae
+29 Decticus verrucivorus
+30 Dermaptera
+31 Diptera
+32 Episyrphus balteatus
+33 Eristalis
+34 Eupeodes
+35 Eurimyia
+36 Formidicidae
+37 Helophilus
+38 Hemiptera
+39 Herpetofauna
+40 Hesperidae
+41 Ichneumonidae
+42 Isopoda
+43 Larvae
+44 Lepidoptera
+45 Lepidoptera_fw
+46 Lycaena phlaeas
+47 Lycenidae
+48 Maniola jurtina
+49 Maniola jurtina_fw
+50 Megachilidae
+51 Melanargia galathea
+52 Meliscaeva cinctella
+53 Milipedes
+54 Moths
+55 Myathropa florea
+56 Nomada
+57 Nymphalidae
+58 Odonata
+59 Odynerus spinipes
+60 Omocestus viridulus
+61 Orthoptera
+62 Pholidoptera griseoaptera
+63 Pieridae
+64 Platycheirus
+65 Pompilidae
+66 Rhagonycha fulva
+67 Sarcophagidae
+68 Satyrinae_fw
+69 Scaeva
+70 Scaeva pyrastri
+71 Slugs
+72 Snails
+73 Sphaerophoria scripta-complex
+74 Syritta pipiens
+75 Syrphidae
+76 Syrphus
+77 Vegetation
+78 Vespidae
+79 Vespula vulgaris
+80 Xanthogramma
+```
 
-### Training and validating hierarchical classification models: ###
+## Training and development tools
 
- - hierarchicalB3L/trainAdv.py  traning of the hierarchical classifier<br />
- - hierarchicalB3L/validate.py  validation of  the hierarchical classifier<br />
- - hierarchicalB3L/plotTrainAdvResults.py plotting results and learning the distribution (mean+STD) of logits for each class in the hierarchy
+The detector and classifier training datasets are not included in this repository. The original README states that they may be published separately.
 
-## Additional helper functions ##
+### Motion-Informed Enhancement (MIE) dataset helpers
 
- - plotResultsInsectTaxon.py, plotResultsMAMBO.py and plotResultsNI2.py - examples of reading CSV files with tracks or detections and plots histograms and abundance of classified taxa
-   
-### Helper functions to create datasets for the insect detector model ###
+- `tools/createAccurateDataset.py`
+- `tools/Create_MotionNI-dataset.py`
 
- - countLabels.py - counts the labels on the datasets for YOLO detector for images with and without annotations
- - tools/Create-MotionNI-dataset.py - example for how to create motion enhanced images (MIE)
- - tools/Create-PollNI-dataset.py - selects and create dataset for detection based on images from project Pollinator Watch (Logitech camera)
- - tools/Create-Orchard-dataset.py - selects and create dataset for detection based on image from project Orchard (Pi model 3 camera)
- - tools/Create-*.py - selects and create dataset for detection based on images and videos from various projects
- - tools/createAccurateDataset.py - dataset from paper: "Accurate detections and identification .." https://doi.org/10.1371/journal.pstr.0000051 
+### Python helper modules
 
-More information on the dataset for insect detection: 
-  
-https://github.com/kimbjerge/insectDCT/tree/main/README_detection_datasets.txt
+- `common/` — helper code used by `pipeDetectAndClassifyInsectsTaxon.py`.
+- `idac/` — helper code used by `pipeTrackInsectsTaxon.py`.
 
-### Helper functions to select crops (see createCrops.py) for dataset to improve training of the hierarchical classifier ###
+### Train and validate YOLO11 detectors
 
- - copySelectedCrops.py - example code for how to select specific taxa of insect crops and create a dataset for training (MAMBO, NI2)
+- `insectsColorTrain.py` — train on color images.
+- `insectsColorVal.py` — validate on color images.
+- `insectsMotionTrain.py` — train on motion-enhanced images.
 
-### Helper functions to evaluate the hierarchical classifier and tracking ###
+### Train and validate hierarchical classifiers
 
- - createCrops.py - creates crops of insect images found by the insect detector and classifier
- - countCrops.py - counts the created crops and plots statistics for number of FalseA (subdirectory of false arthropods) and FalseB (subdirectory of false background detections)
- - countCropsOrchard.py - counts crops and plots statistics on validated crops for models V3 and V4 - result files: Test-HierarchicalClassifierVx.csv (Precision Micro and Macro)
- - createTrackCrops.py - based on the *_TRS.csv files with valid tracks (Id) - it create png files of insects crops in a 3x4 matrix plot (See examples below)
+- `hierarchicalB3L/trainAdv.py` — train the hierarchical classifier.
+- `hierarchicalB3L/validate.py` — validate the hierarchical classifier.
+- `hierarchicalB3L/plotTrainAdvResults.py` — plot training results and estimate the mean and standard deviation of logits for classes in the hierarchy.
 
-   ![Alt text](ExTrackCrops.png)
+### Additional analysis and dataset helpers
 
-   ![Alt text](ExTrackCrops2.png)
+- `plotResultsInsectTaxon.py`, `plotResultsMAMBO.py`, and `plotResultsNI2.py` — read detection or track CSV files and plot taxon histograms and abundance summaries.
+- `countLabels.py` — count YOLO labels in annotated and unannotated datasets.
+- `tools/Create-MotionNI-dataset.py` — example for creating motion-enhanced images.
+- `tools/Create-PollNI-dataset.py` — select detection images from the Pollinator Watch project (Logitech camera).
+- `tools/Create-Orchard-dataset.py` — select detection images from the Orchard project (Raspberry Pi camera).
+- `tools/Create-*.py` — scripts for selecting images and videos from various projects.
+- `tools/createAccurateDataset.py` — dataset helper associated with the paper “Accurate detections and identification …”: https://doi.org/10.1371/journal.pstr.0000051
+- `README_detection_datasets.txt` — additional information about insect-detection datasets: https://github.com/kimbjerge/insectDCT/tree/main/README_detection_datasets.txt
+- `copySelectedCrops.py` — select taxa-specific insect crops to build classifier-training datasets (MAMBO, NI2).
+- `createCrops.py` — create crops of insects detected and classified by the pipeline.
+- `countCrops.py` — count crops and summarize false arthropod (`FalseA`) and false background (`FalseB`) detections.
+- `countCropsOrchard.py` — count crops and summarize validated crops for V3 and V4; results include `Test-HierarchicalClassifierVx.csv` (micro- and macro-precision).
+- `createTrackCrops.py` — create 3 × 4 plots of insect crops for valid tracks in `*_TRS.csv` files.
 
-### Tag version number ###
+![Example track-crop plot](ExTrackCrops.png)
 
-All tags in this repository are named: DVx-CVy-SVz.z
+![Additional example track-crop plot](ExTrackCrops2.png)
 
-DVx is the detector version number eg. DV5 - YOLO11 detector model trained on dataset version 5   <br />
-CVx is the hierarchical classifier version number eg. CV6 - classifier model trained on taxon dataset version 6   <br />
-SVx is the source code version number eg. SV1.5 - Python and HTML source code version 1.5   <br />
-   
+## Related publications
+
+- **Object detection with Motion-Informed Enhancement (MIE):** “Object Detection of Small Insects in Time-Lapse Camera Recordings.” https://www.mdpi.com/1424-8220/23/16/7242
+- **Flower-cover estimation and arthropod classification:** “A deep learning pipeline for time-lapse camera monitoring of floral environments and insect populations.” https://doi.org/10.1016/j.ecoinf.2024.102861
+- **Hierarchical taxonomic classification:** “Hierarchical classification of insects with multitask learning and anomaly detection.” https://doi.org/10.1016/j.ecoinf.2023.102278
+- **Tracking at low frame rates:** “Towards edge processing of images from insect camera traps.” https://doi.org/10.1002/rse2.70007
+
+## Repository version tags
+
+Repository tags use the format `DVx-CVy-SVz.z`:
+
+- `DVx` — detector version, e.g. `DV5` for a YOLO11 detector trained on dataset version 5.
+- `CVx` — hierarchical classifier version, e.g. `CV6` for the classifier trained on taxonomic dataset version 6.
+- `SVx.z` — source-code version, e.g. `SV1.5` for the Python and HTML source code.
