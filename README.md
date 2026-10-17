@@ -7,7 +7,7 @@
 The pipeline combines three main stages:
 
 1. **Detection and localization** — detects arthropods with YOLO11. Motion-Informed Enhancement (MIE) can help improve detection in challenging backgrounds.
-2. **Hierarchical taxonomic classification** — classifies (ConvNext-Base) detected animals across taxonomic levels, from broad groups to family, genus, or species where supported by the model.
+2. **Hierarchical taxonomic classification** — classifies detected animals across taxonomic levels, from broad groups to family, genus, or species, including anomaly detection of uncertain detections. The backbone of the classifier can be selected as ConvNeXt-Base, EfficientNetV2S, or ResNet50.
 3. **Tracking** — associates detections across frames in high-temporal-resolution recordings to follow individual insects over time.
 
 The repository includes inference scripts, graphical interfaces, browser-based viewers, crop-generation utilities, model-training helpers, and tools for inspecting detection and tracking results.
