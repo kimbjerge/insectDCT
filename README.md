@@ -147,7 +147,8 @@ When `--useExifTime True` is enabled, image timestamps are read from EXIF metada
 
 ```bash
 # Run detector and classifier using Slicing Aided Hyper Inference (SAHI) tiling for large images
-  (20% overlap with 1920x1080 slices)
+# 20% overlap with 1920x1080 slices 
+# Slow performance but increases recall for detecting small insects in very large images
 python pipeDetectAndClassifyInsectsTaxonSahi.py --useSahi True
 ```
 
