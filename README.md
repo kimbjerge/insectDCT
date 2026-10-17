@@ -54,7 +54,7 @@ Choose the environment setup that matches your platform:
 
 ## Model weights and labels (Hierarchical classifier)
 
-The model weights, labels, and thresholds are distributed separately from the source code. Download the required files from the links below and extract them into `models_save/` (the original instructions refer to `insectsDCT/models_save/`; use the corresponding path in your local checkout).
+The model weights, labels, and thresholds are distributed separately from the source code. Download the required files from the links below and extract them into `models_save/`.
 
 The models were trained on images collected using Wingscapes Bird cameras, Logitech webcams, and Raspberry Pi cameras. Backgrounds include *Sedum*, red clover, sea rocket, common mallow, and various grasses.
 
