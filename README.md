@@ -2,6 +2,8 @@
 
 **InsectDCT** is a Python-based pipeline for detecting, hierarchically classifying, and tracking insects in time-lapse camera-trap images and video recordings. It is designed for natural and semi-natural floral environments, where vegetation, changing illumination, and complex backgrounds make automated monitoring challenging.
 
+![Alt text](PipelineHierarchical.png)
+
 The pipeline combines three main stages:
 
 1. **Detection and localization** — detects arthropods with YOLO11. Motion-Informed Enhancement (MIE) can help improve detection in challenging backgrounds.
@@ -140,6 +142,11 @@ python pipeDetectAndClassifyInsectsTaxon.py --dataset V7
 By default, the script performs detection and classification using ConvNeXt-Base on `CUDA:0`. The `--device cpu` option runs on the CPU. `EfficientNetV2S` is a smaller, faster classification model, with lower accuracy than ConvNeXt-Base according to the project documentation. For Raspberry Pi, the original README recommends using a YOLO11s model by changing the `--yoloWeights` parameter in the source code when using the NCNN option.
 
 When `--useExifTime True` is enabled, image timestamps are read from EXIF metadata instead of the filename. Supported filename patterns include `CAM1_YYYY_MM_DD_HH_MM_SS.jpg` and `CAM1_YYYYMMDDHHMMSS_...jpg`.
+
+### Detect and classify insects without resizing large images
+
+# Run detector and classifier using Slicing Aided Hyper Inference (SAHI) tiling for large images (20% overlap with 1920x1080 slices)
+python pipeDetectAndClassifyInsectsTaxonSahi.py --useSahi True
 
 ### Track insects across frames
 
